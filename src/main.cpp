@@ -1,11 +1,10 @@
 #include <setup.h>
 
-/**************************************************************************/
-/*
-    Arduino loop function, called once 'setup' is complete (your own code
-    should go here)
-*/
-/**************************************************************************/
+/**
+ * loop
+ * Arduino loop function, called once 'setup' is complete (your own code
+ * should go here)
+ */
 void loop(void)
 {
 	ArduinoOTA.handle();
@@ -28,7 +27,7 @@ void loop(void)
 		}
 		if (weatherTaskHandle != NULL) {
 			vTaskResume(weatherTaskHandle);
-	}
+		}
 	}
 
 	// Check Meeo channels
@@ -62,7 +61,6 @@ void loop(void)
 	// Check if broadcast arrived
 	udpMsgLength = udpListener.parsePacket();
 	if (udpMsgLength != 0) {
-		// esp_task_wdt_feed();
 		getUDPbroadcast(udpMsgLength);
 	}
 }

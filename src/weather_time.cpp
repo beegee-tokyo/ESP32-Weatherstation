@@ -4,8 +4,8 @@
 #include <WiFiClientSecure.h>
 
 bool getWGWeather();
+void triggerGetWeather();
 void drawIcon(const unsigned short* icon, int16_t x, int16_t y, int8_t width, int8_t height);
-// void weatherTask(void *pvParameters);
 
 /** Underground Weather API key */
 const String wgApiKey = "e062ec62675eb278";
@@ -15,18 +15,22 @@ const String wgCountry = "PH";
 const String wgCity = "Paranaque_City";
 /** URL for Underground Weather */
 const String wgURL = "http://api.wunderground.com/api/";
+/** HTTPClient class to get data from Underground Weather */
+HTTPClient http;
 /** Task handle for the weather and time update task */
 TaskHandle_t weatherTaskHandle = NULL;
 /** String with current weather situation */
 String weatherText = "";
+/** Ticker for weather and time update */
+Ticker weatherTicker;
 
 /**
-	initWeather
-	Setup task for repeated weather and time update
-  @return bool
-      true if task is started
-      false if task couldn't be started
-*/
+ * initWeather
+ * Setup task for repeated weather and time update
+ * @return bool
+ *    true if task is started
+ *    false if task couldn't be started
+ */
 bool initWeather() {
   // Start NTP listener
 	initNTP();
@@ -45,6 +49,7 @@ bool initWeather() {
   if (weatherTaskHandle == NULL) {
     return false;
   }
+	weatherTicker.attach(1800, triggerGetWeather);
   return true;
 }
 
@@ -54,12 +59,11 @@ bool initWeather() {
  * Triggered by timer to get weather and time update every 30 minutes
  */
 void triggerGetWeather() {
-  // vTaskResume(weatherTaskHandle);
-	// xTaskResumeFromISR(weatherTaskHandle);
+	xTaskResumeFromISR(weatherTaskHandle);
 }
 
 /**
- * Task to reads temperature from DHT11 sensor
+ * Task to read temperature from DHT11 sensor
  */
 void weatherTask(void *pvParameters) {
 	Serial.println("weatherTask loop started");
@@ -88,9 +92,6 @@ void weatherTask(void *pvParameters) {
     vTaskSuspend(NULL);
 	}
 }
-
-/** HTTPClient class to get data */
-HTTPClient http;
 
 /**
  * getWGWeather
@@ -218,16 +219,25 @@ bool getWGWeather() {
 	}
 }
 
-//====================================================================================
-// This is the function to draw the icon stored as an array in program memory (FLASH)
-//====================================================================================
-
 // To speed up rendering we use a 64 pixel buffer
 #define BUFF_SIZE 64
 
-// Draw array "icon" of defined width and height at coordinate x,y
-// Maximum icon size is 255x255 pixels to avoid integer overflow
-
+/**
+ * drawIcon
+ * Draw array "icon" of defined width and height at coordinate x,y
+ * Maximum icon size is 255x255 pixels to avoid integer overflow
+ * Icon is stored as an array in program memory (FLASH)
+ * @param icon
+ *		pointer to icon
+ * @param x
+ *		x coordinate where icon should be drawn
+ * @param y
+ *		y coordinate where icon should be drawn
+ * @param width
+ *		width of icon
+ * @param height
+ *		height of icon
+ */
 void drawIcon(const unsigned short* icon, int16_t x, int16_t y, int8_t width, int8_t height) {
 
   uint16_t  pix_buffer[BUFF_SIZE];   // Pixel buffer (16 bits per pixel)

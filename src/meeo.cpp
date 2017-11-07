@@ -1,5 +1,8 @@
 #include "setup.h"
 
+void meeoTask(void *pvParameters);
+void meeoDataHandler(String topic, String payload);
+void meeoEventHandler(MeeoEventType event);
 
 /** Structure for meeo message Buffer */
 struct meeoMsgStruct {
@@ -22,14 +25,10 @@ meeoMsgStruct meeoMsg[10];
 /** Task handle for the MEEO publisher task */
 TaskHandle_t meeoTaskHandle = NULL;
 
-void meeoTask(void *pvParameters);
-void meeoDataHandler(String topic, String payload);
-void meeoEventHandler(MeeoEventType event);
-
 /**
-	initMeeo
-	Initialize Meeo connection
-*/
+ * initMeeo
+ * Initialize Meeo connection
+ */
 void initMeeo() {
   // Start task for MEEO publishing
 	xTaskCreatePinnedToCore(
@@ -50,19 +49,19 @@ void initMeeo() {
 }
 
 /**
-	addMeeoMsg
-	Adds a message to the buffer to be processed by meeoTask()
-
-  @param topic
-      String with the topic
-  @param payload
-      String with the payload
-  @param debug
-      Flag if message should be sent to default logger channel
-  @return bool
-      true if message is added to the buffer
-      false if buffer was full
-*/
+ * addMeeoMsg
+ * Adds a message to the buffer to be processed by meeoTask()
+ *
+ * @param topic
+ *     String with the topic
+ * @param payload
+ *    String with the payload
+ * @param debug
+ *    Flag if message should be sent to default logger channel
+ * @return bool
+ *    true if message is added to the buffer
+ *    false if buffer was full
+ */
 bool addMeeoMsg (String topic, String payload, bool debug) {
 	for (byte index = 0; index < 10; index ++) {
 		if (!meeoMsg[index].waiting) { // found an empty slot?
@@ -78,6 +77,11 @@ bool addMeeoMsg (String topic, String payload, bool debug) {
 	return false;
 }
 
+/**
+ * Task to send data from meeoMsg buffer to Meeo.IO
+ * @param pvParameters
+ *    pointer to task parameters
+ */
 void meeoTask(void *pvParameters) {
 	Serial.println("meeoTask loop started");
 	while (1) // meeoTask loop
@@ -104,29 +108,30 @@ void meeoTask(void *pvParameters) {
 }
 
 /**
-	meeoDataHandler
-	Called when data from MEEO was received
-
-  @param topic
-      String with the received topic
-  @param payload
-      String with the received payload
-*/
+ * meeoDataHandler
+ * Called when data from MEEO was received
+ *
+ * @param topic
+ *    String with the received topic
+ * @param payload
+ *    String with the received payload
+ */
 void meeoDataHandler(String topic, String payload) {
 	String debugMsg = "MEEO incoming: " + topic + " message " + payload;
 	Serial.println(debugMsg);
 	if (Meeo.isChannelMatched(topic, "getweather")) {
 		if (payload == "1") {
 			addMeeoMsg("getweather", "0", false);
-      // TODO resume task to get local weather situation
-			// vTaskResume(weatherTaskHandle);
+			vTaskResume(weatherTaskHandle);
 		}
 	}
 }
 
 /**
-	meeoEventHandler
-	Called on WiFi or MQTT events
+ * meeoEventHandler
+ * Called on WiFi or MQTT events
+ * @param event
+ *		MeeoEvent to be handled
 */
 void meeoEventHandler(MeeoEventType event) {
   switch (event) {

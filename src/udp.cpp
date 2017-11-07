@@ -6,16 +6,26 @@ static IPAddress ipDebug (192, 168, 0, 10);
 static const int tcpDebugPort = 9999;
 
 /**
-	getUDPbroadcast
-	Get UDP broadcast message
-*/
+ * getUDPbroadcast
+ * Get UDP broadcast message
+ * @param udpMsgLength
+ *		size of buffered UDP message
+ */
 void getUDPbroadcast(int udpMsgLength) {
+	/** Outside temperature value */
+	double outsideTemp = 0;
+	/** Outside humidity value */
+	double outsideHumid = 0;
+	/** Outside heat index value */
+	double outsideHeat = 0;
+	/** Buffer for udpPacket */
 	byte udpPacket[udpMsgLength+1];
-	IPAddress udpIP;
 
 	udpListener.read(udpPacket, udpMsgLength);
 	udpPacket[udpMsgLength] = 0;
 
+	// /** UDP sender address */
+	// IPAddress udpIP;
 	// String debugMsg = "UDP broadcast from ";
 	// udpIP = udpListener.remoteIP();
 	// debugMsg += "Sender IP: " + String(udpIP[0]) + "." + String(udpIP[1]) + "." + String(udpIP[2]) + "." + String(udpIP[3]);
@@ -99,7 +109,7 @@ void getUDPbroadcast(int udpMsgLength) {
  * @return <code>bool</bool>
  *				true if payload could be sent
  *				false if error occurs
- **/
+ */
 bool udpSendMessage(IPAddress ipAddr, String udpMsg, int udpPort) {
 	/** WiFiUDP class for creating UDP communication */
 	WiFiUDP udpClientServer;
@@ -136,7 +146,15 @@ bool udpSendMessage(IPAddress ipAddr, String udpMsg, int udpPort) {
 	}
 }
 
-// For debug over TCP
+/**
+ * sendDebug
+ * Send a debug message over TCP
+ *
+ * @param debugMsg
+ *				debug message
+ * @param senderID
+ *				device ID
+ **/
 void sendDebug(String debugMsg, String senderID) {
 	/** WiFiClient class to create TCP communication */
 	WiFiClient tcpDebugClient;
@@ -147,7 +165,6 @@ void sendDebug(String debugMsg, String senderID) {
 		return;
 	}
 
-	// String sendMsg = OTA_HOST;
 	debugMsg = senderID + " " + debugMsg;
 	tcpDebugClient.print(debugMsg);
 

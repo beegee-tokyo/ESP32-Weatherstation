@@ -3,8 +3,7 @@
 #include <Adafruit_TSL2561_U.h>
 
 void configureSensor ();
-void configureSensor();
-void triggerGetLight();
+long readLux();
 void triggerGetLight();
 void lightTask(void *pvParameters);
 
@@ -14,8 +13,6 @@ Adafruit_TSL2561_Unified tsl = Adafruit_TSL2561_Unified ( TSL2561_ADDR_FLOAT, 12
 TwoWire esp32Wire = TwoWire(0);
 /** Task handle for light measurement task */
 TaskHandle_t lightTaskHandle = NULL;
-/** Timer to collect light value */
-hw_timer_t *getLightTimer = NULL;
 /** Pin number for LDR analog input pin */
 int ldrPin = 36;
 /** Flag if TSL2561 light sensor was found */
@@ -26,16 +23,18 @@ int lightInteg = 2;
 long newLDRValue = 0;
 /** TLS light value = 0 if not updated */
 int newTSLValue = 0;
+/** Ticker for LED flashing */
+Ticker lightTicker;
 
 /**
-	initLight
-	Setup port for LDR and TSL2561 sensor
-	Starts task and timer for repeated measurement
-  @return byte
-    0 if light sensor was found and update task and timer are inialized
-    1 if no no TSL2561 sensor was found but update task and timer are inialized
-    2 if update timer could not be started
-*/
+ * initLight
+ * Setup port for LDR and TSL2561 sensor
+ * Starts task and timer for repeated measurement
+ * @return byte
+ *    0 if light sensor was found and update task and timer are inialized
+ *    1 if no no TSL2561 sensor was found but update task and timer are inialized
+ *    2 if update timer could not be started
+ */
 byte initLight() {
   byte resultValue = 0;
   // Initialize analog port for LDR
@@ -68,14 +67,53 @@ byte initLight() {
     resultValue = 2;
   } else {
     // Start update of light values data every 10 seconds
-  	getLightTimer = startTimerSec(10, triggerGetLight, true);
-  	if (getLightTimer == NULL) {
-      vTaskDelete(lightTaskHandle);
-      resultValue = 2;
-  	}
+    lightTicker.attach(10, triggerGetLight);
   }
 
   return resultValue;
+}
+/**
+ * Start task to reads TSL2561 light sensor and LDR analog value
+ */
+void triggerGetLight() {
+	if (lightTaskHandle != NULL) {
+    xTaskResumeFromISR(lightTaskHandle);
+  }
+}
+
+/**
+ * Task to read data from TSL2561 light sensor and LDR sensor
+ * @param pvParameters
+ *    pointer to task parameters
+ */
+void lightTask(void *pvParameters) {
+	Serial.println("lightTask loop started");
+	while (1) // lightTask loop
+  {
+		if (otaRunning)
+		{
+			vTaskDelete(NULL);
+		}
+		if (tasksEnabled) {
+      if (hasTSLSensor) {
+        // Read TSL2561 light sensor
+  			long collLight = readLux();
+  			tft.setCursor(0,102);
+  			tft.fillRect(0, 89, 48, 31, TFT_DARKGREEN);
+  			tft.setTextSize(1);
+  			if (collLight != 65536) {
+  				newTSLValue = collLight;
+  			} else {
+          newTSLValue = 0;
+        }
+  			esp32Wire.reset();
+      }
+
+			// Read analog value of LDR
+			newLDRValue = analogRead(ldrPin);
+		}
+		vTaskSuspend(NULL);
+	}
 }
 
 /**
@@ -94,7 +132,8 @@ void configureSensor() {
  * Function makes 5 measurements and returns the average value.
  * Function adapts integration time in case of sensor overload
  *
- * @result <code>long</code>
+ * @result long
+ *    measured light in Lux, 0 if measurement failed
  */
 long readLux() {
 	/** Accumulated sensor values */
@@ -173,47 +212,5 @@ long readLux() {
 		return (accLux / lightOk);
 	} else {
 		return 0;
-	}
-}
-
-/**
- * Start task to reads TSL2561 light sensor and LDR analog value
- */
-void triggerGetLight() {
-	if (lightTaskHandle != NULL) {
-    xTaskResumeFromISR(lightTaskHandle);
-  }
-}
-
-/**
- * Task to read data from TSL2561 light sensor and LDR sensor
- */
-void lightTask(void *pvParameters) {
-	Serial.println("lightTask loop started");
-	while (1) // lightTask loop
-  {
-		if (otaRunning)
-		{
-			vTaskDelete(NULL);
-		}
-		if (tasksEnabled) {
-      if (hasTSLSensor) {
-        // Read TSL2561 light sensor
-  			long collLight = readLux();
-  			tft.setCursor(0,102);
-  			tft.fillRect(0, 89, 48, 31, TFT_DARKGREEN);
-  			tft.setTextSize(1);
-  			if (collLight != 65536) {
-  				newTSLValue = collLight;
-  			} else {
-          newTSLValue = 0;
-        }
-  			esp32Wire.reset();
-      }
-
-			// Read analog value of LDR
-			newLDRValue = analogRead(ldrPin);
-		}
-		vTaskSuspend(NULL);
 	}
 }

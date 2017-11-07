@@ -25,11 +25,5 @@ int udpMsgLength = 0;
 FtpServer ftpSrv;
 /** Flag for tasks if main app is ready */
 bool tasksEnabled = false;
-/** Outside temperature value */
-double outsideTemp = 0;
-/** Outside humidity value */
-double outsideHumid = 0;
-/** Outside heat index value */
-double outsideHeat = 0;
 
 #endif

@@ -24,7 +24,6 @@
 #include <WiFiUdp.h>
 #include <ArduinoOTA.h>
 #include <esp_system.h>
-#include <Wire.h>
 
 // Declarations and function definitions
 #ifdef HAS_TFT // TFT connected?
@@ -36,16 +35,18 @@
 	#include <WiFiManager.h>
 #endif
 
+// App specific includes
+#include <Wire.h>
 #include <Meeo.h>
 #include <FS.h>
 #include "SPIFFS.h"
 #include <ESP8266FtpServer.h>
 #include <ArduinoJson.h>
-#include "DHT.h"
-
-#include "globals.h"
+// #include "DHT.h"
 
 // My libraries
 #include "myLib.h"
+#include "ESP32Ticker.h"
+#include "globals.h"
 
 #endif

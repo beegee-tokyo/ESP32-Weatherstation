@@ -1,4 +1,5 @@
 #include "setup.h"
+#include "DHT.h"
 
 void triggerGetTemp();
 void tempTask(void *pvParameters);
@@ -9,21 +10,19 @@ float computeHeatIndex(float temperature, float percentHumidity);
 DHT dht;
 /** Task handle for the light value read task */
 TaskHandle_t tempTaskHandle = NULL;
-/** Timer to collect temperature & humidity information */
-hw_timer_t *getTempTimer = NULL;
 /** Pin number for DHT11 data pin */
 int dhtPin = 17;
-/** Counter to update local weather and time */
-byte weatherCountDown = 0;
+/** Ticker for LED flashing */
+Ticker tempTicker;
 
 /**
-	initTemp
-	Setup DHT library
-	Setup task and timer for repeated measurement
-  @return bool
-      true if task and timer are started
-      false if task or timer couldn't be started
-*/
+ * initTemp
+ * Setup DHT library
+ * Setup task and timer for repeated measurement
+ * @return bool
+ *    true if task and timer are started
+ *    false if task or timer couldn't be started
+ */
 bool initTemp() {
   byte resultValue = 0;
   // Initialize temperature sensor
@@ -41,45 +40,31 @@ bool initTemp() {
 			1);                             /* Core where the task should run */
 
   if (tempTaskHandle == NULL) {
+    Serial.println("[ERROR] --:-- Failed to start task for temperature update");
+		addMeeoMsg("", "[ERROR] --:-- Failed to start task for temperature update", true);
     return false;
   } else {
     // Start update of environment data every 20 seconds
-  	getTempTimer = startTimerSec(20, triggerGetTemp, true);
-  	if (getTempTimer == NULL) {
-      vTaskDelete(tempTaskHandle);
-      return false;
-  	}
+    tempTicker.attach(20, triggerGetTemp);
   }
-
   return true;
-
-	// Start update of environment data every 20 seconds
-	getTempTimer = startTimerSec(20, triggerGetTemp, true);
-	if (getTempTimer == NULL) {
-		Serial.println("[ERROR] --:-- Failed to start timer for temperature update");
-		addMeeoMsg("", "[ERROR] --:-- Failed to start timer for temperature update", true);
-	}
 }
 
 /**
-	triggerGetTemp
-	Sets flag dhtUpdated to true for handling in loop()
-	called by Ticker getTempTimer
-*/
+ * triggerGetTemp
+ * Sets flag dhtUpdated to true for handling in loop()
+ * called by Ticker getTempTimer
+ */
 void triggerGetTemp() {
   if (tempTaskHandle != NULL) {
 	   xTaskResumeFromISR(tempTaskHandle);
   }
-	weatherCountDown++;
-	if ((weatherCountDown > 90) && (weatherTaskHandle != NULL)) { // 30 min = 1800 sec / 20 sec update rate = 90 triggers
-		addMeeoMsg("", "[INFO] " + digitalTimeDisplay() + " Weather triggered", true);
-		weatherCountDown = 0;
-		xTaskResumeFromISR(weatherTaskHandle);
-	}
 }
 
 /**
  * Task to reads temperature from DHT11 sensor
+ * @param pvParameters
+ *    pointer to task parameters
  */
 void tempTask(void *pvParameters) {
 	Serial.println("tempTask loop started");
@@ -102,8 +87,11 @@ void tempTask(void *pvParameters) {
 }
 
 /**
-	getTemperature
-	Reads temperature from DHT11 sensor
+ * getTemperature
+ * Reads temperature from DHT11 sensor
+ * @return bool
+ *    true if temperature could be aquired
+ *    false if aquisition failed
 */
 bool getTemperature() {
 	tft.fillRect(0, 32, 128, 8, TFT_WHITE);
@@ -161,6 +149,18 @@ bool getTemperature() {
 	return true;
 }
 
+/**
+ * computeHeatIndex
+ * Calculates heat index (for Centigrade values only!!!)
+ * using both Rothfusz and Steadman's equations
+ * http://www.wpc.ncep.noaa.gov/html/heatindex_equation.shtml
+ * param temperature
+ *    temperature in Centigrade
+ * @param percentHumidity
+ *    humidity in percent
+ * @return float
+ *    calculated heat index
+*/
 float computeHeatIndex(float temperature, float percentHumidity) {
   // Using both Rothfusz and Steadman's equations
   // http://www.wpc.ncep.noaa.gov/html/heatindex_equation.shtml

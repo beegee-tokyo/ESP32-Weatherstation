@@ -34,9 +34,6 @@ bool connectWiFi();
 // Global variables
 extern bool tasksEnabled;
 extern FtpServer ftpSrv;
-extern double outsideTemp;
-extern double outsideHumid;
-extern double outsideHeat;
 
 // UDP interface
 void getUDPbroadcast(int udpMsgLength);
@@ -46,35 +43,33 @@ extern int udpMsgLength;
 
 // Touch interface
 void initTouch();
+extern Ticker touchTicker;
 
 // Meeo functions / variables
 void initMeeo();
 bool addMeeoMsg (String topic, String payload, bool debug = false);
-extern TaskHandle_t meeoTaskHandle;
 extern bool meeoConnected;
 
 // LED functions / variables
 void initLed();
 void startFlashing(uint16_t flashTime);
 void stopFlashing();
+extern Ticker ledTicker;
 
 // Light functions / variables
 byte initLight();
 extern long newLDRValue;
 extern int newTSLValue;
 extern TaskHandle_t lightTaskHandle;
+extern Ticker lightTicker;
 
 // Temperature functions / variables
 bool initTemp();
 extern TaskHandle_t tempTaskHandle;
+extern Ticker tempTicker;
 
 // Weather and time update functions / variables
 bool initWeather();
 void weatherTask(void *pvParameters);
 extern TaskHandle_t weatherTaskHandle;
-
-/**********************************************************/
-/**********************************************************/
-// Put app specific function declarations below
-/**********************************************************/
-/**********************************************************/
+extern Ticker weatherTicker;
