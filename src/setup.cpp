@@ -3,15 +3,7 @@
 
 /** Build time */
 const char compileDate[] = __DATE__ " " __TIME__;
-// /** OTA progress */
-// int otaStatus = 0;
-// /**********************************************************/
-// // Fill these with your WiFi AP credentials
-// /**********************************************************/
-// /** Predefined SSID used for WiFi connection */
-// const char *ssid = "YOUR_NETWORK_SSID_HERE";
-// /** Predefined password used for WiFi connection */
-// const char *password = "YOUR_NETWORK_PASSWORD_HERE";
+
 /**********************************************************/
 // Give the board a type and an ID
 /**********************************************************/

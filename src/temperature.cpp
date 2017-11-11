@@ -74,12 +74,7 @@ void tempTask(void *pvParameters) {
 			vTaskDelete(NULL);
 		}
 		if (tasksEnabled) {
-			if (!getTemperature()) {
-				// Serial.println("Could not get temperature");
-				// addMeeoMsg("", "[ERROR] " + digitalTimeDisplaySec() + " Could not get temperature", true);
-			// } else {
-			// 	addMeeoMsg("", "[INFO] " + digitalTimeDisplaySec() + " Got temperature", true);
-			}
+			getTemperature();
 		}
 		vTaskSuspend(NULL);
 	}

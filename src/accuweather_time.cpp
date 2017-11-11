@@ -204,7 +204,6 @@ bool getAccuWeather() {
 			addMeeoMsg("", "[ERROR] " + digitalTimeDisplay() + " Could not find weather icon", true);
 		}
 		// drawIcon(icon,  (tft.width() -  accuIconWidth), 75,  accuIconWidth,  accuIconHeight);
-    // drawIcon(icon,  (tft.width() -  accuIconWidth)/2, 88,  accuIconWidth,  accuIconHeight);
 		drawIcon(icon,  5, 88,  accuIconWidth,  accuIconHeight);
 		tft.setCursor(45,103);
 		tft.setTextSize(1);
