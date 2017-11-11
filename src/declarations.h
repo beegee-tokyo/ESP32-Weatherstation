@@ -23,6 +23,12 @@ WiFiUDP udpListener;
 int udpMsgLength = 0;
 /** FTP server class */
 FtpServer ftpSrv;
+/** HTTPClient class to get data from Weather website*/
+HTTPClient http;
+/** Task handle for the weather and time update task */
+TaskHandle_t weatherTaskHandle = NULL;
+/** Ticker for weather and time update */
+Ticker weatherTicker;
 /** Flag for tasks if main app is ready */
 bool tasksEnabled = false;
 

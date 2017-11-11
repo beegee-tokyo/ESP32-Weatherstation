@@ -24,6 +24,7 @@
 #include <WiFiUdp.h>
 #include <ArduinoOTA.h>
 #include <esp_system.h>
+#include <rom/rtc.h>
 
 // Declarations and function definitions
 #ifdef HAS_TFT // TFT connected?
@@ -42,7 +43,8 @@
 #include "SPIFFS.h"
 #include <ESP8266FtpServer.h>
 #include <ArduinoJson.h>
-// #include "DHT.h"
+#include <HTTPClient.h>
+#include <WiFiClientSecure.h>
 
 // My libraries
 #include "myLib.h"

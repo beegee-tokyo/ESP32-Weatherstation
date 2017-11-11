@@ -125,6 +125,14 @@ void meeoDataHandler(String topic, String payload) {
 			vTaskResume(weatherTaskHandle);
 		}
 	}
+	if (Meeo.isChannelMatched(topic, "reset")) {
+		if (payload == "1") {
+			addMeeoMsg("reset", "0", false);
+			addMeeoMsg("", "[INFO] " + digitalTimeDisplaySec() + " RESET request", true);
+			delay(2000);
+			esp_restart();
+		}
+	}
 }
 
 /**
@@ -151,6 +159,7 @@ void meeoEventHandler(MeeoEventType event) {
     case MQ_CONNECTED:
       Serial.println("Connected to MEEO Server");
 			Meeo.subscribe("getweather", 0, false);
+			Meeo.subscribe("reset", 0, false);
 			meeoConnected = true;
 			break;
     case MQ_BAD_CREDENTIALS:

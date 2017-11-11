@@ -44,9 +44,8 @@ byte initLight() {
 	analogSetAttenuation(ADC_6db);
 
   // Initialize light sensor with SDA,SCL,frequency
-	esp32Wire.begin(21,22,400000);
+	esp32Wire.begin(21,22,100000);
 	if (tsl.begin(&esp32Wire)) {
-	// if (tsl.begin()) {
     hasTSLSensor = true;
 		configureSensor();
   } else {
@@ -98,15 +97,26 @@ void lightTask(void *pvParameters) {
       if (hasTSLSensor) {
         // Read TSL2561 light sensor
   			long collLight = readLux();
-  			tft.setCursor(0,102);
-  			tft.fillRect(0, 89, 48, 31, TFT_DARKGREEN);
-  			tft.setTextSize(1);
   			if (collLight != 65536) {
   				newTSLValue = collLight;
   			} else {
           newTSLValue = 0;
+          Serial.println("[ERROR] " + digitalTimeDisplay() + " Failed to read from TSL2561");
+      		addMeeoMsg("", "[ERROR] " + digitalTimeDisplay() + " Failed to read from TSL2561", true);
+          hasTSLSensor = false;
         }
   			esp32Wire.reset();
+      } else {
+        // Try to initialize sensor again
+        // Initialize light sensor with SDA,SCL,frequency
+        esp32Wire.reset();
+      	esp32Wire.begin(21,22,100000);
+      	if (tsl.begin(&esp32Wire)) {
+          hasTSLSensor = true;
+      		configureSensor();
+        } else {
+          hasTSLSensor = false;
+        }
       }
 
 			// Read analog value of LDR

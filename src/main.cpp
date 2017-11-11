@@ -35,19 +35,21 @@ void loop(void)
 
 	// Check if LDR light values are updated
 	if (newLDRValue != 0) {
-		tft.setCursor(85,102);
-		tft.fillRect(80, 89, 48, 31, TFT_DARKGREEN);
+		tft.setCursor(85,97);
+		tft.fillRect(80, 89, 48, 16, TFT_DARKGREEN);
 		tft.setTextSize(1);
-		addMeeoMsg("ldr", String(newLDRValue));
 		tft.print(String(newLDRValue));
+		addMeeoMsg("ldr", String(newLDRValue));
 		// addMeeoMsg("", "[INFO] " + digitalTimeDisplaySec() + " Got light value from LDR", true);
 		newLDRValue = 0;
 	}
 
 	// Check if TSL light values are updated
 	if (newTSLValue != 0) {
-		tft.setCursor(0,102);
-		tft.fillRect(0, 89, 48, 31, TFT_DARKGREEN);
+		// tft.setCursor(0,102);
+		tft.setCursor(85,108);
+		// tft.fillRect(0, 89, 48, 31, TFT_DARKGREEN);
+		tft.fillRect(80, 105, 48, 15, TFT_DARKGREEN);
 		tft.setTextSize(1);
 		addMeeoMsg("light", String(newTSLValue));
 		tft.print(String(newTSLValue) + "lux");

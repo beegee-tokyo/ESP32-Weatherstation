@@ -4,7 +4,6 @@
 void triggerGetTemp();
 void tempTask(void *pvParameters);
 bool getTemperature();
-float computeHeatIndex(float temperature, float percentHumidity);
 
 /** Initialize DHT sensor */
 DHT dht;
@@ -76,8 +75,8 @@ void tempTask(void *pvParameters) {
 		}
 		if (tasksEnabled) {
 			if (!getTemperature()) {
-				Serial.println("Could not get temperature");
-				addMeeoMsg("", "[ERROR] " + digitalTimeDisplaySec() + " Could not get temperature", true);
+				// Serial.println("Could not get temperature");
+				// addMeeoMsg("", "[ERROR] " + digitalTimeDisplaySec() + " Could not get temperature", true);
 			// } else {
 			// 	addMeeoMsg("", "[INFO] " + digitalTimeDisplaySec() + " Got temperature", true);
 			}
@@ -99,6 +98,7 @@ bool getTemperature() {
 	tft.setTextColor(TFT_BLACK);
 	tft.setTextSize(0);
 	tft.println("Getting temperature");
+  tft.setTextColor(TFT_WHITE);
 
 	// Reading temperature for humidity takes about 250 milliseconds!
 	// Sensor readings may also be up to 2 seconds 'old' (it's a very slow sensor)
@@ -113,6 +113,7 @@ bool getTemperature() {
 		tft.setTextColor(TFT_BLACK);
 		tft.setTextSize(0);
 		tft.println("DHT11 failure");
+    tft.setTextColor(TFT_WHITE);
 		return false;
 	}
 	/******************************************************* */
@@ -123,7 +124,7 @@ bool getTemperature() {
 
 	String displayTxt = "";
 
-  tft.fillRect(0, 32, 128, 8, TFT_DARKGREY);
+  tft.fillRect(0, 32, 128, 16, TFT_DARKGREY);
   tft.setCursor(0, 33);
   tft.setTextSize(1);
   tft.setTextColor(TFT_WHITE);

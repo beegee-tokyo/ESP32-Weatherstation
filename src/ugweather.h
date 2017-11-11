@@ -1,5 +1,5 @@
-#ifndef icons_h
-#define icons_h
+#ifndef ugweather_h
+#define ugweather_h
 
 #include <pgmspace.h>
 
@@ -1344,14 +1344,14 @@ const unsigned short unknown[0x400] PROGMEM ={
 };
 
 /** Number of icons */
-const byte iconNums = 20;
+const byte ugIconNums = 20;
 /** Width of the icons */
-const uint16_t infoWidth = 32;
+const uint16_t ugIconWidth = 32;
 /** height of the icons */
-const uint16_t infoHeight = 32;
+const uint16_t ugIconHeight = 32;
 
 /** List with all icon names */
-String iconNames[20] = {
+String ugIconName[ugIconNums] = {
 	"chanceflurries",
 	"chancerain",
 	"chancesleet",
@@ -1374,7 +1374,7 @@ String iconNames[20] = {
 	"unknown"
 };
 /** List with all icon arrays */
-const unsigned short * iconArray[20] = {
+const unsigned short * ugIconArray[ugIconNums] = {
 	chanceflurries,
 	chancerain,
 	chancesleet,
@@ -1396,5 +1396,60 @@ const unsigned short * iconArray[20] = {
 	tstorms,
 	unknown
 };
+
+// /** Number of icons */
+// const byte accuIconNums = 44;
+// /** Width of the icons */
+// const uint16_t accuIconWidth = 32;
+// /** height of the icons */
+// const uint16_t accuIconHeight = 32;
+//
+// /** List with all icon arrays */
+// const unsigned short * accuIconArray[accuIconNums] = {
+// 	sunny,
+// 	mostlysunny,
+// 	partlysunny,
+// 	partlycloudy,
+// 	hazy,
+// 	mostlycloudy,
+// 	cloudy,
+// 	chancesleet,
+// 	unknown,
+// 	unknown,
+// 	fog,
+// 	chancerain,
+// 	chancerain,
+// 	chancerain,
+// 	tstorms,
+// 	chancetstorms,
+// 	chancetstorms,
+// 	rain,
+// 	flurries,
+// 	chanceflurries,
+// 	chanceflurries,
+// 	snow,
+// 	chancesnow,
+// 	snow,
+// 	sleet,
+// 	snow,
+// 	unknown,
+// 	unknown,
+// 	chancerain,
+// 	unknown,
+// 	unknown,
+// 	unknown,
+// 	clear,
+// 	mostlysunny,
+// 	partlysunny,
+// 	mostlycloudy,
+// 	hazy,
+// 	partlycloudy,
+// 	chancerain,
+// 	chancerain,
+// 	chancetstorms,
+// 	chancetstorms,
+// 	flurries,
+//   chancesnow
+// };
 
 #endif

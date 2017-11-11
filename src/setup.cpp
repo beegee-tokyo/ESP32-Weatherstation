@@ -3,15 +3,15 @@
 
 /** Build time */
 const char compileDate[] = __DATE__ " " __TIME__;
-/** OTA progress */
-int otaStatus = 0;
-/**********************************************************/
-// Fill these with your WiFi AP credentials
-/**********************************************************/
-/** Predefined SSID used for WiFi connection */
-const char *ssid = "YOUR_NETWORK_SSID_HERE";
-/** Predefined password used for WiFi connection */
-const char *password = "YOUR_NETWORK_PASSWORD_HERE";
+// /** OTA progress */
+// int otaStatus = 0;
+// /**********************************************************/
+// // Fill these with your WiFi AP credentials
+// /**********************************************************/
+// /** Predefined SSID used for WiFi connection */
+// const char *ssid = "YOUR_NETWORK_SSID_HERE";
+// /** Predefined password used for WiFi connection */
+// const char *password = "YOUR_NETWORK_PASSWORD_HERE";
 /**********************************************************/
 // Give the board a type and an ID
 /**********************************************************/
@@ -153,8 +153,8 @@ void setup(void)
 			addMeeoMsg("", "[INFO] --:-- Light sensors available and initialized", true);
 			break;
 		case 1:
-			Serial.println("[ERROR] --:-- Failed to start task for light measurement");
-			addMeeoMsg("", "[ERROR] --:-- Failed to start task for light measurement", true);
+			Serial.println("[ERROR] --:-- Light sensors not available");
+			addMeeoMsg("", "[ERROR] --:-- Light sensors not available", true);
 			break;
 		case 2:
 		default:
@@ -170,192 +170,17 @@ void setup(void)
 	}
 
 	// Initialize Weather and NTP time updates
-	if (!initWeather()) {
+	if (!initUGWeather()) {
 		Serial.println("[ERROR] --:-- Failed to start weather & time updates");
 		addMeeoMsg("", "[ERROR] --:-- Failed to start weather & time updates", true);
 	}
-}
+	// if (!initAccuWeather()) {
+	// 	Serial.println("[ERROR] --:-- Failed to start weather & time updates");
+	// 	addMeeoMsg("", "[ERROR] --:-- Failed to start weather & time updates", true);
+	// }
 
-/**
- * Activate OTA
- *
- * @param MODULTYPE
- *		Module type as char* e.g. 'aircon', 'security', 'light'
- * @param MODULID
- *		Module ID used by other apps to recognize this device
- *		e.g. ac1, lb1, sf1, ...
- */
-void activateOTA(const char *MODULTYPE, const char *MODULID) {
-
-	ArduinoOTA
-		.setHostname(apName)
-    .onStart([]() {
-			addMeeoMsg("", "[INFO] " + digitalTimeDisplaySec() + " OTA_START", true);
-			stopFlashing();
-			lightTicker.detach();
-			tempTicker.detach();
-			weatherTicker.detach();
-			touchTicker.detach();
-			// stopAllTimers();
-			otaRunning = true;
-
-			pinMode(16, OUTPUT);
-			String type;
-			if (ArduinoOTA.getCommand() == U_FLASH)
-				type = "sketch";
-			else // U_SPIFFS
-				type = "filesystem";
-
-			// NOTE: if updating SPIFFS this would be the place to unmount SPIFFS using SPIFFS.end()
-			Serial.println("OTA Start updating " + type);
-
-	#ifdef HAS_TFT
-			tft.fillScreen(TFT_BLUE);
-			tft.setTextDatum(MC_DATUM);
-			tft.setTextColor(TFT_WHITE);
-			tft.setTextSize(2);
-			tft.drawString("OTA",64,50);
-			tft.drawString("Progress:",64,75);
-	#endif
-    })
-    .onEnd([]() {
-			Serial.println("\n OTA End");
-
-	#ifdef HAS_TFT
-			tft.fillScreen(TFT_GREEN);
-			tft.setTextDatum(MC_DATUM);
-			tft.setTextColor(TFT_BLACK);
-			tft.setTextSize(2);
-			tft.drawString("OTA",64,50);
-			tft.drawString("FINISHED!",64,80);
-	#endif
-			delay(10);
-    })
-    .onProgress([](unsigned int progress, unsigned int total) {
-			unsigned int achieved = progress / (total / 100);
-			if (otaStatus == 0 || achieved == otaStatus + 1) {
-				digitalWrite(16, !digitalRead(16));
-				otaStatus = achieved;
-				tft.setTextDatum(MC_DATUM);
-				tft.setTextSize(2);
-				tft.fillRect(32,91,64,28,TFT_BLUE);
-				String progVal = String(achieved) + "%";
-				tft.drawString(progVal,64,105);
-			}
-    })
-    .onError([](ota_error_t error) {
-			#ifdef HAS_TFT
-					tft.fillScreen(TFT_RED);
-					tft.setTextDatum(MC_DATUM);
-					tft.setTextColor(TFT_BLACK);
-					tft.setTextSize(2);
-					tft.drawString("OTA",64,30,2);
-					tft.drawString("ERROR:",64,60,2);
-			#endif
-
-					Serial.printf("\nOTA Error[%u]: ", error);
-					if (error == OTA_AUTH_ERROR) {
-						Serial.println("Auth Failed");
-
-			#ifdef HAS_TFT
-						tft.drawString("Auth Failed",64,80,2);
-			#endif
-					}
-					else if (error == OTA_BEGIN_ERROR) {
-						Serial.println("Begin Failed");
-
-			#ifdef HAS_TFT
-						tft.drawString("Begin Failed",64,80,2);
-			#endif
-					}
-					else if (error == OTA_CONNECT_ERROR) {
-						Serial.println("Connect Failed");
-			#ifdef HAS_TFT
-						tft.drawString("Connect Failed",64,80,2);
-			#endif
-					}
-					else if (error == OTA_RECEIVE_ERROR) {
-						Serial.println("Receive Failed");
-			#ifdef HAS_TFT
-						tft.drawString("Receive Failed",64,80,2);
-			#endif
-					}
-					else if (error == OTA_END_ERROR) {
-						Serial.println("End Failed");
-			#ifdef HAS_TFT
-						tft.drawString("End Failed",64,80,2);
-			#endif
-					}
-    });
-
-	ArduinoOTA.begin();
-
-	const char * mhcTxtData[7] = {
-			"board=" ARDUINO_BOARD,
-			"tcp_check=no",
-			"ssh_upload=no",
-			"auth_upload=no",
-			MODULTYPE,
-			MODULID,
-			"service=MHC"
-  };
-	MDNS.addMultiServiceTxt("_arduino", "_tcp", mhcTxtData, 7);
-}
-
-/**
- * Connect to WiFi with pre-defined method
- *
- * @return <code>bool</code>
- *			true if connection was successful
- *			false if connection failed
- **/
-bool connectWiFi() {
-#ifdef CONNDIRECT
-#ifdef ENA_DEBUG
-	Serial.println("Connect with predefined SSID and password");
-#endif
-	// /** Connect with predefined SSID and password */
-	if (connDirect(ssid, password, 20000)) {
-		return true;
-	} else {
-		return false;
-	}
-#elif defined CONNWIFIMANAGER
-#ifdef ENA_DEBUG
-	Serial.println("Connect with WiFiManager");
-#endif
-	/** Connect with WiFiManager */
-	if (connWiFiManager(apName, 10000, 0, true)) {
-		return true;
-	} else {
-		return false;
-	}
-#elif defined CONNSMARTCONFIG
-#ifdef ENA_DEBUG
-	Serial.println("Connect with SmartConfig");
-#endif
-	/** Connect with SmartConfig */
-	WiFi.begin();
-	WiFi.reconnect();
-	uint32_t startTime = millis();
-	while (WiFi.waitForConnectResult() != WL_CONNECTED) {
-		if (millis()-startTime > 10000) { // check if waiting time exceeded
-			if (connSmartConfig(60000, 10000)) {
-				return false;
-			}
-		}
-	}
-	return true;
-#else
-	// We end up here if no connection method was defined !!!!!
-	WiFi.begin();
-	WiFi.reconnect();
-	uint32_t startTime = millis();
-	while (WiFi.waitForConnectResult() != WL_CONNECTED) {
-		if (millis()-startTime > 10000) { // check if waiting time exceeded
-			return false;
-		}
-	}
-	return true;
-#endif
+	String resetReason = reset_reason(rtc_get_reset_reason(0));
+	addMeeoMsg("", "[INFO] --:-- Reset reason CPU0: " + resetReason, true);
+	resetReason = reset_reason(rtc_get_reset_reason(1));
+	addMeeoMsg("", "[INFO] --:-- Reset reason CPU1: " + resetReason, true);
 }

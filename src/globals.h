@@ -25,6 +25,10 @@ void activateOTA(const char *MODULTYPE, const char *MODULID);
  * Connect to WiFi with pre-defined method
  */
 bool connectWiFi();
+/**
+ * Get reset reason as string array
+ */
+String reset_reason(RESET_REASON reason);
 
 /**********************************************************/
 /**********************************************************/
@@ -33,6 +37,15 @@ bool connectWiFi();
 /**********************************************************/
 // Global variables
 extern bool tasksEnabled;
+
+// Weather interface
+extern HTTPClient http;
+/** Task handle for the weather and time update task */
+extern TaskHandle_t weatherTaskHandle;
+/** Ticker for weather and time update */
+extern Ticker weatherTicker;
+
+// FTP interface
 extern FtpServer ftpSrv;
 
 // UDP interface
@@ -44,6 +57,9 @@ extern int udpMsgLength;
 // Touch interface
 void initTouch();
 extern Ticker touchTicker;
+
+// Graphics functions
+void drawIcon(const unsigned short* icon, int16_t x, int16_t y, int8_t width, int8_t height);
 
 // Meeo functions / variables
 void initMeeo();
@@ -67,9 +83,16 @@ extern Ticker lightTicker;
 bool initTemp();
 extern TaskHandle_t tempTaskHandle;
 extern Ticker tempTicker;
+float computeHeatIndex(float temperature, float percentHumidity);
 
-// Weather and time update functions / variables
-bool initWeather();
-void weatherTask(void *pvParameters);
+// Underground Weather & NTP time update functions / variables
+bool initUGWeather();
+void ugWeatherTask(void *pvParameters);
+// Accu Weather & NTP time update functions / variables
+bool initAccuWeather();
+void accuWeatherTask(void *pvParameters);
+bool getAccuWeather();
+
+// Weather & NTP time update functions / variables
 extern TaskHandle_t weatherTaskHandle;
 extern Ticker weatherTicker;
