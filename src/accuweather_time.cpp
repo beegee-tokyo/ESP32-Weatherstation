@@ -74,7 +74,7 @@ void accuWeatherTask(void *pvParameters) {
       // Update NTP time
       if (!tryGetTime()) {
         // Serial.println("Failed to get update from NTP");
-        addMeeoMsg("", "[ERROR] " + digitalTimeDisplay() + " Failed to get update from NTP", true);
+        addMeeoMsg("", "[ERROR] " + digitalTimeDisplaySec() + " Failed to get update from NTP", true);
       }
       // Get weather info
       if (getAccuWeather()) {
@@ -201,7 +201,7 @@ bool getAccuWeather() {
       icon = accuIconArray[iconNum];
 		} else {
 			Serial.println("Could not find the icon");
-			addMeeoMsg("", "[ERROR] " + digitalTimeDisplay() + " Could not find weather icon", true);
+			addMeeoMsg("", "[ERROR] " + digitalTimeDisplaySec() + " Could not find weather icon", true);
 		}
 		// drawIcon(icon,  (tft.width() -  accuIconWidth), 75,  accuIconWidth,  accuIconHeight);
 		drawIcon(icon,  5, 88,  accuIconWidth,  accuIconHeight);

@@ -141,30 +141,30 @@ void setup(void)
 	byte lightInitResult = initLight();
 	switch (lightInitResult) {
 		case 0:
-			Serial.println("[INFO] --:-- Light sensors available and initialized");
-			addMeeoMsg("", "[INFO] --:-- Light sensors available and initialized", true);
+			Serial.println("[INFO] " + digitalTimeDisplaySec() + " Light sensors available and initialized");
+			addMeeoMsg("", "[INFO] " + digitalTimeDisplaySec() + " Light sensors available and initialized", true);
 			break;
 		case 1:
-			Serial.println("[ERROR] --:-- Light sensors not available");
-			addMeeoMsg("", "[ERROR] --:-- Light sensors not available", true);
+			Serial.println("[ERROR] " + digitalTimeDisplaySec() + " Light sensors not available");
+			addMeeoMsg("", "[ERROR] " + digitalTimeDisplaySec() + " Light sensors not available", true);
 			break;
 		case 2:
 		default:
-			Serial.println("[ERROR] --:-- Failed to start timer for light measurement");
-			addMeeoMsg("", "[ERROR] --:-- Failed to start timer for light measurement", true);
+			Serial.println("[ERROR] " + digitalTimeDisplaySec() + " Failed to start timer for light measurement");
+			addMeeoMsg("", "[ERROR] " + digitalTimeDisplaySec() + " Failed to start timer for light measurement", true);
 			break;
 	}
 
 	// Initialize temperature measurements
 	if (!initTemp()) {
-		Serial.println("[ERROR] --:-- Failed to start temperature measurement");
-		addMeeoMsg("", "[ERROR] --:-- Failed to start temperature measurement", true);
+		Serial.println("[ERROR] " + digitalTimeDisplaySec() + " Failed to start temperature measurement");
+		addMeeoMsg("", "[ERROR] " + digitalTimeDisplaySec() + " Failed to start temperature measurement", true);
 	}
 
 	// Initialize Weather and NTP time updates
 	if (!initUGWeather()) {
-		Serial.println("[ERROR] --:-- Failed to start weather & time updates");
-		addMeeoMsg("", "[ERROR] --:-- Failed to start weather & time updates", true);
+		Serial.println("[ERROR] " + digitalTimeDisplaySec() + " Failed to start weather & time updates");
+		addMeeoMsg("", "[ERROR] " + digitalTimeDisplaySec() + " Failed to start weather & time updates", true);
 	}
 	// if (!initAccuWeather()) {
 	// 	Serial.println("[ERROR] --:-- Failed to start weather & time updates");
@@ -172,7 +172,7 @@ void setup(void)
 	// }
 
 	String resetReason = reset_reason(rtc_get_reset_reason(0));
-	addMeeoMsg("", "[INFO] --:-- Reset reason CPU0: " + resetReason, true);
+	addMeeoMsg("", "[INFO] " + digitalTimeDisplaySec() + " Reset reason CPU0: " + resetReason, true);
 	resetReason = reset_reason(rtc_get_reset_reason(1));
-	addMeeoMsg("", "[INFO] --:-- Reset reason CPU1: " + resetReason, true);
+	addMeeoMsg("", "[INFO] " + digitalTimeDisplaySec() + " Reset reason CPU1: " + resetReason, true);
 }

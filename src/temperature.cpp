@@ -102,7 +102,7 @@ bool getTemperature() {
 	// Check if any reads failed and exit early (to try again).
 	if (dht.getStatus() != 0) {
 		Serial.println("DHT11 error status: " + String(dht.getStatusString()));
-		addMeeoMsg("", "[ERROR] " + digitalTimeDisplay() + " DHT11 error status: " + String(dht.getStatusString()), true);
+		addMeeoMsg("", "[ERROR] " + digitalTimeDisplaySec() + " DHT11 error status: " + String(dht.getStatusString()), true);
 		tft.fillRect(0, 32, 128, 8, TFT_RED);
 		tft.setCursor(0, 33);
 		tft.setTextColor(TFT_BLACK);
@@ -115,7 +115,7 @@ bool getTemperature() {
 	/* Trying to calibrate the humidity values               */
 	/******************************************************* */
 	// newHumidValue = 10*sqrt(newHumidValue);
-	newHumidValue = 20+newHumidValue;
+	newHumidValue = 20.0 + newHumidValue;
 
 	String displayTxt = "";
 

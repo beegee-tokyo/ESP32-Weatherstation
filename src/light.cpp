@@ -101,8 +101,8 @@ void lightTask(void *pvParameters) {
   				newTSLValue = collLight;
   			} else {
           newTSLValue = 0;
-          Serial.println("[ERROR] " + digitalTimeDisplay() + " Failed to read from TSL2561");
-      		addMeeoMsg("", "[ERROR] " + digitalTimeDisplay() + " Failed to read from TSL2561", true);
+          Serial.println("[ERROR] " + digitalTimeDisplaySec() + " Failed to read from TSL2561");
+      		addMeeoMsg("", "[ERROR] " + digitalTimeDisplaySec() + " Failed to read from TSL2561", true);
           hasTSLSensor = false;
         }
   			esp32Wire.reset();

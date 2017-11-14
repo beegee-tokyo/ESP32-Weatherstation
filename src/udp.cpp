@@ -92,7 +92,7 @@ void getUDPbroadcast(int udpMsgLength) {
       tft.print(displayText);
 		}
 	} else {
-		addMeeoMsg("", "[ERROR] " + digitalTimeDisplay() + "Received invalid JSON", true);
+		addMeeoMsg("", "[ERROR] " + digitalTimeDisplaySec() + "Received invalid JSON", true);
 	}
 }
 
@@ -119,7 +119,7 @@ bool udpSendMessage(IPAddress ipAddr, String udpMsg, int udpPort) {
 
 	if (connOK == 0) {
 		Serial.println("UDP could not get socket");
-		addMeeoMsg("", "[ERROR] " + digitalTimeDisplay() + "UDP could not get socket", true);
+		addMeeoMsg("", "[ERROR] " + digitalTimeDisplaySec() + "UDP could not get socket", true);
 		return false;
 	}
 	udpClientServer.begin(udpPort);
@@ -128,7 +128,7 @@ bool udpSendMessage(IPAddress ipAddr, String udpMsg, int udpPort) {
 	if (beginOK == 0) { // Problem occured!
 		udpClientServer.stop();
 		Serial.println("UDP connection failed");
-		addMeeoMsg("", "[ERROR] " + digitalTimeDisplay() + "UDP connection failed", true);
+		addMeeoMsg("", "[ERROR] " + digitalTimeDisplaySec() + "UDP connection failed", true);
 		return false;
 	}
 	int bytesSent = udpClientServer.print(udpMsg);
@@ -139,7 +139,7 @@ bool udpSendMessage(IPAddress ipAddr, String udpMsg, int udpPort) {
 		return true;
 	} else {
 		Serial.println("Failed to send " + udpMsg + ", sent " + String(bytesSent) + " of " + String(udpMsg.length()) + " bytes");
-		addMeeoMsg("", "[ERROR] " + digitalTimeDisplay() + "Failed to send " + udpMsg + ", sent " + String(bytesSent) + " of " + String(udpMsg.length()) + " bytes", true);
+		addMeeoMsg("", "[ERROR] " + digitalTimeDisplaySec() + "Failed to send " + udpMsg + ", sent " + String(bytesSent) + " of " + String(udpMsg.length()) + " bytes", true);
 		udpClientServer.endPacket();
 		udpClientServer.stop();
 		return false;

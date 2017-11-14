@@ -68,7 +68,7 @@ void ugWeatherTask(void *pvParameters) {
       // Update NTP time
       if (!tryGetTime()) {
         // Serial.println("Failed to get update from NTP");
-        addMeeoMsg("", "[ERROR] " + digitalTimeDisplay() + " Failed to get update from NTP", true);
+        addMeeoMsg("", "[ERROR] " + digitalTimeDisplaySec() + " Failed to get update from NTP", true);
       }
       // Get weather info
       if (getUGWeather()) {
@@ -194,7 +194,7 @@ bool getUGWeather() {
 			}
 		} else {
 			Serial.println("Could not find the icon");
-			addMeeoMsg("", "[ERROR] " + digitalTimeDisplay() + "Could not find weather icon", true);
+			addMeeoMsg("", "[ERROR] " + digitalTimeDisplaySec() + "Could not find weather icon", true);
 		}
 		// drawIcon(icon,  (tft.width() -  ugIconWidth)/2, 88,  ugIconWidth,  ugIconHeight);
 		drawIcon(icon,  5, 88,  ugIconWidth,  ugIconHeight);
