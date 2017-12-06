@@ -19,9 +19,5 @@
         , "WebServer-esp32" : "https://github.com/zhouhan0126/WebServer-esp32.git"
         , "DNSServer---esp32" : "https://github.com/zhouhan0126/DNSServer---esp32.git"
       },
-    "devDependencies":
-      { "arduino-esp32": "https://github.com/espressif/arduino-esp32.git"
-        , "PlatformIO_Atom_IDE": "https://github.com/platformio/platformio-atom-ide.git"
-      },
     "cpu" : [ "ESP32" ]
 }
