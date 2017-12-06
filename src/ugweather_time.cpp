@@ -50,11 +50,12 @@ bool initUGWeather() {
  * Triggered by timer to get weather and time update every 30 minutes
  */
 void triggerGetUGWeather() {
+	addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec() + " Weather update triggered", false);
 	xTaskResumeFromISR(weatherTaskHandle);
 }
 
 /**
- * Task to read temperature from DHT11 sensor
+ * Task to get current weather from Underground Weather
  */
 void ugWeatherTask(void *pvParameters) {
 	Serial.println("weatherTask loop started");
@@ -68,15 +69,16 @@ void ugWeatherTask(void *pvParameters) {
       // Update NTP time
       if (!tryGetTime()) {
         // Serial.println("Failed to get update from NTP");
-        addMeeoMsg("", "[ERROR] " + digitalTimeDisplaySec() + " Failed to get update from NTP", true);
+				addMqttMsg("debug", "[ERROR] " + digitalTimeDisplaySec() + " Failed to get update from NTP", false);
       }
       // Get weather info
       if (getUGWeather()) {
         // Serial.println("Got weather conditions");
-        addMeeoMsg("weather", ugWeatherText, false);
+				Serial.println(ugWeatherText);
+				addMqttMsg("WEA", ugWeatherText, true);
       } else {
         // Serial.println("Failed to get weather conditions");
-        addMeeoMsg("", "[ERROR] " + digitalTimeDisplaySec() + " Failed to get weather conditions", true);
+				addMqttMsg("debug", "[ERROR] " + digitalTimeDisplaySec() + " Failed to get weather conditions", false);
         // delay(60000); // try again in 60 seconds
       }
 		}
@@ -118,16 +120,14 @@ bool getUGWeather() {
 				payload = "[HTTP] GET error code: " + http.errorToString(httpCode);
 				http.end();
 				Serial.println(payload);
-				// sendDebug(payload,"ESP32");
-				addMeeoMsg("", "[ERROR] " + digitalTimeDisplaySec() + " getWGWeather() http.getString() -> " + payload, true);
+				addMqttMsg("debug", "[ERROR] " + digitalTimeDisplaySec() + " getWGWeather() http.getString() -> " + payload, false);
 				return false;
 			}
 	} else {
 		payload = "[HTTP] GET error code: " + http.errorToString(httpCode);
 		http.end();
 		Serial.println(payload);
-		// sendDebug(payload,"ESP32");
-		addMeeoMsg("", "[ERROR] " + digitalTimeDisplaySec() + " getWGWeather() http.GET() -> " + payload, true);
+		addMqttMsg("debug", "[ERROR] " + digitalTimeDisplaySec() + " getWGWeather() http.GET() -> " + payload, false);
 		return false;
 	}
 
@@ -141,7 +141,6 @@ bool getUGWeather() {
   /** Json object for incoming data */
   JsonObject& jsonIn = jsonInBuffer.parseObject(json);
   if (!jsonIn.success()) {
-		// sendDebug(String(json),"ESP32");
 		return false;
 	} else {
 		JsonObject& current_observation = jsonIn.get<JsonObject>("current_observation");
@@ -176,11 +175,6 @@ bool getUGWeather() {
 		tft.println(ugWeatherText);
 		ugWeatherText = "gusting to " + wind_gust_kph + "kph";
 		tft.println(ugWeatherText);
-		// Serial.println("Temperature: " + temp);
-		// Serial.println("Humidity:    " + humid);
-		// Serial.println("Heat index:  " + heat);
-		// Serial.println(weather);
-		// Serial.println("Wind from the " + wind_dir + " at " + wind_kph + "km/h up to " + wind_gust_kph + "km/h");
 
 		const unsigned short *icon = unknown;
 		if (current_observation.containsKey("icon")) {
@@ -194,18 +188,18 @@ bool getUGWeather() {
 			}
 		} else {
 			Serial.println("Could not find the icon");
-			addMeeoMsg("", "[ERROR] " + digitalTimeDisplaySec() + "Could not find weather icon", true);
+			addMqttMsg("debug", "[ERROR] " + digitalTimeDisplaySec() + "Could not find weather icon", false);
 		}
 		// drawIcon(icon,  (tft.width() -  ugIconWidth)/2, 88,  ugIconWidth,  ugIconHeight);
 		drawIcon(icon,  5, 88,  ugIconWidth,  ugIconHeight);
 		tft.setCursor(45,103);
 		tft.setTextSize(1);
 		tft.print("Light:");
-		ugWeatherText = "Weather at " + String(obsHour) + ":" + String(obsMin) + "\n";
-		ugWeatherText += "T " + temp + "'C H " + humid +"%\n";
-		ugWeatherText += weather + "\n";
-		ugWeatherText += wind_dir + " wind at " + wind_kph + "kph\n";
-		ugWeatherText += "gusting to " + wind_gust_kph + "kph\n";
+		ugWeatherText = "Weather at " + String(obsHour) + ":" + String(obsMin) + "</br>";
+		ugWeatherText += "T " + temp + "&deg;C H " + humid +"%</br>";
+		ugWeatherText += weather + "</br>";
+		ugWeatherText += wind_dir + " wind at " + wind_kph + "kph</br>";
+		ugWeatherText += "gusting to " + wind_gust_kph + "kph</br>";
 
 		return true;
 	}

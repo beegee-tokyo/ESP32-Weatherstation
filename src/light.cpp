@@ -102,7 +102,7 @@ void lightTask(void *pvParameters) {
   			} else {
           newTSLValue = 0;
           Serial.println("[ERROR] " + digitalTimeDisplaySec() + " Failed to read from TSL2561");
-      		addMeeoMsg("", "[ERROR] " + digitalTimeDisplaySec() + " Failed to read from TSL2561", true);
+          addMqttMsg("debug", "[ERROR] " + digitalTimeDisplaySec() + " Failed to read from TSL2561", false);
           hasTSLSensor = false;
         }
   			esp32Wire.reset();
@@ -134,7 +134,9 @@ void configureSensor() {
 	tsl.enableAutoRange ( true );				 /* Auto-gain ... switches automatically between 1x and 16x */
 
 	/* Changing the integration time gives you better sensor resolution (402ms = 16-bit data) */
-	tsl.setIntegrationTime ( TSL2561_INTEGRATIONTIME_402MS ); /* 16-bit data but slowest conversions */
+	// tsl.setIntegrationTime ( TSL2561_INTEGRATIONTIME_402MS ); /* 16-bit data but slowest conversions */
+  tsl.setIntegrationTime ( TSL2561_INTEGRATIONTIME_13MS );
+  lightInteg = 0;
 }
 
 /**
@@ -154,73 +156,55 @@ long readLux() {
 	/** Counter for successfull readings, used to adjust the integration time */
 	int lightOk = 0; /* In case of saturation we retry 5 times */
 
-	for ( int i = 0; i < 5; i++ ) {
-		tsl.getEvent ( &event );
+  // tsl.getEvent (&event);
+  // return (event.light);
 
-		/* Display the results (light is measured in lux) */
-		if ( event.light ) {
-			/** Int value read from AD conv for sun measurement */
-			accLux += event.light;
-			lightOk++; /* Increase counter of successful measurements */
-
-			if ( lightInteg == 1 ) { /* we are at medium integration time, try a higher one */
-				tsl.setIntegrationTime ( TSL2561_INTEGRATIONTIME_402MS ); /* 16-bit data but slowest conversions */
-				/* Test new integration time */
-				tsl.getEvent ( &event );
-
-				if ( event.light == 0 ) {
-					/* Satured, switch back to medium integration time */
-					tsl.setIntegrationTime ( TSL2561_INTEGRATIONTIME_101MS ); /* medium resolution and speed	 */
-				} else {
-					lightInteg = 2;
-				}
-			} else if ( lightInteg == 0 ) { /* we are at lowest integration time, try a higher one */
-				tsl.setIntegrationTime ( TSL2561_INTEGRATIONTIME_101MS ); /* medium resolution and speed	 */
-				/* Test new integration time */
-				tsl.getEvent ( &event );
-
-				if ( event.light == 0 ) {
-					/* Satured, switch back to low integration time */
-					tsl.setIntegrationTime ( TSL2561_INTEGRATIONTIME_13MS ); /* fast but low resolution */
-				} else {
-					lightInteg = 1;
-				}
-			}
-		} else {
-			/* If event.light = 0 lux the sensor is probably saturated and no reliable data could be generated! */
-			if ( lightInteg == 2 ) { /* we are at highest integration time, try a lower one */
-				tsl.setIntegrationTime ( TSL2561_INTEGRATIONTIME_101MS ); /* medium resolution and speed	 */
-				tsl.getEvent ( &event );
-
-				if ( event.light == 0 ) { /* Still saturated? */
-					lightInteg = 0;
-					tsl.setIntegrationTime ( TSL2561_INTEGRATIONTIME_13MS ); /* fast but low resolution */
-					tsl.getEvent ( &event );
-
-					if ( event.light != 0 ) { /* Got a result now? */
-						accLux += event.light;
-						lightOk++; /* Increase counter of successful measurements */
-					}
-				} else {
-					lightInteg = 1;
-					accLux += event.light;
-					lightOk++; /* Increase counter of successful measurements */
-				}
-			} else if ( lightInteg == 1 ) { /* we are at medium integration time, try a lower one */
-				lightInteg = 0;
-				tsl.setIntegrationTime ( TSL2561_INTEGRATIONTIME_13MS ); /* fast but low resolution */
-				tsl.getEvent ( &event );
-				if ( event.light != 0 ) { /* Got a result now? */
-					accLux += event.light;
-					lightOk++; /* Increase counter of successful measurements */
-				}
-			}
-		}
-	}
-
-	if ( lightOk != 0 ) {
-		return (accLux / lightOk);
-	} else {
-		return 0;
-	}
+  if (tsl.getEvent(&event)) { // True if we are not saturated
+    accLux = event.light;
+    if ( lightInteg == 1 ) { /* we are at medium integration time, try a higher one */
+      tsl.setIntegrationTime ( TSL2561_INTEGRATIONTIME_402MS ); /* 16-bit data but slowest conversions */
+      /* Test new integration time */
+      if (tsl.getEvent (&event)) { // True if we are not saturated
+        addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec() + " Switched up to 402ms", false);
+        lightInteg = 2;
+        return event.light;
+      } else {
+        /* Satured, switch back to medium integration time */
+        tsl.setIntegrationTime ( TSL2561_INTEGRATIONTIME_101MS ); /* medium resolution and speed */
+        return accLux;
+      }
+    } else if ( lightInteg == 0 ) { /* we are at lowest integration time, try a higher one */
+      tsl.setIntegrationTime ( TSL2561_INTEGRATIONTIME_101MS ); /* medium resolution and speed */
+      /* Test new integration time */
+      if (tsl.getEvent (&event)) { // True if we are not saturated
+        addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec() + " Switched up to 101ms", false);
+        lightInteg = 1;
+        return event.light;
+      } else {
+        /* Satured, switch back to low integration time */
+        tsl.setIntegrationTime ( TSL2561_INTEGRATIONTIME_13MS ); /* medium resolution and speed */
+        return accLux;
+      }
+    }
+    return accLux;
+  } else { // sensor is saturated, try lower level
+    if ( lightInteg == 2 ) { /* we are at highest integration time, try a lower one */
+      tsl.setIntegrationTime ( TSL2561_INTEGRATIONTIME_101MS ); /* medium resolution and speed	 */
+      if (tsl.getEvent (&event)) { // True if we are not saturated
+        addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec() + " Switched down to 101ms", false);
+        lightInteg = 1;
+        return event.light;
+      } else {
+        /* Still satured, switch back to low integration time */
+        tsl.setIntegrationTime ( TSL2561_INTEGRATIONTIME_13MS ); /* medium resolution and speed */
+        if (tsl.getEvent (&event)) { // True if we are not saturated
+          addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec() + " Switched down to 13ms", false);
+          lightInteg = 1;
+          return event.light;
+        } else {
+          return 0; // Something wrong here??? lowest integration time and still saturated!!!
+        }
+      }
+    }
+  }
 }

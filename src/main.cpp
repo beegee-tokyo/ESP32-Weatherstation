@@ -30,8 +30,15 @@ void loop(void)
 		}
 	}
 
-	// Check Meeo channels
-	Meeo.run();
+	/** Handle MQTT subscribed */
+	mqttClient.loop();
+
+	if(!mqttClient.connected()) {
+		// Handle OTA updates
+		ArduinoOTA.handle();
+		// Try to reconnect to MQTT
+		connectMQTT();
+	}
 
 	// Check if LDR light values are updated
 	if (newLDRValue != 0) {
@@ -39,8 +46,6 @@ void loop(void)
 		tft.fillRect(80, 89, 48, 16, TFT_DARKGREEN);
 		tft.setTextSize(1);
 		tft.print(String(newLDRValue));
-		addMeeoMsg("ldr", String(newLDRValue));
-		// addMeeoMsg("", "[INFO] " + digitalTimeDisplaySec() + " Got light value from LDR", true);
 		newLDRValue = 0;
 	}
 
@@ -49,14 +54,9 @@ void loop(void)
 		tft.setCursor(85,108);
 		tft.fillRect(80, 105, 48, 15, TFT_DARKGREEN);
 		tft.setTextSize(1);
-		addMeeoMsg("light", String(newTSLValue));
 		tft.print(String(newTSLValue) + "lux");
-		// addMeeoMsg("", "[INFO] " + digitalTimeDisplaySec() + " Got light value from TSL2561", true);
 		newTSLValue = 0;
 	}
-
-	// Check FTP server requests
-	ftpSrv.handleFTP();
 
 	// Check if broadcast arrived
 	udpMsgLength = udpListener.parsePacket();

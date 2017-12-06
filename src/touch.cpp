@@ -37,7 +37,7 @@ void touchT3ISR() {
   if (!isTouchedT3) {
     touchTimeT3 = millis();
     isTouchedT3 = true;
-    addMeeoMsg("touch", "1", false);
+    addMqttMsg("touch", "1", false);
     xTaskResumeFromISR(lightTaskHandle);
     xTaskResumeFromISR(tempTaskHandle);
   }
@@ -63,12 +63,12 @@ void checkTouchStatus() {
     if (touchRead(T3) > 50) {
       isTouchedT3 = false;
       longTouchT3 = false;
-      addMeeoMsg("touch", "0", false);
-      addMeeoMsg("longtouch", "0", false);
+      addMqttMsg("touch", "0", false);
+      addMqttMsg("longtouch", "0", false);
     } else {
       if ((millis()-touchTimeT3) >= 1000) {
         if (!longTouchT3) {
-          addMeeoMsg("longtouch", "1", false);
+          addMqttMsg("longtouch", "1", false);
           xTaskResumeFromISR(weatherTaskHandle);
         }
         longTouchT3 = true;
@@ -82,7 +82,7 @@ void checkTouchStatus() {
     } else {
       if ((millis()-touchTimeT2) >= 1000) {
         if (!longTouchT2) {
-          addMeeoMsg("", "[INFO] " + digitalTimeDisplaySec() + " RESET request", true);
+          addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec() + " RESET request", false);
     			delay(2000);
     			esp_restart();
         }

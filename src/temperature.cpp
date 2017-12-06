@@ -39,8 +39,8 @@ bool initTemp() {
 			1);                             /* Core where the task should run */
 
   if (tempTaskHandle == NULL) {
-    Serial.println("[ERROR] --:-- Failed to start task for temperature update");
-		addMeeoMsg("", "[ERROR] --:-- Failed to start task for temperature update", true);
+    Serial.println("[ERROR] " + digitalTimeDisplaySec() + " Failed to start task for temperature update");
+    addMqttMsg("debug", "[ERROR] " + digitalTimeDisplaySec() + " Failed to start task for temperature update", false);
     return false;
   } else {
     // Start update of environment data every 20 seconds
@@ -102,7 +102,7 @@ bool getTemperature() {
 	// Check if any reads failed and exit early (to try again).
 	if (dht.getStatus() != 0) {
 		Serial.println("DHT11 error status: " + String(dht.getStatusString()));
-		addMeeoMsg("", "[ERROR] " + digitalTimeDisplaySec() + " DHT11 error status: " + String(dht.getStatusString()), true);
+    addMqttMsg("debug", "[ERROR] " + digitalTimeDisplaySec() + " DHT11 error status: " + String(dht.getStatusString()), false);
 		tft.fillRect(0, 32, 128, 8, TFT_RED);
 		tft.setCursor(0, 33);
 		tft.setTextColor(TFT_BLACK);
@@ -132,12 +132,23 @@ bool getTemperature() {
   displayTxt = "I " + String(newTempValue,0) + "'C " + String(newHumidValue,0) + "%";
 	tft.print(displayTxt);
 
-	addMeeoMsg("temp", String(newTempValue)+"C", false);
-	addMeeoMsg("humid", String(newHumidValue), false);
 	float heatIndex = computeHeatIndex(newTempValue, newHumidValue);
-	addMeeoMsg("heat", String(heatIndex), false);
 
-	String udpMsg = "{\"de\":\"wei\",\"te\":" + String(newTempValue) + ",\"hu\":" + String(newHumidValue) + ",\"he\":" + String(heatIndex) + "}";
+ 	/** Buffer for outgoing JSON string */
+	DynamicJsonBuffer jsonOutBuffer;
+	/** Json object for outgoing data */
+	JsonObject& jsonOut = jsonOutBuffer.createObject();
+
+	jsonOut["de"] = "wei";
+
+	jsonOut["te"] = newTempValue;
+	jsonOut["hu"] = newHumidValue;
+	jsonOut["hi"] = heatIndex;
+
+	String udpMsg;
+  jsonOut.printTo(udpMsg);
+  addMqttMsg("WEI", udpMsg, false);
+
 	IPAddress pcIP (192,	168, 0, 110);
 	IPAddress multiIP (192,	168, 0, 255);
 	udpSendMessage(pcIP, udpMsg, 9997);

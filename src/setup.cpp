@@ -52,7 +52,7 @@ void setup(void)
 	/**********************************************************/
 	createName(apName, apIndex);
 
-	if (connectWiFi()) {
+	if (connDirect("MHC2", "teresa1963", 20000)) {
 		// WiFi connection successfull
 #ifdef HAS_TFT
 		tft.println("Connected to ");
@@ -91,38 +91,6 @@ void setup(void)
 	// Initialize touch interface
 	initTouch();
 
-	// Initialize Spiffs
-	byte spiffsStatus = 0;
-	if (!SPIFFS.begin(false,"/home",2)) {
-		if (SPIFFS.format()){
-			spiffsStatus = 1;
-		} else {
-			spiffsStatus = 2;
-		}
-	}
-
-	switch (spiffsStatus) {
-		case 1:
-			tft.println("FS needed formatting");
-			Serial.println("FS needed formatting");
-		case 0:
-			tft.println("FS: " + String(SPIFFS.totalBytes()/1024) + "kB used: " + (SPIFFS.usedBytes()/1024) + "kB");
-			Serial.println("FS: " + String(SPIFFS.totalBytes()) + "Bytes used: " + String(SPIFFS.usedBytes()) + "Bytes");
-			Serial.println("FS: " + String((float)SPIFFS.totalBytes()/1024,2) + "kB used: " + String((float)SPIFFS.usedBytes()/1024,2) + "kB");
-			Serial.println("FS: " + String((float)SPIFFS.totalBytes()/1024/1024,2) + "MB used: " + String((float)SPIFFS.usedBytes()/1024/1024,2) + "MB");
-			break;
-		case 2:
-			tft.println("FS formatting failed");
-			Serial.println("FS formatting failed");
-			break;
-	}
-
-	// Start FTP server
-	if (spiffsStatus < 2) {
-		ftpSrv.begin("esp32","esp32");
-		Serial.println("FTP server initiated");
-	}
-
 	// Start UDP listener
 	udpListener.begin(9997);
 
@@ -134,45 +102,70 @@ void setup(void)
 	initLed();
 	startFlashing(1000);
 
-	// Initialize MEEO connection
-	initMeeo();
+	// Initialize MQTT connection
+	initMqtt();
 
 	// Initialize Light measurement
 	byte lightInitResult = initLight();
 	switch (lightInitResult) {
 		case 0:
 			Serial.println("[INFO] " + digitalTimeDisplaySec() + " Light sensors available and initialized");
-			addMeeoMsg("", "[INFO] " + digitalTimeDisplaySec() + " Light sensors available and initialized", true);
+			addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec() + " Light sensors available and initialized", false);
 			break;
 		case 1:
 			Serial.println("[ERROR] " + digitalTimeDisplaySec() + " Light sensors not available");
-			addMeeoMsg("", "[ERROR] " + digitalTimeDisplaySec() + " Light sensors not available", true);
+			addMqttMsg("debug", "[ERROR] " + digitalTimeDisplaySec() + " Light sensors not available", false);
 			break;
 		case 2:
 		default:
 			Serial.println("[ERROR] " + digitalTimeDisplaySec() + " Failed to start timer for light measurement");
-			addMeeoMsg("", "[ERROR] " + digitalTimeDisplaySec() + " Failed to start timer for light measurement", true);
+			addMqttMsg("debug", "[ERROR] " + digitalTimeDisplaySec() + " Failed to start timer for light measurement", false);
 			break;
 	}
 
 	// Initialize temperature measurements
 	if (!initTemp()) {
 		Serial.println("[ERROR] " + digitalTimeDisplaySec() + " Failed to start temperature measurement");
-		addMeeoMsg("", "[ERROR] " + digitalTimeDisplaySec() + " Failed to start temperature measurement", true);
+		addMqttMsg("debug", "[ERROR] " + digitalTimeDisplaySec() + " Failed to start temperature measurement", false);
 	}
 
 	// Initialize Weather and NTP time updates
 	if (!initUGWeather()) {
 		Serial.println("[ERROR] " + digitalTimeDisplaySec() + " Failed to start weather & time updates");
-		addMeeoMsg("", "[ERROR] " + digitalTimeDisplaySec() + " Failed to start weather & time updates", true);
+		addMqttMsg("debug", "[ERROR] " + digitalTimeDisplaySec() + " Failed to start weather & time updates", false);
 	}
 	// if (!initAccuWeather()) {
-	// 	Serial.println("[ERROR] --:-- Failed to start weather & time updates");
-	// 	addMeeoMsg("", "[ERROR] --:-- Failed to start weather & time updates", true);
+	// 	Serial.println("[ERROR] " + digitalTimeDisplaySec() + " Failed to start weather & time updates");
+	// addMqttMsg("debug", "[ERROR] " + digitalTimeDisplaySec() + " Failed to start weather & time updates", false);
 	// }
 
 	String resetReason = reset_reason(rtc_get_reset_reason(0));
-	addMeeoMsg("", "[INFO] " + digitalTimeDisplaySec() + " Reset reason CPU0: " + resetReason, true);
+	addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec() + " Reset reason CPU0: " + resetReason, false);
 	resetReason = reset_reason(rtc_get_reset_reason(1));
-	addMeeoMsg("", "[INFO] " + digitalTimeDisplaySec() + " Reset reason CPU1: " + resetReason, true);
+	addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec() + " Reset reason CPU1: " + resetReason, false);
+
+	// Get Partitionsizes
+	size_t ul;
+	esp_partition_iterator_t _mypartiterator;
+	const esp_partition_t *_mypart;
+	ul = spi_flash_get_chip_size(); Serial.print("Flash chip size: "); Serial.println(ul);
+	Serial.println("Partiton table:");
+	_mypartiterator = esp_partition_find(ESP_PARTITION_TYPE_APP, ESP_PARTITION_SUBTYPE_ANY, NULL);
+	if (_mypartiterator) {
+		Serial.println("App Partiton table:");
+		do {
+			_mypart = esp_partition_get(_mypartiterator);
+			printf("Type: %x SubType %x Address %x Size %x Label %s Encryption %i\r\n", _mypart->type, _mypart->subtype, _mypart->address, _mypart->size, _mypart->label, _mypart->encrypted);
+		} while (_mypartiterator = esp_partition_next(_mypartiterator));
+	}
+	esp_partition_iterator_release(_mypartiterator);
+	_mypartiterator = esp_partition_find(ESP_PARTITION_TYPE_DATA, ESP_PARTITION_SUBTYPE_ANY, NULL);
+	if (_mypartiterator) {
+		Serial.println("Data Partiton table:");
+		do {
+			_mypart = esp_partition_get(_mypartiterator);
+			printf("%x - %x - %x - %x - %s - %i\r\n", _mypart->type, _mypart->subtype, _mypart->address, _mypart->size, _mypart->label, _mypart->encrypted);
+		} while (_mypartiterator = esp_partition_next(_mypartiterator));
+	}
+	esp_partition_iterator_release(_mypartiterator);
 }

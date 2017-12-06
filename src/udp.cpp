@@ -24,13 +24,6 @@ void getUDPbroadcast(int udpMsgLength) {
 	udpListener.read(udpPacket, udpMsgLength);
 	udpPacket[udpMsgLength] = 0;
 
-	// /** UDP sender address */
-	// IPAddress udpIP;
-	// String debugMsg = "UDP broadcast from ";
-	// udpIP = udpListener.remoteIP();
-	// debugMsg += "Sender IP: " + String(udpIP[0]) + "." + String(udpIP[1]) + "." + String(udpIP[2]) + "." + String(udpIP[3]);
-	// Serial.println(debugMsg);
-
 	udpListener.flush(); // empty UDP buffer for next packet
 
 	/** Buffer for incoming JSON string */
@@ -39,49 +32,40 @@ void getUDPbroadcast(int udpMsgLength) {
 	JsonObject& jsonIn = jsonInBuffer.parseObject((char *)udpPacket);
 	if (jsonIn.success() && jsonIn.containsKey("de")) {
 		String thisPayLoad;
-		if (jsonIn["de"] == "spm") {
-			if (jsonIn.containsKey("c") && meeoConnected) {
-				thisPayLoad = String(jsonIn["c"].as<double>());
-				// Serial.print("Consumption: "); Serial.println(thisPayLoad);
-				addMeeoMsg("cons", thisPayLoad, false);
-				addMeeoMsg("cons_chart", thisPayLoad, false);
-			}
-			if (jsonIn.containsKey("s") && meeoConnected) {
-				thisPayLoad = String(jsonIn["s"].as<double>());
-				// Serial.print("Solar production: "); Serial.println(thisPayLoad);
-				addMeeoMsg("solar", thisPayLoad, false);
-				addMeeoMsg("solar_chart", thisPayLoad, false);
-			}
-		}
-		if (jsonIn["de"] == "ly1") {
-			if (jsonIn.containsKey("lo") && meeoConnected) {
-				byte lightIsOn = jsonIn["lo"];
-				// Serial.print("Light is: "); Serial.println(lightIsOn);
-				if (lightIsOn == 1) {
-					addMeeoMsg("backyard-light", (char *) "1", false);
-				} else {
-					addMeeoMsg("backyard-light", (char *) "0", false);
-				}
-			}
-		}
+		// if (jsonIn["de"] == "spm") {
+		// 	double consVal = 0;
+		// 	double solarVal = 0;
+		// 	if (jsonIn.containsKey("c")) {
+		// 		thisPayLoad = String(jsonIn["c"].as<double>());
+		// 		consVal = jsonIn["c"].as<double>();
+		// 	}
+		// 	if (jsonIn.containsKey("s")) {
+		// 		thisPayLoad = String(jsonIn["s"].as<double>());
+		// 		solarVal = jsonIn["s"].as<double>();
+		// 	}
+		// }
+		// if (jsonIn["de"] == "ly1") {
+		// 	if (jsonIn.containsKey("lo")) {
+		// 		byte lightIsOn = jsonIn["lo"];
+		// 		if (lightIsOn == 1) {
+		// 			// addMqttMsg("backyard-light", (char *) "1");
+		// 		} else {
+		// 			// addMqttMsg("backyard-light", (char *) "0");
+		// 		}
+		// 	}
+		// }
 		if (jsonIn["de"] == "sb1") {
-			if (jsonIn.containsKey("te") && meeoConnected) {
+			if (jsonIn.containsKey("te")) {
 				thisPayLoad = String(jsonIn["te"].as<double>())+"C";
 				outsideTemp = jsonIn["te"].as<double>();
-				// Serial.print("Temperature outside: "); Serial.println(thisPayLoad);
-				addMeeoMsg("temp2", thisPayLoad, false);
 			}
-			if (jsonIn.containsKey("hu") && meeoConnected) {
+			if (jsonIn.containsKey("hu")) {
 				thisPayLoad = String(jsonIn["hu"].as<double>());
 				outsideHumid = jsonIn["hu"].as<double>();
-				// Serial.print("Humidity outside: "); Serial.println(thisPayLoad);
-				addMeeoMsg("humid2", thisPayLoad, false);
 			}
-			if (jsonIn.containsKey("he") && meeoConnected) {
+			if (jsonIn.containsKey("he")) {
 				thisPayLoad = String(jsonIn["he"].as<double>());
 				outsideHeat = jsonIn["he"].as<double>();
-				// Serial.print("Heat index outside: "); Serial.println(thisPayLoad);
-				addMeeoMsg("heat2", thisPayLoad, false);
 			}
 
       tft.fillRect(0, 69, 128, 14, TFT_BLACK);
@@ -92,7 +76,7 @@ void getUDPbroadcast(int udpMsgLength) {
       tft.print(displayText);
 		}
 	} else {
-		addMeeoMsg("", "[ERROR] " + digitalTimeDisplaySec() + "Received invalid JSON", true);
+		addMqttMsg("debug", "[ERROR] " + digitalTimeDisplaySec() + "Received invalid JSON", false);
 	}
 }
 
@@ -119,27 +103,25 @@ bool udpSendMessage(IPAddress ipAddr, String udpMsg, int udpPort) {
 
 	if (connOK == 0) {
 		Serial.println("UDP could not get socket");
-		addMeeoMsg("", "[ERROR] " + digitalTimeDisplaySec() + "UDP could not get socket", true);
+		addMqttMsg("debug", "[ERROR] " + digitalTimeDisplaySec() + "UDP could not get socket", false);
 		return false;
 	}
-	udpClientServer.begin(udpPort);
 	int beginOK = udpClientServer.beginPacket(ipAddr, udpPort);
 
 	if (beginOK == 0) { // Problem occured!
 		udpClientServer.stop();
 		Serial.println("UDP connection failed");
-		addMeeoMsg("", "[ERROR] " + digitalTimeDisplaySec() + "UDP connection failed", true);
+		addMqttMsg("debug", "[ERROR] " + digitalTimeDisplaySec() + "UDP connection failed", false);
 		return false;
 	}
 	int bytesSent = udpClientServer.print(udpMsg);
 	if (bytesSent == udpMsg.length()) {
-		// Serial.println("Sent " + String(bytesSent) + " bytes from " + udpMsg + " which had a length of " + String(udpMsg.length()) + " bytes");
 		udpClientServer.endPacket();
 		udpClientServer.stop();
 		return true;
 	} else {
 		Serial.println("Failed to send " + udpMsg + ", sent " + String(bytesSent) + " of " + String(udpMsg.length()) + " bytes");
-		addMeeoMsg("", "[ERROR] " + digitalTimeDisplaySec() + "Failed to send " + udpMsg + ", sent " + String(bytesSent) + " of " + String(udpMsg.length()) + " bytes", true);
+		addMqttMsg("debug", "[ERROR] " + digitalTimeDisplaySec() + "Failed to send " + udpMsg + ", sent " + String(bytesSent) + " of " + String(udpMsg.length()) + " bytes", false);
 		udpClientServer.endPacket();
 		udpClientServer.stop();
 		return false;

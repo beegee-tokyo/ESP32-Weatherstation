@@ -17,7 +17,7 @@ void activateOTA(const char *MODULTYPE, const char *MODULID) {
 	ArduinoOTA
 		.setHostname(apName)
     .onStart([]() {
-			addMeeoMsg("", "[INFO] " + digitalTimeDisplaySec() + " OTA_START", true);
+			addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec() + " OTA_START", false);
 			stopFlashing();
 			lightTicker.detach();
 			tempTicker.detach();
@@ -58,6 +58,7 @@ void activateOTA(const char *MODULTYPE, const char *MODULID) {
 	#endif
 			delay(10);
     })
+#ifdef HAS_TFT
     .onProgress([](unsigned int progress, unsigned int total) {
 			unsigned int achieved = progress / (total / 100);
 			if (otaStatus == 0 || achieved == otaStatus + 1) {
@@ -70,6 +71,7 @@ void activateOTA(const char *MODULTYPE, const char *MODULID) {
 				tft.drawString(progVal,64,105);
 			}
     })
+#endif
     .onError([](ota_error_t error) {
 			#ifdef HAS_TFT
 					tft.fillScreen(TFT_RED);
@@ -83,14 +85,12 @@ void activateOTA(const char *MODULTYPE, const char *MODULID) {
 					Serial.printf("\nOTA Error[%u]: ", error);
 					if (error == OTA_AUTH_ERROR) {
 						Serial.println("Auth Failed");
-
 			#ifdef HAS_TFT
 						tft.drawString("Auth Failed",64,80,2);
 			#endif
 					}
 					else if (error == OTA_BEGIN_ERROR) {
 						Serial.println("Begin Failed");
-
 			#ifdef HAS_TFT
 						tft.drawString("Begin Failed",64,80,2);
 			#endif

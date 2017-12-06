@@ -45,9 +45,6 @@ extern TaskHandle_t weatherTaskHandle;
 /** Ticker for weather and time update */
 extern Ticker weatherTicker;
 
-// FTP interface
-extern FtpServer ftpSrv;
-
 // UDP interface
 void getUDPbroadcast(int udpMsgLength);
 bool udpSendMessage(IPAddress ipAddr, String udpMsg, int udpPort);
@@ -61,10 +58,12 @@ extern Ticker touchTicker;
 // Graphics functions
 void drawIcon(const unsigned short* icon, int16_t x, int16_t y, int8_t width, int8_t height);
 
-// Meeo functions / variables
-void initMeeo();
-bool addMeeoMsg (String topic, String payload, bool debug = false);
-extern bool meeoConnected;
+// MQTT functions / variables
+void initMqtt();
+bool connectMQTT();
+bool addMqttMsg (String topic, String payload, bool retained);
+void updatePower(double cons, double solar);
+extern MQTTClient mqttClient;
 
 // LED functions / variables
 void initLed();
@@ -88,10 +87,6 @@ float computeHeatIndex(float temperature, float percentHumidity);
 // Underground Weather & NTP time update functions / variables
 bool initUGWeather();
 void ugWeatherTask(void *pvParameters);
-// Accu Weather & NTP time update functions / variables
-bool initAccuWeather();
-void accuWeatherTask(void *pvParameters);
-bool getAccuWeather();
 
 // Weather & NTP time update functions / variables
 extern TaskHandle_t weatherTaskHandle;

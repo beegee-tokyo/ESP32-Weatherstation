@@ -21,8 +21,8 @@ TFT_eSPI tft = TFT_eSPI();
 WiFiUDP udpListener;
 /** Length of received UDP broadcast message */
 int udpMsgLength = 0;
-/** FTP server class */
-FtpServer ftpSrv;
+/** MQTT client class to access mqtt broker */
+MQTTClient mqttClient(2560);
 /** HTTPClient class to get data from Weather website*/
 HTTPClient http;
 /** Task handle for the weather and time update task */

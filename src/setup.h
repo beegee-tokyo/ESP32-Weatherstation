@@ -14,8 +14,8 @@
 // If changes to the standard are needed change in
 // bgConnect.cpp
 /**********************************************************/
-// #define CONNDIRECT // connect with pre-defined SSID and password
-#define CONNWIFIMANAGER // connect using the WiFiManager
+#define CONNDIRECT // connect with pre-defined SSID and password
+// #define CONNWIFIMANAGER // connect using the WiFiManager
 // #define CONNSMARTCONFIG // connect using SmartConfig
 
 // Standard libraries
@@ -38,10 +38,10 @@
 
 // App specific includes
 #include <Wire.h>
-#include <Meeo.h>
-#include <FS.h>
-#include "SPIFFS.h"
-#include <ESP8266FtpServer.h>
+#include <MQTTClient.h>
+// #include <FS.h>
+// #include "SPIFFS.h"
+// #include <ESP8266FtpServer.h>
 #include <ArduinoJson.h>
 #include <HTTPClient.h>
 #include <WiFiClientSecure.h>
