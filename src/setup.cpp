@@ -1,5 +1,6 @@
 #include "setup.h"
 #include "declarations.h"
+#include "esp_now.h"
 
 /** Build time */
 const char compileDate[] = __DATE__ " " __TIME__;
@@ -139,32 +140,47 @@ void setup(void)
 	// addMqttMsg("debug", "[ERROR] " + digitalTimeDisplaySec() + " Failed to start weather & time updates", false);
 	// }
 
+	// Get last reset reason and publish it
 	String resetReason = reset_reason(rtc_get_reset_reason(0));
 	addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec() + " Reset reason CPU0: " + resetReason, false);
 	resetReason = reset_reason(rtc_get_reset_reason(1));
 	addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec() + " Reset reason CPU1: " + resetReason, false);
+
+	// // Initialize SPI connection to ESP8266
+	// initSPI();
+
+	// Initialize BLE
+	initBLE();
 
 	// Get Partitionsizes
 	size_t ul;
 	esp_partition_iterator_t _mypartiterator;
 	const esp_partition_t *_mypart;
 	ul = spi_flash_get_chip_size(); Serial.print("Flash chip size: "); Serial.println(ul);
-	Serial.println("Partiton table:");
+	Serial.println("Partition table:");
+	char mqttMsg[1024];
+
 	_mypartiterator = esp_partition_find(ESP_PARTITION_TYPE_APP, ESP_PARTITION_SUBTYPE_ANY, NULL);
 	if (_mypartiterator) {
-		Serial.println("App Partiton table:");
+		Serial.println("App Partition table:");
+		addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec() + " App partition table:", false);
 		do {
 			_mypart = esp_partition_get(_mypartiterator);
-			printf("Type: %x SubType %x Address %x Size %x Label %s Encryption %i\r\n", _mypart->type, _mypart->subtype, _mypart->address, _mypart->size, _mypart->label, _mypart->encrypted);
+			printf("Type: %02x SubType %02x Address 0x%06X Size 0x%06X Encryption %i Label %s\r\n", _mypart->type, _mypart->subtype, _mypart->address, _mypart->size, _mypart->encrypted, _mypart->label);
+			sprintf(mqttMsg,"Type: %02x SubType %x Address 0x%06X Size 0x%06X Encryption %i Label %s", _mypart->type, _mypart->subtype, _mypart->address, _mypart->size, _mypart->encrypted, _mypart->label);
+			addMqttMsg("debug", "[INFO] " + String(mqttMsg), false);
 		} while (_mypartiterator = esp_partition_next(_mypartiterator));
 	}
 	esp_partition_iterator_release(_mypartiterator);
 	_mypartiterator = esp_partition_find(ESP_PARTITION_TYPE_DATA, ESP_PARTITION_SUBTYPE_ANY, NULL);
 	if (_mypartiterator) {
-		Serial.println("Data Partiton table:");
+		Serial.println("Data Partition table:");
+		addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec() + " Data partition table:", false);
 		do {
 			_mypart = esp_partition_get(_mypartiterator);
-			printf("%x - %x - %x - %x - %s - %i\r\n", _mypart->type, _mypart->subtype, _mypart->address, _mypart->size, _mypart->label, _mypart->encrypted);
+			printf("Type: %02x SubType %02x Address 0x%06X Size 0x%06X Encryption %i Label %s\r\n", _mypart->type, _mypart->subtype, _mypart->address, _mypart->size, _mypart->encrypted, _mypart->label);
+			sprintf(mqttMsg,"Type: %02x SubType %02x Address 0x%06X Size 0x%06X Encryption %i Label %s", _mypart->type, _mypart->subtype, _mypart->address, _mypart->size, _mypart->encrypted, _mypart->label);
+			addMqttMsg("debug", "[INFO] " + String(mqttMsg), false);
 		} while (_mypartiterator = esp_partition_next(_mypartiterator));
 	}
 	esp_partition_iterator_release(_mypartiterator);

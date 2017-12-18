@@ -1,11 +1,11 @@
 #include "setup.h"
 
-/** Touch status of T3 pad */
-bool isTouchedT3 = false;
-/** Long touch status of T3 pad */
-bool longTouchT3 = false;
-/** Time that pad T3 was touched */
-long touchTimeT3 = 0;
+/** Touch status of T0 pad */
+bool isTouchedT0 = false;
+/** Long touch status of T0 pad */
+bool longTouchT0 = false;
+/** Time that pad T0 was touched */
+long touchTimeT0 = 0;
 /** Touch status of T2 pad */
 bool isTouchedT2 = false;
 /** Long touch status of T2 pad */
@@ -16,7 +16,7 @@ long touchTimeT2 = 0;
 Ticker touchTicker;
 
 void checkTouchStatus();
-void touchT3ISR();
+void touchT0ISR();
 void touchT2ISR();
 
 /**
@@ -25,21 +25,21 @@ void touchT2ISR();
  */
 void initTouch() {
   touchTicker.attach_ms(250, checkTouchStatus);
-  touchAttachInterrupt(T3, touchT3ISR, 20);
+  touchAttachInterrupt(T0, touchT0ISR, 20);
   touchAttachInterrupt(T2, touchT2ISR, 20);
 }
 
 /**
- * touchT3ISR
+ * touchT0ISR
  * Called when touch pin value goes below treshold
 */
-void touchT3ISR() {
-  if (!isTouchedT3) {
-    touchTimeT3 = millis();
-    isTouchedT3 = true;
-    addMqttMsg("touch", "1", false);
-    xTaskResumeFromISR(lightTaskHandle);
-    xTaskResumeFromISR(tempTaskHandle);
+void touchT0ISR() {
+  if (!isTouchedT0) {
+    touchTimeT0= millis();
+    isTouchedT0 = true;
+    addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec() + " touch T0", false);
+    // xTaskResumeFromISR(lightTaskHandle);
+    // xTaskResumeFromISR(tempTaskHandle);
   }
 }
 
@@ -51,27 +51,28 @@ void touchT2ISR() {
   if (!isTouchedT2) {
     touchTimeT2 = millis();
     isTouchedT2 = true;
+    xTaskResumeFromISR(lightTaskHandle);
+    xTaskResumeFromISR(tempTaskHandle);
+    xTaskResumeFromISR(weatherTaskHandle);
   }
 }
 
 /**
  * checkTouchStatus
- * Checks if T2 or T3 pad is still touched
+ * Checks if T2 or T0 pad is still touched
 */
 void checkTouchStatus() {
-  if (isTouchedT3) {
-    if (touchRead(T3) > 50) {
-      isTouchedT3 = false;
-      longTouchT3 = false;
-      addMqttMsg("touch", "0", false);
-      addMqttMsg("longtouch", "0", false);
+  if (isTouchedT0) {
+    if (touchRead(T0) > 50) {
+      isTouchedT0 = false;
+      longTouchT0 = false;
     } else {
-      if ((millis()-touchTimeT3) >= 1000) {
-        if (!longTouchT3) {
-          addMqttMsg("longtouch", "1", false);
-          xTaskResumeFromISR(weatherTaskHandle);
+      if ((millis()-touchTimeT0) >= 1000) {
+        if (!longTouchT0) {
+          addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec() + " longtouch T0", false);
+          // xTaskResumeFromISR(weatherTaskHandle);
         }
-        longTouchT3 = true;
+        longTouchT0 = true;
       }
     }
   }
@@ -86,7 +87,7 @@ void checkTouchStatus() {
     			delay(2000);
     			esp_restart();
         }
-        longTouchT3 = true;
+        longTouchT2 = true;
       }
     }
   }

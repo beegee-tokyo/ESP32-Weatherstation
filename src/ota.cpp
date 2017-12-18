@@ -23,7 +23,7 @@ void activateOTA(const char *MODULTYPE, const char *MODULID) {
 			tempTicker.detach();
 			weatherTicker.detach();
 			touchTicker.detach();
-			// stopAllTimers();
+
 			otaRunning = true;
 
 			pinMode(16, OUTPUT);

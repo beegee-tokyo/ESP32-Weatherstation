@@ -1,18 +1,22 @@
 #include "setup.h"
-#include "DHT.h"
+#include "DHTesp.h"
 
 void triggerGetTemp();
 void tempTask(void *pvParameters);
 bool getTemperature();
+String comfortRatioString(float newTempValue, float newHumidValue);
+String computePerceptionString(float newTempValue, float newHumidValue);
 
 /** Initialize DHT sensor */
-DHT dht;
+DHTesp dht;
 /** Task handle for the light value read task */
 TaskHandle_t tempTaskHandle = NULL;
 /** Pin number for DHT11 data pin */
 int dhtPin = 17;
-/** Ticker for LED flashing */
+/** Ticker for temperature reading */
 Ticker tempTicker;
+/** Comfort profile */
+ComfortState cf;
 
 /**
  * initTemp
@@ -25,7 +29,7 @@ Ticker tempTicker;
 bool initTemp() {
   byte resultValue = 0;
   // Initialize temperature sensor
-	dht.setup(dhtPin, DHT::DHT11);
+	dht.setup(dhtPin, DHTesp::DHT11);
 	Serial.println("DHT initiated");
 
   // Start task to get temperature
@@ -115,7 +119,7 @@ bool getTemperature() {
 	/* Trying to calibrate the humidity values               */
 	/******************************************************* */
 	// newHumidValue = 10*sqrt(newHumidValue);
-	newHumidValue = 20.0 + newHumidValue;
+	newHumidValue = (int)(20.0 + newHumidValue)*1.6;
 
 	String displayTxt = "";
 
@@ -132,7 +136,25 @@ bool getTemperature() {
   displayTxt = "I " + String(newTempValue,0) + "'C " + String(newHumidValue,0) + "%";
 	tft.print(displayTxt);
 
-	float heatIndex = computeHeatIndex(newTempValue, newHumidValue);
+	float heatIndex = dht.computeHeatIndex(newTempValue, newHumidValue);
+  float dewPoint = dht.computeDewPoint(newTempValue, newHumidValue);
+  String comfortStatus = comfortRatioString(newTempValue, newHumidValue);
+  String humanPerception = computePerceptionString(newTempValue, newHumidValue);
+  String dbgMessage = "[INFO] " + digitalTimeDisplaySec();
+  dbgMessage += " T: " + String(newTempValue) + " H: " + String(newHumidValue);
+  dbgMessage += " I: " + String(heatIndex) + " D: " + String(dewPoint);
+  dbgMessage += " C: " + comfortStatus + " P: " + humanPerception;
+  addMqttMsg("debug", dbgMessage, false);
+
+  if (bleConnected) {
+    bleNewData = dbgMessage;
+    String notifString = digitalTimeDisplaySec();
+    size_t dataLen = notifString.length();
+    uint8_t notifData[dataLen+1];
+    notifString.toCharArray((char *)notifData,dataLen+1);
+    pCharacteristicNotify->setValue(notifData, dataLen);
+    pCharacteristicNotify->notify();
+  }
 
  	/** Buffer for outgoing JSON string */
 	DynamicJsonBuffer jsonOutBuffer;
@@ -156,42 +178,71 @@ bool getTemperature() {
 	return true;
 }
 
-/**
- * computeHeatIndex
- * Calculates heat index (for Centigrade values only!!!)
- * using both Rothfusz and Steadman's equations
- * http://www.wpc.ncep.noaa.gov/html/heatindex_equation.shtml
- * param temperature
- *    temperature in Centigrade
- * @param percentHumidity
- *    humidity in percent
- * @return float
- *    calculated heat index
-*/
-float computeHeatIndex(float temperature, float percentHumidity) {
-  // Using both Rothfusz and Steadman's equations
-  // http://www.wpc.ncep.noaa.gov/html/heatindex_equation.shtml
-  float hi;
+String comfortRatioString(float newTempValue, float newHumidValue) {
+  float cr = dht.getComfortRatio(cf, newTempValue, newHumidValue);
+  switch(cf) {
+    case Comfort_OK:
+      return "Comfort OK";
+      break;
+    case Comfort_TooHot:
+      return "Comfort Too Hot";
+      break;
+    case Comfort_TooCold:
+      return "Comfort Too Cold";
+      break;
+    case Comfort_TooDry:
+      return "Comfort Too Dry";
+      break;
+    case Comfort_TooHumid:
+      return "Comfort Too Humid";
+      break;
+    case Comfort_HotAndHumid:
+      return "Comfort Hot And Humid";
+      break;
+    case Comfort_HotAndDry:
+      return "Comfort Hot And Dry";
+      break;
+    case Comfort_ColdAndHumid:
+      return "Comfort Cold And Humid";
+      break;
+    case Comfort_ColdAndDry:
+      return "Comfort Cold And Dry";
+      break;
+    default:
+      return "Unknown:";
+      break;
+  };
+}
 
-  hi = 0.5 * (temperature + 61.0 + ((temperature - 68.0) * 1.2) + (percentHumidity * 0.094));
-
-  if (hi > 79) {
-    hi = -42.379 +
-             2.04901523 * temperature +
-            10.14333127 * percentHumidity +
-            -0.22475541 * temperature*percentHumidity +
-            -0.00683783 * pow(temperature, 2) +
-            -0.05481717 * pow(percentHumidity, 2) +
-             0.00122874 * pow(temperature, 2) * percentHumidity +
-             0.00085282 * temperature*pow(percentHumidity, 2) +
-            -0.00000199 * pow(temperature, 2) * pow(percentHumidity, 2);
-
-    if((percentHumidity < 13) && (temperature >= 80.0) && (temperature <= 112.0))
-      hi -= ((13.0 - percentHumidity) * 0.25) * sqrt((17.0 - abs(temperature - 95.0)) * 0.05882);
-
-    else if((percentHumidity > 85.0) && (temperature >= 80.0) && (temperature <= 87.0))
-      hi += ((percentHumidity - 85.0) * 0.1) * ((87.0 - temperature) * 0.2);
-  }
-
-  return hi;
+String computePerceptionString(float newTempValue, float newHumidValue) {
+  byte perception = dht.computePerception(newTempValue, newHumidValue);
+  switch(perception) {
+    case Perception_Dry:
+      return "Dry";
+      break;
+    case Perception_VeryComfy:
+      return "Very comfortable";
+      break;
+    case Perception_Comfy:
+      return "Comfortable";
+      break;
+    case Perception_Ok:
+      return "Just OK";
+      break;
+    case Perception_UnComfy:
+      return "Somehow uncomfortable";
+      break;
+    case Perception_QuiteUnComfy:
+      return "Uncomfortable, too humid";
+      break;
+    case Perception_VeryUnComfy:
+      return "Very uncomfortable, too humid";
+      break;
+    case Perception_SevereUncomfy:
+      return "Very uncomfortabl, much too humid";
+      break;
+    default:
+      return "Unknown:";
+      break;
+  };
 }
