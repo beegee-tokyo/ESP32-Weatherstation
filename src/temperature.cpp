@@ -147,12 +147,26 @@ bool getTemperature() {
   addMqttMsg("debug", dbgMessage, false);
 
   if (bleConnected) {
-    bleNewData = dbgMessage;
-    String notifString = digitalTimeDisplaySec();
-    size_t dataLen = notifString.length();
-    uint8_t notifData[dataLen+1];
-    notifString.toCharArray((char *)notifData,dataLen+1);
-    pCharacteristicNotify->setValue(notifData, dataLen);
+    bleTemperature = newTempValue;
+    bleHumidity = newHumidValue;
+    bleStatus = "Comfort: " + comfortStatus + " Perception: " + humanPerception;
+
+    // Send notification to connected clients
+    uint8_t notifData[8];
+    time_t now;
+    struct tm timeinfo;
+    time(&now); // get time (as epoch)
+    localtime_r(&now, &timeinfo); // update tm struct with current time
+    uint16_t year = timeinfo.tm_year+1900;
+    notifData[1] = year>>8;
+    notifData[0] = year;
+    notifData[2] = timeinfo.tm_mon+1;
+    notifData[3] = timeinfo.tm_mday;
+    notifData[4] = timeinfo.tm_hour;
+    notifData[5] = timeinfo.tm_min;
+    notifData[6] = timeinfo.tm_sec;
+    pCharacteristicNotify->setValue(notifData, 8);
+
     pCharacteristicNotify->notify();
   }
 
@@ -182,31 +196,31 @@ String comfortRatioString(float newTempValue, float newHumidValue) {
   float cr = dht.getComfortRatio(cf, newTempValue, newHumidValue);
   switch(cf) {
     case Comfort_OK:
-      return "Comfort OK";
+      return "OK";
       break;
     case Comfort_TooHot:
-      return "Comfort Too Hot";
+      return "Too Hot";
       break;
     case Comfort_TooCold:
-      return "Comfort Too Cold";
+      return "Too Cold";
       break;
     case Comfort_TooDry:
-      return "Comfort Too Dry";
+      return "Too Dry";
       break;
     case Comfort_TooHumid:
-      return "Comfort Too Humid";
+      return "Too Humid";
       break;
     case Comfort_HotAndHumid:
-      return "Comfort Hot And Humid";
+      return "Hot And Humid";
       break;
     case Comfort_HotAndDry:
-      return "Comfort Hot And Dry";
+      return "Hot And Dry";
       break;
     case Comfort_ColdAndHumid:
-      return "Comfort Cold And Humid";
+      return "Cold And Humid";
       break;
     case Comfort_ColdAndDry:
-      return "Comfort Cold And Dry";
+      return "Cold And Dry";
       break;
     default:
       return "Unknown:";

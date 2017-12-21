@@ -1,4 +1,5 @@
 #include "setup.h"
+#include "esp32-hal-bt.c"
 
 /** OTA progress */
 int otaStatus = 0;
@@ -17,6 +18,7 @@ void activateOTA(const char *MODULTYPE, const char *MODULID) {
 	ArduinoOTA
 		.setHostname(apName)
     .onStart([]() {
+			bleStop();
 			addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec() + " OTA_START", false);
 			stopFlashing();
 			lightTicker.detach();
@@ -24,6 +26,8 @@ void activateOTA(const char *MODULTYPE, const char *MODULID) {
 			weatherTicker.detach();
 			touchTicker.detach();
 
+			btStop();
+			
 			otaRunning = true;
 
 			pinMode(16, OUTPUT);

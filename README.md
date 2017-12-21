@@ -21,20 +21,21 @@ PlatformIO
 - Use of ESP32 touch interface    
 - Use of ESP32 multi tasking    
 - Use of ArduinoOTA for SW updates     
-- Use of MEEO.IO (MQTT based) for web based information display
+- Use of MQTT for web based information display
 - Use of UDP broadcast messaging
-- Use of UDP broadcast receiving
+- Use of UDP broadcast receiving    
+- Use of BLE for sending sensor data    
 
 ## Library dependencies    
-PlatformIO library ID - Library name - Github link
-- ID34 [Adafruit TSL2561 by Adafruit Industries](https://github.com/adafruit/Adafruit_TSL2561?utm_source=platformio&utm_medium=piohome)    
-- ID18  [Adafruit DHT Unified by Adafruit Industries](https://github.com/adafruit/Adafruit_DHT_Unified?utm_source=platformio&utm_medium=piohome)    
+PlatformIO library ID - Library name / Github link
+- ID34 [Adafruit TSL2561 by Adafruit Industries](https://github.com/adafruit/Adafruit_TSL2561)    
 - [zhouhan0126 WIFIMANAGER-ESP32](https://github.com/zhouhan0126/WIFIMANAGER-ESP32)    
 - [zhouhan0126 WebServer-esp32](https://github.com/zhouhan0126/WebServer-esp32)    
 - [zhouhan0126 DNSServer---esp32](https://github.com/zhouhan0126/DNSServer---esp32)    
-- [Meeo for ESP32](https://github.com/beegee-tokyo/meeo-arduino)    
+- [MQTT by Joel Gaehwiler](https://github.com/256dpi/arduino-mqtt)    
 - [esp8266FTPServer by David Paiva](https://github.com/nailbuster/esp8266FTPServer)    
-- ID64 [ArduinoJson by Benoit Blanchon](https://github.com/bblanchon/ArduinoJson?utm_source=platformio&utm_medium=piohome)    
-- ID1671 [DHT by Mark Ruys](https://github.com/markruys/arduino-DHT?utm_source=platformio&utm_medium=piohome)    
-- ID 1559 [TFT_eSPI by Bodmer](https://github.com/Bodmer/TFT_eSPI?utm_source=platformio&utm_medium=piohome)    
-- [ESP32-MyLib](https://github.com/beegee-tokyo/ESP32-MyLib)    
+- ID64 [ArduinoJson by Benoit Blanchon](https://github.com/bblanchon/ArduinoJson)    
+- ID2029 [DHTesp by Bernd Giesecke](https://github.com/beegee-tokyo/DHTesp)    
+- ID1559 [TFT_eSPI by Bodmer](https://github.com/Bodmer/TFT_eSPI)    
+- [ESP32-MyLib by Bernd Giesecke](https://github.com/beegee-tokyo/ESP32-MyLib)    
+- ID1841 [ESP32 BLE Arduino by Neil Kolban](https://github.com/nkolban/ESP32_BLE_Arduino)    

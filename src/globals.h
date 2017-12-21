@@ -53,10 +53,16 @@ extern int udpMsgLength;
 
 // BLE interface
 void initBLE();
-extern BLECharacteristic *pCharacteristic;
+void bleStop();
 extern BLECharacteristic *pCharacteristicNotify;
+extern BLECharacteristic *pCharacteristicTemp;
+extern BLECharacteristic *pCharacteristicHumid;
+extern BLECharacteristic *pCharacteristicStatus;
+extern BLEAdvertising* pAdvertising;
 extern bool bleConnected;
-extern String bleNewData;
+extern float bleTemperature;
+extern float bleHumidity;
+extern String bleStatus;
 
 // Touch interface
 void initTouch();

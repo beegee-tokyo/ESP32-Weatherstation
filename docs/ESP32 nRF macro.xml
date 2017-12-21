@@ -1,0 +1,23 @@
+<!-- Macro for Android-nRF Connect application. -->
+<!-- Waits for a notification on char uuid="2da23a2c-e324-423b-a23d-859366d24948" -->
+<!-- Then reads new data from uuid="2da23a2c-e324-423b-a23d-859366d24947" -->
+<macro name="ESP32 temp + humid" icon="MAGIC">
+   <assert-service description="Ensure Environmental Sensing" uuid="0000181a-0000-1000-8000-00805f9b34fb">
+      <assert-characteristic description="Ensure Date Time" uuid="00002a08-0000-1000-8000-00805f9b34fb">
+         <assert-cccd description="Ensure CCCD"/>
+         <property name="NOTIFY" requirement="MANDATORY"/>
+      </assert-characteristic>
+      <assert-characteristic description="Ensure Temperature Celsius" uuid="00002a1f-0000-1000-8000-00805f9b34fb">
+         <property name="READ" requirement="MANDATORY"/>
+      </assert-characteristic>
+   </assert-service>
+   <write-descriptor description="Enable notifications for Date Time" characteristic-uuid="00002a08-0000-1000-8000-00805f9b34fb" service-uuid="0000181a-0000-1000-8000-00805f9b34fb" uuid="00002902-0000-1000-8000-00805f9b34fb" value="0100"/>
+   <wait-for-notification description="Wait for notification to Date Time" characteristic-uuid="00002a08-0000-1000-8000-00805f9b34fb" service-uuid="0000181a-0000-1000-8000-00805f9b34fb">
+   </wait-for-notification>
+   <read description="Read Temperature Celsius" characteristic-uuid="00002a1f-0000-1000-8000-00805f9b34fb" service-uuid="0000181a-0000-1000-8000-00805f9b34fb">
+   </read>
+   <read description="Read Humidity" characteristic-uuid="00002a6f-0000-1000-8000-00805f9b34fb" service-uuid="0000181a-0000-1000-8000-00805f9b34fb">
+   </read>
+   <read description="Read Status" characteristic-uuid="00002a3d-0000-1000-8000-00805f9b34fb" service-uuid="0000181a-0000-1000-8000-00805f9b34fb">
+   </read>
+</macro>

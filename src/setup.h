@@ -52,6 +52,11 @@
 #include <BLEUtils.h>
 #include <BLEServer.h>
 #include <BLE2902.h>
+#include <BLE2A08.h>
+#include <BLE2A1F.h>
+#include <BLE2A3D.h>
+#include <BLE2A6F.h>
+#include <BLE2A46.h>
 
 // My libraries
 #include "myLib.h"
