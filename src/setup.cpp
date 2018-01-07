@@ -27,7 +27,6 @@ void setup(void)
 #ifdef ENA_DEBUG
 	Serial.setDebugOutput(true);
 #endif
-#ifdef HAS_TFT
 	/**********************************************************/
 	// If TFT is connected, initialize it
 	/**********************************************************/
@@ -35,17 +34,14 @@ void setup(void)
 	tft.fillScreen(TFT_BLACK);
 	tft.setCursor(0, 40);
 	tft.setTextColor(TFT_WHITE);
-#endif
 
 #ifdef ENA_DEBUG
 	Serial.print("Build: ");
 	Serial.println(compileDate);
 #endif
-#ifdef HAS_TFT
 	tft.println("Build: ");
 	tft.setTextSize(1);
 	tft.println(compileDate);
-#endif
 
 	/**********************************************************/
 	// Create Access Point name & mDNS name
@@ -55,22 +51,18 @@ void setup(void)
 
 	if (connDirect("MHC2", "teresa1963", 20000)) {
 		// WiFi connection successfull
-#ifdef HAS_TFT
 		tft.println("Connected to ");
 		tft.println(WiFi.SSID());
 		tft.println("with IP address ");
 		tft.println(WiFi.localIP());
-#endif
 #ifdef ENA_DEBUG
 		Serial.print("Connected to " + String(WiFi.SSID()) + " with IP address ");
 		Serial.println(WiFi.localIP());
 #endif
 	} else {
 		// WiFi connection failed
-#ifdef HAS_TFT
 		tft.println("Failed to connect to WiFI");
 		tft.println("Rebooting in 30 seconds");
-#endif
 #ifdef ENA_DEBUG
 		Serial.println("Failed to connect to WiFi");
 #endif
@@ -88,6 +80,39 @@ void setup(void)
 	/**********************************************************/
 	// Initialize other stuff from here on
 	/**********************************************************/
+
+	// Get Partitionsizes
+	size_t ul;
+	esp_partition_iterator_t _mypartiterator;
+	const esp_partition_t *_mypart;
+	ul = spi_flash_get_chip_size(); Serial.print("Flash chip size: "); Serial.println(ul);
+	Serial.println("Partition table:");
+	char mqttMsg[1024];
+
+	_mypartiterator = esp_partition_find(ESP_PARTITION_TYPE_APP, ESP_PARTITION_SUBTYPE_ANY, NULL);
+	if (_mypartiterator) {
+		Serial.println("App Partition table:");
+		addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec() + " App partition table:", false);
+		do {
+			_mypart = esp_partition_get(_mypartiterator);
+			printf("Type: %02x SubType %02x Address 0x%06X Size 0x%06X Encryption %i Label %s\n", _mypart->type, _mypart->subtype, _mypart->address, _mypart->size, _mypart->encrypted, _mypart->label);
+			sprintf(mqttMsg,"Type: %02x SubType %x Address 0x%06X Size 0x%06X Encryption %i Label %s", _mypart->type, _mypart->subtype, _mypart->address, _mypart->size, _mypart->encrypted, _mypart->label);
+			addMqttMsg("debug", "[INFO] " + String(mqttMsg), false);
+		} while (_mypartiterator = esp_partition_next(_mypartiterator));
+	}
+	esp_partition_iterator_release(_mypartiterator);
+	_mypartiterator = esp_partition_find(ESP_PARTITION_TYPE_DATA, ESP_PARTITION_SUBTYPE_ANY, NULL);
+	if (_mypartiterator) {
+		Serial.println("Data Partition table:");
+		addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec() + " Data partition table:", false);
+		do {
+			_mypart = esp_partition_get(_mypartiterator);
+			printf("Type: %02x SubType %02x Address 0x%06X Size 0x%06X Encryption %i Label %s\n", _mypart->type, _mypart->subtype, _mypart->address, _mypart->size, _mypart->encrypted, _mypart->label);
+			sprintf(mqttMsg,"Type: %02x SubType %02x Address 0x%06X Size 0x%06X Encryption %i Label %s", _mypart->type, _mypart->subtype, _mypart->address, _mypart->size, _mypart->encrypted, _mypart->label);
+			addMqttMsg("debug", "[INFO] " + String(mqttMsg), false);
+		} while (_mypartiterator = esp_partition_next(_mypartiterator));
+	}
+	esp_partition_iterator_release(_mypartiterator);
 
 	// Initialize touch interface
 	initTouch();
@@ -135,10 +160,6 @@ void setup(void)
 		Serial.println("[ERROR] " + digitalTimeDisplaySec() + " Failed to start weather & time updates");
 		addMqttMsg("debug", "[ERROR] " + digitalTimeDisplaySec() + " Failed to start weather & time updates", false);
 	}
-	// if (!initAccuWeather()) {
-	// 	Serial.println("[ERROR] " + digitalTimeDisplaySec() + " Failed to start weather & time updates");
-	// addMqttMsg("debug", "[ERROR] " + digitalTimeDisplaySec() + " Failed to start weather & time updates", false);
-	// }
 
 	// Get last reset reason and publish it
 	String resetReason = reset_reason(rtc_get_reset_reason(0));
@@ -146,42 +167,9 @@ void setup(void)
 	resetReason = reset_reason(rtc_get_reset_reason(1));
 	addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec() + " Reset reason CPU1: " + resetReason, false);
 
-	// // Initialize SPI connection to ESP8266
+	// Initialize SPI connection to ESP8266
 	// initSPI();
 
-	// Initialize BLE
-	initBLE();
-
-	// Get Partitionsizes
-	size_t ul;
-	esp_partition_iterator_t _mypartiterator;
-	const esp_partition_t *_mypart;
-	ul = spi_flash_get_chip_size(); Serial.print("Flash chip size: "); Serial.println(ul);
-	Serial.println("Partition table:");
-	char mqttMsg[1024];
-
-	_mypartiterator = esp_partition_find(ESP_PARTITION_TYPE_APP, ESP_PARTITION_SUBTYPE_ANY, NULL);
-	if (_mypartiterator) {
-		Serial.println("App Partition table:");
-		addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec() + " App partition table:", false);
-		do {
-			_mypart = esp_partition_get(_mypartiterator);
-			printf("Type: %02x SubType %02x Address 0x%06X Size 0x%06X Encryption %i Label %s\r\n", _mypart->type, _mypart->subtype, _mypart->address, _mypart->size, _mypart->encrypted, _mypart->label);
-			sprintf(mqttMsg,"Type: %02x SubType %x Address 0x%06X Size 0x%06X Encryption %i Label %s", _mypart->type, _mypart->subtype, _mypart->address, _mypart->size, _mypart->encrypted, _mypart->label);
-			addMqttMsg("debug", "[INFO] " + String(mqttMsg), false);
-		} while (_mypartiterator = esp_partition_next(_mypartiterator));
-	}
-	esp_partition_iterator_release(_mypartiterator);
-	_mypartiterator = esp_partition_find(ESP_PARTITION_TYPE_DATA, ESP_PARTITION_SUBTYPE_ANY, NULL);
-	if (_mypartiterator) {
-		Serial.println("Data Partition table:");
-		addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec() + " Data partition table:", false);
-		do {
-			_mypart = esp_partition_get(_mypartiterator);
-			printf("Type: %02x SubType %02x Address 0x%06X Size 0x%06X Encryption %i Label %s\r\n", _mypart->type, _mypart->subtype, _mypart->address, _mypart->size, _mypart->encrypted, _mypart->label);
-			sprintf(mqttMsg,"Type: %02x SubType %02x Address 0x%06X Size 0x%06X Encryption %i Label %s", _mypart->type, _mypart->subtype, _mypart->address, _mypart->size, _mypart->encrypted, _mypart->label);
-			addMqttMsg("debug", "[INFO] " + String(mqttMsg), false);
-		} while (_mypartiterator = esp_partition_next(_mypartiterator));
-	}
-	esp_partition_iterator_release(_mypartiterator);
+	// Initialize BLE server
+	// initBLEserver();
 }

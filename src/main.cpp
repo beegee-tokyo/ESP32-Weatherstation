@@ -56,39 +56,64 @@ void loop(void)
 		tft.setTextSize(1);
 		tft.print(String(newTSLValue) + "lux");
 		newTSLValue = 0;
-
-		// String spiAnswer;
-		// uint32_t esp8266Status = spiGetStatus();
-		// addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec() + " ESP8266 SPI status: " + String(esp8266Status), false);
-		// spiWriteData((uint8_t*) "Hello Slave!",(size_t)12);
-		// delay(10);
-		// spiAnswer = spiReadData();
-		// if (spiAnswer[0] != 'H') {
-		// 	addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec() + " ESP8266 SPI Hello Slave! got no response", false);
-		// } else {
-			// addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec() + " ESP8266 SPI Hello Slave! response: " + spiAnswer, false);
-		// }
-		// spiWriteData("Are you alive?");
-		// delay(10);
-		// spiAnswer = spiReadData();
-		// if (spiAnswer[0] != 'A') {
-		// 	addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec() + " ESP8266 SPI Are you alive? got no response", false);
-		// } else {
-		// 	addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec() + " ESP8266 SPI Are you alive? response: " + spiAnswer, false);
-		// }
-		// spiWriteData("Invalid question");
-		// delay(10);
-		// spiAnswer = spiReadData();
-		// if (spiAnswer[0] != 'S') {
-		// 	addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec() + " ESP8266 SPI Invalid question got no response", false);
-		// } else {
-		// 	addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec() + " ESP8266 SPI Invalid question response: " + spiAnswer, false);
-		// }
 	}
 
 	// Check if broadcast arrived
 	udpMsgLength = udpListener.parsePacket();
 	if (udpMsgLength != 0) {
 		getUDPbroadcast(udpMsgLength);
+	}
+
+	// Check if Pad 1 was touched
+	if (shortTouchPad1) {
+		shortTouchPad1 = false;
+
+		if (!isScanning) {
+			if (pClient != NULL && pClient->isConnected()) {
+				pClient->disconnect();
+				connected = false;
+			}
+			Serial.println("[INFO] " + digitalTimeDisplaySec() + " BLE Scan started");
+			scanBLEdevices();
+		}
+	}
+
+	// Check if Pad 1 was long touched
+	if (longTouchPad1) {
+		longTouchPad1 = false;
+		// if (connected) {
+		// 	std::string value = pRemoteCharacteristic->readValue();
+		//   addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec()
+		//         + " BLE characteristic value was: " + value.c_str(), false);
+		//   Serial.print("The characteristic value was: ");
+		//   Serial.println(value.c_str());
+		// }
+	}
+
+	// Check if we found a BLE server
+	// if (doConnect) {
+	// 	if (connectToServer(*pServerAddress)) {
+  //     Serial.println("We are now connected to the BLE Server.");
+	// 		addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec()
+	//           + " BLE Connected to server", false);
+  //     connected = true;
+  //   } else {
+  //     Serial.println("We have failed to connect to the server; there is nothin more we will do.");
+	// 		addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec()
+	//           + " BLE Connection to server failed", false);
+  //   }
+  //   doConnect = false;
+	// }
+
+	// Check if Pad 3 was touched
+	if (shortTouchPad3) {
+		shortTouchPad3 = false;
+		// Testing SPI master code
+		checkSPISlave();
+}
+
+	// Check if Pad 1 was long touched
+	if (longTouchPad3) {
+		longTouchPad3 = false;
 	}
 }

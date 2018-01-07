@@ -2,6 +2,7 @@
 #include "DHTesp.h"
 
 void triggerGetTemp();
+void triggerSendTemp();
 void tempTask(void *pvParameters);
 bool getTemperature();
 String comfortRatioString(float newTempValue, float newHumidValue);
@@ -15,6 +16,10 @@ TaskHandle_t tempTaskHandle = NULL;
 int dhtPin = 17;
 /** Ticker for temperature reading */
 Ticker tempTicker;
+/** Ticker for MQTT weather update every minute */
+Ticker mqttTicker;
+/** JSON as string to be sent to MQTT broker and UDP listeners */
+String tempMsg;
 /** Comfort profile */
 ComfortState cf;
 
@@ -49,6 +54,8 @@ bool initTemp() {
   } else {
     // Start update of environment data every 20 seconds
     tempTicker.attach(20, triggerGetTemp);
+    // Start sending update of environment data by MQTT every 60 seconds
+    mqttTicker.attach(60, triggerSendTemp);
   }
   return true;
 }
@@ -56,12 +63,22 @@ bool initTemp() {
 /**
  * triggerGetTemp
  * Sets flag dhtUpdated to true for handling in loop()
- * called by Ticker getTempTimer
+ * called by Ticker tempTicker
  */
 void triggerGetTemp() {
   if (tempTaskHandle != NULL) {
 	   xTaskResumeFromISR(tempTaskHandle);
   }
+}
+
+/**
+ * triggerSendTemp
+ * Creates WEI JSON to be send to MQTT broker
+ * and UDP listeners every 60 seconds
+ * called by Ticker mqttTicker
+ */
+void triggerSendTemp() {
+  addMqttMsg("WEI", tempMsg, false);
 }
 
 /**
@@ -99,10 +116,10 @@ bool getTemperature() {
 	tft.println("Getting temperature");
   tft.setTextColor(TFT_WHITE);
 
-	// Reading temperature for humidity takes about 250 milliseconds!
+	// Reading temperature and humidity takes about 250 milliseconds!
 	// Sensor readings may also be up to 2 seconds 'old' (it's a very slow sensor)
-	float newHumidValue = dht.getHumidity();          // Read humidity (percent)
-	float newTempValue = dht.getTemperature();     // Read temperature as Celsius
+  TempAndHumidity lastValues = dht.getTempAndHumidity();
+
 	// Check if any reads failed and exit early (to try again).
 	if (dht.getStatus() != 0) {
 		Serial.println("DHT11 error status: " + String(dht.getStatusString()));
@@ -118,9 +135,7 @@ bool getTemperature() {
 	/******************************************************* */
 	/* Trying to calibrate the humidity values               */
 	/******************************************************* */
-	// newHumidValue = 10*sqrt(newHumidValue);
-	newHumidValue = (int)(20.0 + newHumidValue)*1.6;
-
+  lastValues.humidity =  (int)(20.0 + lastValues.humidity)*1.6;
 	String displayTxt = "";
 
   tft.fillRect(0, 32, 128, 16, TFT_DARKGREY);
@@ -133,23 +148,52 @@ bool getTemperature() {
   tft.setTextSize(2);
   tft.setCursor(0,48);
   tft.setTextColor(TFT_WHITE);
-  displayTxt = "I " + String(newTempValue,0) + "'C " + String(newHumidValue,0) + "%";
-	tft.print(displayTxt);
+  displayTxt = "I " + String(lastValues.temperature,0) + "'C " + String(lastValues.humidity,0) + "%";
+  tft.print(displayTxt);
 
-	float heatIndex = dht.computeHeatIndex(newTempValue, newHumidValue);
-  float dewPoint = dht.computeDewPoint(newTempValue, newHumidValue);
-  String comfortStatus = comfortRatioString(newTempValue, newHumidValue);
-  String humanPerception = computePerceptionString(newTempValue, newHumidValue);
-  String dbgMessage = "[INFO] " + digitalTimeDisplaySec();
-  dbgMessage += " T: " + String(newTempValue) + " H: " + String(newHumidValue);
-  dbgMessage += " I: " + String(heatIndex) + " D: " + String(dewPoint);
-  dbgMessage += " C: " + comfortStatus + " P: " + humanPerception;
-  addMqttMsg("debug", dbgMessage, false);
+  float heatIndex = dht.computeHeatIndex(lastValues.temperature, lastValues.humidity);
+  float dewPoint = dht.computeDewPoint(lastValues.temperature, lastValues.humidity);
+  String comfortStatus = comfortRatioString(lastValues.temperature, lastValues.humidity);
+  String humanPerception = computePerceptionString(lastValues.temperature, lastValues.humidity);
+  // String dbgMessage = "[INFO] " + digitalTimeDisplaySec();
+  // dbgMessage += " T: " + String(newTempValue) + " H: " + String(newHumidValue);
+  // dbgMessage += " I: " + String(heatIndex) + " D: " + String(dewPoint);
+  // dbgMessage += " C: " + comfortStatus + " P: " + humanPerception;
+  // addMqttMsg("debug", dbgMessage, false);
 
-  if (bleConnected) {
-    bleTemperature = newTempValue;
-    bleHumidity = newHumidValue;
-    bleStatus = "Comfort: " + comfortStatus + " Perception: " + humanPerception;
+
+  // Send notification if any BLE client is connected
+  if (pServer != NULL)
+  if ((pServer != NULL) && (pServer->getConnectedCount() != 0)) {
+    uint8_t tempData[2];
+    uint16_t tempValue;
+    tempValue = (uint16_t)(lastValues.temperature*100);
+    tempData[1] = tempValue>>8;
+    tempData[0] = tempValue;
+    pCharacteristicTemp->setValue(tempData, 2);
+
+    tempValue = (uint16_t)(lastValues.humidity*100);
+    tempData[1] = tempValue>>8;
+    tempData[0] = tempValue;
+    pCharacteristicHumid->setValue(tempData, 2);
+
+    tempValue = (uint16_t)(dewPoint);
+    tempData[1] = 0;
+    tempData[0] = tempValue;
+    pCharacteristicDewPoint->setValue(tempData, 2);
+
+    tempValue = (uint16_t)(heatIndex);
+    tempData[1] = 0;
+    tempData[0] = tempValue;
+    pCharacteristicHeatIndex->setValue(tempData, 2);
+
+    String bleStatus = "Comfort: " + comfortStatus;
+    size_t dataLen = bleStatus.length();
+    pCharacteristicComfort->setValue((uint8_t*)&bleStatus[0], dataLen);
+
+    bleStatus = "Perception: " + humanPerception;
+    dataLen = bleStatus.length();
+    pCharacteristicPerception->setValue((uint8_t*)&bleStatus[0], dataLen);
 
     // Send notification to connected clients
     uint8_t notifData[8];
@@ -177,18 +221,16 @@ bool getTemperature() {
 
 	jsonOut["de"] = "wei";
 
-	jsonOut["te"] = newTempValue;
-	jsonOut["hu"] = newHumidValue;
+  jsonOut["te"] = lastValues.temperature;
+	jsonOut["hu"] = lastValues.humidity;
 	jsonOut["hi"] = heatIndex;
+  jsonOut["dp"] = dewPoint;
+  jsonOut["cr"] = dht.getComfortRatio(cf, lastValues.temperature, lastValues.humidity);
+  jsonOut["pe"] = dht.computePerception(lastValues.temperature, lastValues.humidity);
 
-	String udpMsg;
-  jsonOut.printTo(udpMsg);
-  addMqttMsg("WEI", udpMsg, false);
-
-	IPAddress pcIP (192,	168, 0, 110);
-	IPAddress multiIP (192,	168, 0, 255);
-	udpSendMessage(pcIP, udpMsg, 9997);
-	udpSendMessage(multiIP, udpMsg, 9997);
+  tempMsg = "";
+  // Message will be broadcasted every 60 seconds by triggerSendTemp
+  jsonOut.printTo(tempMsg);
 	return true;
 }
 

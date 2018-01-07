@@ -156,9 +156,6 @@ long readLux() {
 	/** Counter for successfull readings, used to adjust the integration time */
 	int lightOk = 0; /* In case of saturation we retry 5 times */
 
-  // tsl.getEvent (&event);
-  // return (event.light);
-
   if (tsl.getEvent(&event)) { // True if we are not saturated
     accLux = event.light;
     if ( lightInteg == 1 ) { /* we are at medium integration time, try a higher one */

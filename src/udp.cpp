@@ -32,28 +32,6 @@ void getUDPbroadcast(int udpMsgLength) {
 	JsonObject& jsonIn = jsonInBuffer.parseObject((char *)udpPacket);
 	if (jsonIn.success() && jsonIn.containsKey("de")) {
 		String thisPayLoad;
-		// if (jsonIn["de"] == "spm") {
-		// 	double consVal = 0;
-		// 	double solarVal = 0;
-		// 	if (jsonIn.containsKey("c")) {
-		// 		thisPayLoad = String(jsonIn["c"].as<double>());
-		// 		consVal = jsonIn["c"].as<double>();
-		// 	}
-		// 	if (jsonIn.containsKey("s")) {
-		// 		thisPayLoad = String(jsonIn["s"].as<double>());
-		// 		solarVal = jsonIn["s"].as<double>();
-		// 	}
-		// }
-		// if (jsonIn["de"] == "ly1") {
-		// 	if (jsonIn.containsKey("lo")) {
-		// 		byte lightIsOn = jsonIn["lo"];
-		// 		if (lightIsOn == 1) {
-		// 			// addMqttMsg("backyard-light", (char *) "1");
-		// 		} else {
-		// 			// addMqttMsg("backyard-light", (char *) "0");
-		// 		}
-		// 	}
-		// }
 		if (jsonIn["de"] == "sb1") {
 			if (jsonIn.containsKey("te")) {
 				thisPayLoad = String(jsonIn["te"].as<double>())+"C";

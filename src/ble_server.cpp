@@ -1,116 +1,92 @@
 #include "setup.h"
+#include <BLEUtils.h>
+#include <BLEServer.h>
+#include <BLE2902.h>
+#include <BLEAdvertising.h>
 
-#define SERVICE_UUID        0x181A
-#define NOTIFICATION_UUID   0x2A08
-#define TEMP_UUID           0x2A1F
-#define HUMID_UUID          0x2A6F
-#define STATUS_UUID         0x2A3D
+// List of Service and Characteristic UUIDs
+#define SERVICE_UUID          0x181A
+#define NOTIFICATION_UUID     0x2A08
+#define TEMP_UUID             0x2A6E
+#define HUMID_UUID            0x2A6F
+#define HEAT_UUID             0x2A7A
+#define DEW_UUID              0x2A7B
+#define COMFORT_UUID          "00002A3D-ead2-11e7-80c1-9a214cf093ae" // same as String characteristic 0x2A3D
+#define PERCEPTION_UUID       "10002A3D-ead2-11e7-80c1-9a214cf093ae" //  same as String characteristic 0x2A3D
 
+/** Characteristic for client notification */
 BLECharacteristic *pCharacteristicNotify;
+/** Characteristic for temperature in celsius */
 BLECharacteristic *pCharacteristicTemp;
+/** Characteristic for humidity in percent */
 BLECharacteristic *pCharacteristicHumid;
-BLECharacteristic *pCharacteristicStatus;
+/** Characteristic for heat index in celsius */
+BLECharacteristic *pCharacteristicHeatIndex;
+/** Characteristic for dew point in celsius */
+BLECharacteristic *pCharacteristicDewPoint;
+/** Characteristic for environment comfort status */
+BLECharacteristic *pCharacteristicComfort;
+/** Characteristic for environment perception status */
+BLECharacteristic *pCharacteristicPerception;
 
-BLEUUID pNotifUUID;
-
+/** BLE Advertiser */
 BLEAdvertising* pAdvertising;
+/** BLE Service */
 BLEService *pService;
+/** BLE Server */
 BLEServer *pServer;
 
+/** Flag if a client is connected */
 bool bleConnected = false;
-float bleTemperature;
-float bleHumidity;
-String bleStatus;
 
+/**
+ * MyServerCallbacks
+ * Callbacks for client connection and disconnection
+ */
 class MyServerCallbacks: public BLEServerCallbacks {
+  // TODO this doesn't take into account several clients being connected
     void onConnect(BLEServer* pServer) {
       bleConnected = true;
-      addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec() + " BLE connected", false);
+      addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec() + " BLE connected #" + String(pServer->getConnId()), false);
+      pAdvertising->start();
     };
 
     void onDisconnect(BLEServer* pServer) {
-      bleConnected = false;
-      addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec() + " BLE disconnected", false);
-    }
-};
-
-class MyCallbackHandler: public BLECharacteristicCallbacks {
-  void onRead(BLECharacteristic* pCharacteristic) {
-    // addMqttMsg("debug", " " + digitalTimeDisplaySec() + " BLE read request", false);
-    // addMqttMsg("debug", " " + digitalTimeDisplaySec() + " BLE sending: " + bleNewData, false);
-    if (pCharacteristic == pCharacteristicNotify) {
-      uint8_t notifData[8];
-      time_t now;
-      struct tm timeinfo;
-    	time(&now); // get time (as epoch)
-    	localtime_r(&now, &timeinfo); // update tm struct with current time
-      uint16_t year = timeinfo.tm_year+1900;
-      notifData[1] = year>>8;
-      notifData[0] = year;
-      notifData[2] = timeinfo.tm_mon+1;
-      notifData[3] = timeinfo.tm_mday;
-      notifData[4] = timeinfo.tm_hour;
-      notifData[5] = timeinfo.tm_min;
-      notifData[6] = timeinfo.tm_sec;
-      pCharacteristic->setValue(notifData, 8);
-    } else if (pCharacteristic == pCharacteristicTemp) {
-      uint8_t tempData[2];
-      uint16_t bleTemp100 = (uint16_t)(bleTemperature*10);
-      tempData[1] = bleTemp100>>8;
-      tempData[0] = bleTemp100;
-      pCharacteristic->setValue(tempData, 2);
-    } else if (pCharacteristic == pCharacteristicHumid) {
-      uint8_t humidData[2];
-      uint16_t bleHumid100 = (uint16_t)(bleHumidity*100);
-      humidData[1] = bleHumid100>>8;
-      humidData[0] = bleHumid100;
-      pCharacteristic->setValue(humidData, 2);
-    } else if (pCharacteristic == pCharacteristicStatus) {
-      size_t dataLen = bleStatus.length();
-      uint8_t bleData[dataLen+1];
-      bleStatus.toCharArray((char *)bleData,dataLen+1);
-      pCharacteristic->setValue(bleData, dataLen);
-    }
-  }
-
-  void onWrite(BLECharacteristic *pCharacteristic) {
-    std::string value = pCharacteristic->getValue();
-    int len = value.length();
-    String strValue = "";
-
-    if (value.length() > 0) {
-      Serial.println("*********");
-      Serial.print("New value: ");
-      for (int i = 0; i < value.length(); i++) {
-        Serial.print(value[i]);
-        strValue += value[i];
+      if (pServer->getConnectedCount() == 0) {
+        bleConnected = false;
       }
-      Serial.println();
-      Serial.println("*********");
-      addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec() + " BLE received: " + strValue, false);
+      addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec() + " BLE disconnected #" + String(pServer->getConnId()), false);
     }
-  }
 };
 
-void initBLE() {
+/**
+ * initBLEserver
+ * Setup BLE server
+ * Setup callbacks for server and pCharacteristicStatus
+ * Start advertising the BLE service
+ */
+void initBLEserver() {
 
-  addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec() + " BLE initBLE()", false);
+  addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec() + " BLE initBLEserver()", false);
 
   // Initialize BLE
   BLEDevice::init(apName);
-  BLEDevice::setPower(ESP_PWR_LVL_P7);
+  // BLEDevice::setPower(ESP_PWR_LVL_P7);
 
   // Create BLE Server
   pServer = BLEDevice::createServer();
+
+  // Set server callbacks
   pServer->setCallbacks(new MyServerCallbacks());
 
   // Create BLE Service
-  pService = pServer->createService(BLEUUID((uint16_t)SERVICE_UUID));
+  pService = pServer->createService(BLEUUID((uint16_t)SERVICE_UUID),20);
 
   // Create BLE Characteristic for Alert
   pCharacteristicNotify = pService->createCharacteristic(
                       BLEUUID((uint16_t)NOTIFICATION_UUID),
                       BLECharacteristic::PROPERTY_READ   |
+                      // BLECharacteristic::PROPERTY_INDICATE |
                       BLECharacteristic::PROPERTY_NOTIFY
                     );
 
@@ -129,9 +105,29 @@ void initBLE() {
                       BLECharacteristic::PROPERTY_READ
                     );
 
-  // Create BLE Characteristic for Status
-  pCharacteristicStatus = pService->createCharacteristic(
-                      BLEUUID((uint16_t)STATUS_UUID),
+  // Create BLE Characteristic for Dew Point
+  pCharacteristicDewPoint = pService->createCharacteristic(
+                      BLEUUID((uint16_t)DEW_UUID),
+                      BLECharacteristic::PROPERTY_READ
+                    );
+
+  // Create BLE Characteristic for Perception
+  pCharacteristicPerception = pService->createCharacteristic(
+                      PERCEPTION_UUID,
+                      // BLEUUID((uint16_t)PERCEPTION_UUID),
+                      BLECharacteristic::PROPERTY_READ
+                    );
+
+  // Create BLE Characteristic for Comfort
+  pCharacteristicComfort = pService->createCharacteristic(
+                      COMFORT_UUID,
+                      // BLEUUID((uint16_t)COMFORT_UUID),
+                      BLECharacteristic::PROPERTY_READ
+                    );
+
+  // Create BLE Characteristic for Heat Index
+  pCharacteristicHeatIndex = pService->createCharacteristic(
+                      BLEUUID((uint16_t)HEAT_UUID),
                       BLECharacteristic::PROPERTY_READ
                     );
 
@@ -140,16 +136,16 @@ void initBLE() {
 
   // Start advertising
   pAdvertising = pServer->getAdvertising();
+
   pAdvertising->start();
-  // Setup callback handler
-  pCharacteristicNotify->setCallbacks(new MyCallbackHandler());
-  pCharacteristicTemp->setCallbacks(new MyCallbackHandler());
-  pCharacteristicHumid->setCallbacks(new MyCallbackHandler());
-  pCharacteristicStatus->setCallbacks(new MyCallbackHandler());
 
   addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec() + " BLE active now", false);
 }
 
-void bleStop() {
+/**
+ * stopBLE
+ * Stop advertising the BLE service
+ */
+void stopBLE() {
   pAdvertising->stop();
 }

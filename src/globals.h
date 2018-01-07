@@ -9,10 +9,8 @@ extern int apIndex;
 /** OTA update status */
 extern bool otaRunning;
 
-#ifdef HAS_TFT
 /** TFT_eSPI class for display */
 extern TFT_eSPI tft;
-#endif
 
 /**********************************************************/
 // Function declarations
@@ -44,6 +42,8 @@ extern HTTPClient http;
 extern TaskHandle_t weatherTaskHandle;
 /** Ticker for weather and time update */
 extern Ticker weatherTicker;
+/** Ticker for MQTT weather update every minute */
+extern Ticker mqttTicker;
 
 // UDP interface
 void getUDPbroadcast(int udpMsgLength);
@@ -52,21 +52,43 @@ extern WiFiUDP udpListener;
 extern int udpMsgLength;
 
 // BLE interface
-void initBLE();
-void bleStop();
+void initBLEserver();
+void stopBLE();
+void scanBLEdevices();
+bool connectToServer(BLEAddress pAddress);
+extern BLEServer *pServer;
 extern BLECharacteristic *pCharacteristicNotify;
 extern BLECharacteristic *pCharacteristicTemp;
 extern BLECharacteristic *pCharacteristicHumid;
-extern BLECharacteristic *pCharacteristicStatus;
+extern BLECharacteristic *pCharacteristicHeatIndex;
+extern BLECharacteristic *pCharacteristicDewPoint;
+extern BLECharacteristic *pCharacteristicComfort;
+extern BLECharacteristic *pCharacteristicPerception;
 extern BLEAdvertising* pAdvertising;
 extern bool bleConnected;
 extern float bleTemperature;
 extern float bleHumidity;
-extern String bleStatus;
+
+extern bool doConnect;
+extern bool connected;
+extern bool isScanning;
+extern BLEAddress *pServerAddress;
+extern BLEClient* pClient;
+extern BLERemoteCharacteristic* pRemoteCharacteristic;
+
+extern void btScan();
 
 // Touch interface
 void initTouch();
-extern Ticker touchTicker;
+extern Ticker touchTickerPad1;
+extern Ticker touchTickerPad2;
+extern Ticker touchTickerPad3;
+extern bool shortTouchPad1;
+extern bool longTouchPad1;
+extern bool shortTouchPad2;
+extern bool longTouchPad2;
+extern bool shortTouchPad3;
+extern bool longTouchPad3;
 
 // Graphics functions
 void drawIcon(const unsigned short* icon, int16_t x, int16_t y, int8_t width, int8_t height);
@@ -99,13 +121,10 @@ extern Ticker tempTicker;
 bool initUGWeather();
 void ugWeatherTask(void *pvParameters);
 
-// Weather & NTP time update functions / variables
-extern TaskHandle_t weatherTaskHandle;
-extern Ticker weatherTicker;
-
 // SPI interface
 void initSPI();
 void stopSPI();
+void checkSPISlave();
 uint32_t spiGetStatus();
 void spiWriteData(uint8_t * data, size_t len);
 void spiWriteData(const char * data);
