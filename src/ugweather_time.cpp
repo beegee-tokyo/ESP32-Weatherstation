@@ -19,29 +19,29 @@ String ugWeatherText = "";
  * initWeather
  * Setup task for repeated weather and time update
  * @return bool
- *    true if task is started
- *    false if task couldn't be started
+ *		true if task is started
+ *		false if task couldn't be started
  */
 bool initUGWeather() {
-  // Start NTP listener
+	// Start NTP listener
 	initNTP();
 	tryGetTime();
 
-  // Start task to get weather & time updates
+	// Start task to get weather & time updates
 	xTaskCreatePinnedToCore(
-			ugWeatherTask,                      /* Function to implement the task */
-			"ugWeatherTask ",			              /* Name of the task */
-			8000,              			          /* Stack size in words */
-			NULL,                          		/* Task input parameter */
-			5,                              	/* Priority of the task */
-			&weatherTaskHandle,               /* Task handle. */
-			0);                            		/* Core where the task should run */
+			ugWeatherTask,        /* Function to implement the task */
+			"ugWeatherTask ",     /* Name of the task */
+			8000,                 /* Stack size in words */
+			NULL,                 /* Task input parameter */
+			5,                    /* Priority of the task */
+			&weatherTaskHandle,   /* Task handle. */
+			0);                   /* Core where the task should run */
 
-  if (weatherTaskHandle == NULL) {
-    return false;
-  }
+	if (weatherTaskHandle == NULL) {
+		return false;
+	}
 	weatherTicker.attach(1800, triggerGetUGWeather);
-  return true;
+	return true;
 }
 
 /**
@@ -60,29 +60,29 @@ void triggerGetUGWeather() {
 void ugWeatherTask(void *pvParameters) {
 	Serial.println("weatherTask loop started");
 	while (1) // weatherTask loop
-  {
-    if (otaRunning)
-    {
-      vTaskDelete(NULL);
-    }
+	{
+		if (otaRunning)
+		{
+			vTaskDelete(NULL);
+		}
 		if (tasksEnabled) {
-      // Update NTP time
-      if (!tryGetTime()) {
-        // Serial.println("Failed to get update from NTP");
+			// Update NTP time
+			if (!tryGetTime()) {
+				// Serial.println("Failed to get update from NTP");
 				addMqttMsg("debug", "[ERROR] " + digitalTimeDisplaySec() + " Failed to get update from NTP", false);
-      }
-      // Get weather info
-      if (getUGWeather()) {
-        // Serial.println("Got weather conditions");
+			}
+			// Get weather info
+			if (getUGWeather()) {
+				// Serial.println("Got weather conditions");
 				Serial.println(ugWeatherText);
 				addMqttMsg("WEA", ugWeatherText, true);
-      } else {
-        // Serial.println("Failed to get weather conditions");
+			} else {
+				// Serial.println("Failed to get weather conditions");
 				addMqttMsg("debug", "[ERROR] " + digitalTimeDisplaySec() + " Failed to get weather conditions", false);
-        // delay(60000); // try again in 60 seconds
-      }
+				// delay(60000); // try again in 60 seconds
+			}
 		}
-    vTaskSuspend(NULL);
+		vTaskSuspend(NULL);
 	}
 }
 
@@ -96,11 +96,11 @@ void ugWeatherTask(void *pvParameters) {
  **/
 bool getUGWeather() {
 	String url = wgURL;
-  url += wgApiKey;
-  url += "/conditions/q/";
-  url += wgCountry;
-  url += "/";
-  url += wgCity;
+	url += wgApiKey;
+	url += "/conditions/q/";
+	url += wgCountry;
+	url += "/";
+	url += wgCity;
 	url += ".json";
 
 	String payload = "";
@@ -114,8 +114,8 @@ bool getUGWeather() {
 	if(httpCode > 0) {
 			// file found at server
 			if(httpCode == HTTP_CODE_OK) {
-					payload = http.getString();
-					http.end();
+				payload = http.getString();
+				http.end();
 			} else {
 				payload = "[HTTP] GET error code: " + http.errorToString(httpCode);
 				http.end();
@@ -134,13 +134,13 @@ bool getUGWeather() {
 	payload = payload.substring(1,payload.length()-1);
 
 	/** Buffer for incoming JSON string */
-  DynamicJsonBuffer jsonInBuffer;
-  /** Char buffer for incoming data */
-  char json[payload.length()];
-  payload.toCharArray(json, payload.length() + 1);
-  /** Json object for incoming data */
-  JsonObject& jsonIn = jsonInBuffer.parseObject(json);
-  if (!jsonIn.success()) {
+	DynamicJsonBuffer jsonInBuffer;
+	/** Char buffer for incoming data */
+	char json[payload.length()];
+	payload.toCharArray(json, payload.length() + 1);
+	/** Json object for incoming data */
+	JsonObject& jsonIn = jsonInBuffer.parseObject(json);
+	if (!jsonIn.success()) {
 		return false;
 	} else {
 		JsonObject& current_observation = jsonIn.get<JsonObject>("current_observation");
@@ -152,17 +152,17 @@ bool getUGWeather() {
 		String wind_kph = current_observation["wind_kph"];
 		String wind_gust_kph = current_observation["wind_gust_kph"];
 		long observation_epoch = current_observation["observation_epoch"];
-		int obsHourVal = ((observation_epoch  % 86400L) / 3600) + 8; // GMT+8
+		int obsHourVal = ((observation_epoch	% 86400L) / 3600) + 8; // GMT+8
 		if (obsHourVal >= 24) {
 			obsHourVal -= 24;
 		}
 		String obsHour = String(obsHourVal);
 		String obsMin = "";
 		if ( ((observation_epoch % 3600) / 60) < 10 ) {
-      // In the first 10 minutes of each hour, we'll want a leading '0'
-      obsMin = "0";
-    }
-		obsMin += String((observation_epoch  % 3600) / 60);
+			// In the first 10 minutes of each hour, we'll want a leading '0'
+			obsMin = "0";
+		}
+		obsMin += String((observation_epoch	% 3600) / 60);
 
 		tft.setTextSize(1);
 		tft.setCursor(0, 120);
@@ -178,7 +178,7 @@ bool getUGWeather() {
 
 		const unsigned short *icon = unknown;
 		if (current_observation.containsKey("icon")) {
-			String iconName =  current_observation["icon"].as<char*>();
+			String iconName =	current_observation["icon"].as<char*>();
 			// Serial.printf("Showing icon for %s\n",current_observation["icon"].asString());
 			for (int index = 0; index < ugIconNums; index++) {
 				if (strcmp(iconName.c_str(), ugIconName[index].c_str()) == 0) {
@@ -190,8 +190,8 @@ bool getUGWeather() {
 			Serial.println("Could not find the icon");
 			addMqttMsg("debug", "[ERROR] " + digitalTimeDisplaySec() + "Could not find weather icon", false);
 		}
-		// drawIcon(icon,  (tft.width() -  ugIconWidth)/2, 88,  ugIconWidth,  ugIconHeight);
-		drawIcon(icon,  5, 88,  ugIconWidth,  ugIconHeight);
+		// drawIcon(icon,	(tft.width() -	ugIconWidth)/2, 88,	ugIconWidth,	ugIconHeight);
+		drawIcon(icon,	5, 88,	ugIconWidth,	ugIconHeight);
 		tft.setCursor(45,103);
 		tft.setTextSize(1);
 		tft.print("Light:");

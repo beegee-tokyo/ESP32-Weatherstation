@@ -17,7 +17,7 @@ void activateOTA(const char *MODULTYPE, const char *MODULID) {
 
 	ArduinoOTA
 		.setHostname(apName)
-    .onStart([]() {
+		.onStart([]() {
 			addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec() + " OTA_START", false);
 			// Set OTA flag
 			otaRunning = true;
@@ -60,8 +60,8 @@ void activateOTA(const char *MODULTYPE, const char *MODULID) {
 			tft.setTextSize(2);
 			tft.drawString("OTA",64,50);
 			tft.drawString("Progress:",64,75);
-	  })
-    .onEnd([]() {
+		})
+		.onEnd([]() {
 			Serial.println("\n OTA End");
 
 			tft.fillScreen(TFT_GREEN);
@@ -71,8 +71,8 @@ void activateOTA(const char *MODULTYPE, const char *MODULID) {
 			tft.drawString("OTA",64,50);
 			tft.drawString("FINISHED!",64,80);
 			delay(10);
-    })
-    .onProgress([](unsigned int progress, unsigned int total) {
+		})
+		.onProgress([](unsigned int progress, unsigned int total) {
 			unsigned int achieved = progress / (total / 100);
 			if (otaStatus == 0 || achieved == otaStatus + 1) {
 				digitalWrite(16, !digitalRead(16));
@@ -83,48 +83,44 @@ void activateOTA(const char *MODULTYPE, const char *MODULID) {
 				String progVal = String(achieved) + "%";
 				tft.drawString(progVal,64,105);
 			}
-    })
-    .onError([](ota_error_t error) {
-					tft.fillScreen(TFT_RED);
-					tft.setTextDatum(MC_DATUM);
-					tft.setTextColor(TFT_BLACK);
-					tft.setTextSize(2);
-					tft.drawString("OTA",64,30,2);
-					tft.drawString("ERROR:",64,60,2);
+		})
+		.onError([](ota_error_t error) {
+			tft.fillScreen(TFT_RED);
+			tft.setTextDatum(MC_DATUM);
+			tft.setTextColor(TFT_BLACK);
+			tft.setTextSize(2);
+			tft.drawString("OTA",64,30,2);
+			tft.drawString("ERROR:",64,60,2);
 
-					Serial.printf("\nOTA Error[%u]: ", error);
-					if (error == OTA_AUTH_ERROR) {
-						Serial.println("Auth Failed");
-						tft.drawString("Auth Failed",64,80,2);
-					}
-					else if (error == OTA_BEGIN_ERROR) {
-						Serial.println("Begin Failed");
-						tft.drawString("Begin Failed",64,80,2);
-					}
-					else if (error == OTA_CONNECT_ERROR) {
-						Serial.println("Connect Failed");
-						tft.drawString("Connect Failed",64,80,2);
-					}
-					else if (error == OTA_RECEIVE_ERROR) {
-						Serial.println("Receive Failed");
-						tft.drawString("Receive Failed",64,80,2);
-					}
-					else if (error == OTA_END_ERROR) {
-						Serial.println("End Failed");
-						tft.drawString("End Failed",64,80,2);
-					}
-    });
+			Serial.printf("\nOTA Error[%u]: ", error);
+			if (error == OTA_AUTH_ERROR) {
+				Serial.println("Auth Failed");
+				tft.drawString("Auth Failed",64,80,2);
+			} else if (error == OTA_BEGIN_ERROR) {
+				Serial.println("Begin Failed");
+				tft.drawString("Begin Failed",64,80,2);
+			} else if (error == OTA_CONNECT_ERROR) {
+				Serial.println("Connect Failed");
+				tft.drawString("Connect Failed",64,80,2);
+			} else if (error == OTA_RECEIVE_ERROR) {
+				Serial.println("Receive Failed");
+				tft.drawString("Receive Failed",64,80,2);
+			} else if (error == OTA_END_ERROR) {
+				Serial.println("End Failed");
+				tft.drawString("End Failed",64,80,2);
+			}
+		});
 
 	ArduinoOTA.begin();
 
 	const char * mhcTxtData[7] = {
-			"board=" ARDUINO_BOARD,
-			"tcp_check=no",
-			"ssh_upload=no",
-			"auth_upload=no",
-			MODULTYPE,
-			MODULID,
-			"service=MHC"
-  };
+		"board=" ARDUINO_BOARD,
+		"tcp_check=no",
+		"ssh_upload=no",
+		"auth_upload=no",
+		MODULTYPE,
+		MODULID,
+		"service=MHC"
+	};
 	MDNS.addMultiServiceTxt("_arduino", "_tcp", mhcTxtData, 7);
 }

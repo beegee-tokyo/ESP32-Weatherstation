@@ -48,15 +48,15 @@ void initMqtt() {
 		return;
 	}
 
-  // Start task for MEEO publishing
+	// Start task for MEEO publishing
 	xTaskCreatePinnedToCore(
-	    mqttTask,                       /* Function to implement the task */
-	    "MQTTPublisher ",               /* Name of the task */
-	    4000,                           /* Stack size in words */
-	    NULL,                           /* Task input parameter */
-	    5,                             	/* Priority of the task */
-	    &mqttTaskHandle,                /* Task handle. */
-	    1);                             /* Core where the task should run */
+			mqttTask,              /* Function to implement the task */
+			"MQTTPublisher ",      /* Name of the task */
+			4000,                  /* Stack size in words */
+			NULL,                  /* Task input parameter */
+			5,                     /* Priority of the task */
+			&mqttTaskHandle,       /* Task handle. */
+			1);                    /* Core where the task should run */
 
 	// Tell MQTT broker we are alive
 	mqttClient.publish((char *)"/DEV/ESP32",(char *)"esp32",5,true,0);
@@ -67,12 +67,12 @@ void initMqtt() {
  * Adds a message to the buffer to be processed by meeoTask()
  *
  * @param topic
- *     String with the topic
+ *		 String with the topic
  * @param payload
- *    String with the payload
+ *		String with the payload
  * @return bool
- *    true if message is added to the buffer
- *    false if buffer was full
+ *		true if message is added to the buffer
+ *		false if buffer was full
  */
 bool addMqttMsg (String topic, String payload, bool retained) {
 	bool queueResults = false;
@@ -95,13 +95,13 @@ bool addMqttMsg (String topic, String payload, bool retained) {
 /**
  * Task to send data from meeoMsg buffer to Meeo.IO
  * @param pvParameters
- *    pointer to task parameters
+ *		pointer to task parameters
  */
 void mqttTask(void *pvParameters) {
 	Serial.println("mqttTask loop started");
 	while (1) // mqttTask loop
-  {
-    if (otaRunning) {
+	{
+		if (otaRunning) {
 			vTaskDelete(NULL);
 		}
 		for (byte index = 0; index < msgBufferSize; index ++) {
@@ -124,15 +124,15 @@ void mqttTask(void *pvParameters) {
 				}
 			}
 		}
-    bool queueIsEmpty = true;
-    for (byte index = 0; index < msgBufferSize; index ++) {
-      if (mqttMsg[index].waiting) {
-        queueIsEmpty = false;
-      }
-    }
-    if (queueIsEmpty) {
-      vTaskSuspend(NULL);
-    }
+		bool queueIsEmpty = true;
+		for (byte index = 0; index < msgBufferSize; index ++) {
+			if (mqttMsg[index].waiting) {
+				queueIsEmpty = false;
+			}
+		}
+		if (queueIsEmpty) {
+			vTaskSuspend(NULL);
+		}
 	}
 }
 
@@ -146,27 +146,27 @@ void mqttTask(void *pvParameters) {
 bool connectMQTT() {
 	Serial.println("Connecting to MQTT broker");
 
-  // Connect to MQTT broker
-  mqttClient.begin(mqttBroker, mqttReceiver);
+	// Connect to MQTT broker
+	mqttClient.begin(mqttBroker, mqttReceiver);
 	// Setup callback function for messages from broker
-  mqttClient.onMessage(messageReceived);
+	mqttClient.onMessage(messageReceived);
 
-  int connectTimeout = 0;
+	int connectTimeout = 0;
 
-  while (!mqttClient.connect(mqttID, mqttUser, mqttPwd)) {
-    delay(100);
-    connectTimeout++;
-    if (connectTimeout > 10) { // Wait for 1 seconds to connect
-      Serial.println("Can't connect to MQTT broker");
-      return false;
-    }
-  }
-  Serial.println("Connected to MQTT");
+	while (!mqttClient.connect(mqttID, mqttUser, mqttPwd)) {
+		delay(100);
+		connectTimeout++;
+		if (connectTimeout > 10) { // Wait for 1 seconds to connect
+			Serial.println("Can't connect to MQTT broker");
+			return false;
+		}
+	}
+	Serial.println("Connected to MQTT");
 
-  // Set MQTT last will
-  mqttClient.setWill("/DEV/ESP32", "Dead");
+	// Set MQTT last will
+	mqttClient.setWill("/DEV/ESP32", "Dead");
 
-  return true;
+	return true;
 }
 
 /**
@@ -174,10 +174,10 @@ bool connectMQTT() {
  * Called when subscribed message was received from MQTT broker
  *
  * @param topic
- *      topic of received message
+ *			topic of received message
  * @param payload
- *      payload of message
+ *			payload of message
 */
 void messageReceived(String &topic, String &payload) {
-  Serial.println("MQTT - received from topic: " + topic +  " payload: " + payload);
+	Serial.println("MQTT - received from topic: " + topic +	" payload: " + payload);
 }

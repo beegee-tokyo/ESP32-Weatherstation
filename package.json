@@ -1,23 +1,23 @@
 {
-    "name": "ESP32-WeatherStation",
-    "description": "ESP32 with TFT display as small weather station displaying local and internet weather data",
-    "author": "Bernd Giesecke",
-    "homepage": "https://github.com/beegee-tokyo/ESP32-Weatherstation",
-    "contributors": "Bernd Giesecke",
-    "version": "0.0.0",
-    "url": "https://github.com/beegee-tokyo/ESP32-Weatherstation",
-    "keywords": [ "ESP32", "Weatherstation" ],
-    "bugs": "beegee@giesecke.tk",
-    "license": "GNU General Public License v2.0",
-    "repository":
-      { "type" : "git"
-        , "url" : "https://github.com/beegee-tokyo/ESP32-Weatherstation.git"
-      },
-    "dependencies":
-      { "ESP32-MyLib" : "https://github.com/beegee-tokyo/ESP32-MyLib.git"
-        , "WIFIMANAGER-ESP32" : "https://github.com/zhouhan0126/WIFIMANAGER-ESP32.git"
-        , "WebServer-esp32" : "https://github.com/zhouhan0126/WebServer-esp32.git"
-        , "DNSServer---esp32" : "https://github.com/zhouhan0126/DNSServer---esp32.git"
-      },
-    "cpu" : [ "ESP32" ]
+		"name": "ESP32-WeatherStation",
+		"description": "ESP32 with TFT display as small weather station displaying local and internet weather data",
+		"author": "Bernd Giesecke",
+		"homepage": "https://github.com/beegee-tokyo/ESP32-Weatherstation",
+		"contributors": "Bernd Giesecke",
+		"version": "0.0.0",
+		"url": "https://github.com/beegee-tokyo/ESP32-Weatherstation",
+		"keywords": [ "ESP32", "Weatherstation" ],
+		"bugs": "beegee@giesecke.tk",
+		"license": "GNU General Public License v2.0",
+		"repository":
+			{ "type" : "git"
+				, "url" : "https://github.com/beegee-tokyo/ESP32-Weatherstation.git"
+			},
+		"dependencies":
+			{ "ESP32-MyLib" : "https://github.com/beegee-tokyo/ESP32-MyLib.git"
+				, "WIFIMANAGER-ESP32" : "https://github.com/zhouhan0126/WIFIMANAGER-ESP32.git"
+				, "WebServer-esp32" : "https://github.com/zhouhan0126/WebServer-esp32.git"
+				, "DNSServer---esp32" : "https://github.com/zhouhan0126/DNSServer---esp32.git"
+			},
+		"cpu" : [ "ESP32" ]
 }

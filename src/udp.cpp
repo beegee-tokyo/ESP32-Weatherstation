@@ -46,12 +46,12 @@ void getUDPbroadcast(int udpMsgLength) {
 				outsideHeat = jsonIn["he"].as<double>();
 			}
 
-      tft.fillRect(0, 69, 128, 14, TFT_BLACK);
-      tft.setTextSize(2);
+			tft.fillRect(0, 69, 128, 14, TFT_BLACK);
+			tft.setTextSize(2);
 			tft.setTextColor(TFT_WHITE);
-      tft.setCursor(0,69);
-      String displayText = "E " + String(outsideTemp,0) + "'C " + String(outsideHumid,0) + "%";
-      tft.print(displayText);
+			tft.setCursor(0,69);
+			String displayText = "E " + String(outsideTemp,0) + "'C " + String(outsideHumid,0) + "%";
+			tft.print(displayText);
 		}
 	} else {
 		addMqttMsg("debug", "[ERROR] " + digitalTimeDisplaySec() + "Received invalid JSON", false);

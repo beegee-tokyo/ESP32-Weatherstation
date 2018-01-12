@@ -5,13 +5,13 @@
 # Documentation:
 #
 # * Travis CI Embedded Builds with PlatformIO
-#   < https://docs.travis-ci.com/user/integration/platformio/ >
+#	 < https://docs.travis-ci.com/user/integration/platformio/ >
 #
 # * PlatformIO integration with Travis CI
-#   < http://docs.platformio.org/page/ci/travis.html >
+#	 < http://docs.platformio.org/page/ci/travis.html >
 #
 # * User Guide for `platformio ci` command
-#   < http://docs.platformio.org/page/userguide/cmd_ci.html >
+#	 < http://docs.platformio.org/page/userguide/cmd_ci.html >
 #
 #
 # Please choice one of the following templates (proposed below) and uncomment
@@ -26,18 +26,18 @@
 
 # language: python
 # python:
-#     - "2.7"
+#		 - "2.7"
 #
 # sudo: false
 # cache:
-#     directories:
-#         - "~/.platformio"
+#		 directories:
+#				 - "~/.platformio"
 #
 # install:
-#     - pip install -U platformio
+#		 - pip install -U platformio
 #
 # script:
-#     - platformio run
+#		 - platformio run
 
 
 #
@@ -46,20 +46,20 @@
 
 # language: python
 # python:
-#     - "2.7"
+#		 - "2.7"
 #
 # sudo: false
 # cache:
-#     directories:
-#         - "~/.platformio"
+#		 directories:
+#				 - "~/.platformio"
 #
 # env:
-#     - PLATFORMIO_CI_SRC=path/to/test/file.c
-#     - PLATFORMIO_CI_SRC=examples/file.ino
-#     - PLATFORMIO_CI_SRC=path/to/test/directory
+#		 - PLATFORMIO_CI_SRC=path/to/test/file.c
+#		 - PLATFORMIO_CI_SRC=examples/file.ino
+#		 - PLATFORMIO_CI_SRC=path/to/test/directory
 #
 # install:
-#     - pip install -U platformio
+#		 - pip install -U platformio
 #
 # script:
-#     - platformio ci --lib="." --board=ID_1 --board=ID_2 --board=ID_N
+#		 - platformio ci --lib="." --board=ID_1 --board=ID_2 --board=ID_N

@@ -1,1233 +1,1233 @@
 {
-   "_comment": [
-      "Add UUIDs for your services, characteristics, and descriptors in this file.",
-      "The format is the UUID of the item, followed by an object containing the data.",
-      "'name' is a mandatory handle, while 'format' is optional.",
-      "Currently the only supported format is 'TEXT', default is 'NO_FORMAT'.",
-      "The application must be reloaded to access changes in this file."
-   ],
-   "uuid16bitServiceDefinitions": {
-      "1811": {
-         "name": "Alert Notification Service"
-      },
-      "1815": {
-         "name": "Automation IO"
-      },
-      "180F": {
-         "name": "Battery Service"
-      },
-      "1810": {
-         "name": "Blood Pressure"
-      },
-      "181B": {
-         "name": "Body Composition"
-      },
-      "181E": {
-         "name": "Bond Management"
-      },
-      "181F": {
-         "name": "Continuous Glucose Monitoring"
-      },
-      "1805": {
-         "name": "Current Time Service"
-      },
-      "1818": {
-         "name": "Cycling Power"
-      },
-      "1816": {
-         "name": "Cycling Speed and Cadence"
-      },
-      "180A": {
-         "name": "Device Information"
-      },
-      "181A": {
-         "name": "Environmental Sensing"
-      },
-      "1826": {
-         "name": "Fitness Machine"
-      },
-      "1800": {
-         "name": "Generic Access"
-      },
-      "1801": {
-         "name": "Generic Attribute"
-      },
-      "1808": {
-         "name": "Glucose"
-      },
-      "1823": {
-         "name": "HTTP Proxy"
-      },
-      "1809": {
-         "name": "Health Thermometer"
-      },
-      "180D": {
-         "name": "Heart Rate"
-      },
-      "1812": {
-         "name": "Human Interface Device"
-      },
-      "1802": {
-         "name": "Immediate Alert"
-      },
-      "1821": {
-         "name": "Indoor Positioning"
-      },
-      "1820": {
-         "name": "Internet Protocol Support"
-      },
-      "1803": {
-         "name": "Link Loss"
-      },
-      "1819": {
-         "name": "Location and Navigation"
-      },
-      "1827": {
-         "name": "Mesh Provisioning Service"
-      },
-      "1828": {
-         "name": "Mesh Proxy Service"
-      },
-      "1807": {
-         "name": "Next DST Change Service"
-      },
-      "1825": {
-         "name": "Object Transfer Service"
-      },
-      "180E": {
-         "name": "Phone Alert Status Service"
-      },
-      "1822": {
-         "name": "Pulse Oximeter"
-      },
-      "1806": {
-         "name": "Reference Time Update Service"
-      },
-      "1814": {
-         "name": "Running Speed and Cadence"
-      },
-      "1813": {
-         "name": "Scan Parameters"
-      },
-      "FE59": {
-         "name": "Secure DFU Service"
-      },
-      "1824": {
-         "name": "Transport Discovery"
-      },
-      "1804": {
-         "name": "Tx Power"
-      },
-      "181C": {
-         "name": "User Data"
-      },
-      "181D": {
-         "name": "Weight Scale"
-      }
-   },
-   "uuid128bitServiceDefinitions": {
-      "be15beef6186407e83810bd89c4d8df4": {
-         "name": "Anki Drive Vehicle Service"
-      },
-      "89d3502b0f36433a8ef4c502ad55f8dc": {
-         "name": "Apple Media Service"
-      },
-      "7905f431b5ce4e99a40f4b1e122d00d0": {
-         "name": "Apple Notification Center Service"
-      },
-      "955a15230fe2f5aaa09484b8d4f3e8ad": {
-         "name": "Beacon Config"
-      },
-      "a6c313376c07453e961ad8a8a41bf368": {
-         "name": "Candy Dispenser Service"
-      },
-      "000015301212efde1523785feabcd123": {
-         "name": "Device Firmware Update Service"
-      },
-      "88400001e95a844ec53ffbec32ed5e54": {
-         "name": "Digital Bird Service"
-      },
-      "a3c875008ed34bdf8a39a01bebede295": {
-         "name": "Eddystone Configuration Service"
-      },
-      "ee0c2080878640baab9699b91ac981d8": {
-         "name": "Eddystone-URL Configuration Service"
-      },
-      "8e400001f3154f609fb8838830daea50": {
-         "name": "Experimental Buttonless DFU Service"
-      },
-      "000015231212efde1523785feabcd123": {
-         "name": "Nordic LED Button Service"
-      },
-      "6e400001b5a3f393e0a9e50e24dcca9e": {
-         "name": "Nordic UART Service"
-      },
-      "ef6801009b3549339b1052ffa9740042": {
-         "name": "Thingy Configuration Service"
-      },
-      "ef6802009b3549339b1052ffa9740042": {
-         "name": "Thingy Environment Service"
-      },
-      "ef6804009b3549339b1052ffa9740042": {
-         "name": "Thingy Motion Service"
-      },
-      "ef6805009b3549339b1052ffa9740042": {
-         "name": "Thingy Sound Service"
-      },
-      "ef6803009b3549339b1052ffa9740042": {
-         "name": "Thingy User Interface Service"
-      },
-      "b35d7da6eed44d598f89f6573edea967": {
-         "name": "URI Beacon Config (V1)"
-      },
-      "e95d0753251d470aa062fa1922dfa9a8": {
-         "name": "micro:bit Accelerometer Service"
-      },
-      "e95d9882251d470aa062fa1922dfa9a8": {
-         "name": "micro:bit Button Service"
-      },
-      "e95d93b0251d470aa062fa1922dfa9a8": {
-         "name": "micro:bit DFU Control Service"
-      },
-      "e95d93af251d470aa062fa1922dfa9a8": {
-         "name": "micro:bit Event Service"
-      },
-      "e95d127b251d470aa062fa1922dfa9a8": {
-         "name": "micro:bit IO Pin Service"
-      },
-      "e95dd91d251d470aa062fa1922dfa9a8": {
-         "name": "micro:bit LED Service"
-      },
-      "e95df2d8251d470aa062fa1922dfa9a8": {
-         "name": "micro:bit Magnetometer Service"
-      },
-      "e95d6100251d470aa062fa1922dfa9a8": {
-         "name": "micro:bit Temperature Service"
-      }
-   },
-   "uuid16bitCharacteristicDefinitions": {
-      "2A7E": {
-         "name": "Aerobic Heart Rate Lower Limit"
-      },
-      "2A84": {
-         "name": "Aerobic Heart Rate Upper Limit"
-      },
-      "2A7F": {
-         "name": "Aerobic Threshold"
-      },
-      "2A80": {
-         "name": "Age"
-      },
-      "2A5A": {
-         "name": "Aggregate"
-      },
-      "2A43": {
-         "name": "Alert Category ID"
-      },
-      "2A42": {
-         "name": "Alert Category ID Bit Mask"
-      },
-      "2A06": {
-         "name": "Alert Level"
-      },
-      "2A44": {
-         "name": "Alert Notification Control Point"
-      },
-      "2A3F": {
-         "name": "Alert Status"
-      },
-      "2AB3": {
-         "name": "Altitude"
-      },
-      "2A81": {
-         "name": "Anaerobic Heart Rate Lower Limit"
-      },
-      "2A82": {
-         "name": "Anaerobic Heart Rate Upper Limit"
-      },
-      "2A83": {
-         "name": "Anaerobic Threshold"
-      },
-      "2A58": {
-         "name": "Analog"
-      },
-      "2A59": {
-         "name": "Analog Output"
-      },
-      "2A73": {
-         "name": "Apparent Wind Direction "
-      },
-      "2A72": {
-         "name": "Apparent Wind Speed"
-      },
-      "2A01": {
-         "name": "Appearance"
-      },
-      "2AA3": {
-         "name": "Barometric Pressure Trend"
-      },
-      "2A19": {
-         "name": "Battery Level"
-      },
-      "2A1B": {
-         "name": "Battery Level State"
-      },
-      "2A1A": {
-         "name": "Battery Power State"
-      },
-      "2A49": {
-         "name": "Blood Pressure Feature"
-      },
-      "2A35": {
-         "name": "Blood Pressure Measurement"
-      },
-      "2A9B": {
-         "name": "Body Composition Feature"
-      },
-      "2A9C": {
-         "name": "Body Composition Measurement"
-      },
-      "2A38": {
-         "name": "Body Sensor Location"
-      },
-      "2AA4": {
-         "name": "Bond Management Control Point"
-      },
-      "2AA5": {
-         "name": "Bond Management Feature"
-      },
-      "2A22": {
-         "name": "Boot Keyboard Input Report"
-      },
-      "2A32": {
-         "name": "Boot Keyboard Output Report"
-      },
-      "2A33": {
-         "name": "Boot Mouse Input Report"
-      },
-      "2AA8": {
-         "name": "CGM Feature"
-      },
-      "2AA7": {
-         "name": "CGM Measurement"
-      },
-      "2AAB": {
-         "name": "CGM Session Run Time"
-      },
-      "2AAA": {
-         "name": "CGM Session Start Time"
-      },
-      "2AAC": {
-         "name": "CGM Specific Ops Control Point"
-      },
-      "2AA9": {
-         "name": "CGM Status"
-      },
-      "2A5C": {
-         "name": "CSC Feature"
-      },
-      "2A5B": {
-         "name": "CSC Measurement"
-      },
-      "2AA6": {
-         "name": "Central Address Resolution"
-      },
-      "2ACE": {
-         "name": "Cross Trainer Data"
-      },
-      "2A2B": {
-         "name": "Current Time"
-      },
-      "2A66": {
-         "name": "Cycling Power Control Point"
-      },
-      "2A65": {
-         "name": "Cycling Power Feature"
-      },
-      "2A63": {
-         "name": "Cycling Power Measurement"
-      },
-      "2A64": {
-         "name": "Cycling Power Vector"
-      },
-      "2A0D": {
-         "name": "DST Offset"
-      },
-      "2A99": {
-         "name": "Database Change Increment"
-      },
-      "2A08": {
-         "name": "Date Time"
-      },
-      "2A85": {
-         "name": "Date of Birth"
-      },
-      "2A86": {
-         "name": "Date of Threshold Assessment"
-      },
-      "2A0A": {
-         "name": "Day Date Time"
-      },
-      "2A09": {
-         "name": "Day of Week"
-      },
-      "2A7D": {
-         "name": "Descriptor Value Changed"
-      },
-      "2A00": {
-         "name": "Device Name",
-         "format": "TEXT"
-      },
-      "2A7B": {
-         "name": "Dew Point"
-      },
-      "2A56": {
-         "name": "Digital"
-      },
-      "2A57": {
-         "name": "Digital Output"
-      },
-      "2A6C": {
-         "name": "Elevation"
-      },
-      "2A87": {
-         "name": "Email Address",
-         "format": "TEXT"
-      },
-      "2A0B": {
-         "name": "Exact Time 100"
-      },
-      "2A0C": {
-         "name": "Exact Time 256"
-      },
-      "2A88": {
-         "name": "Fat Burn Heart Rate Lower Limit"
-      },
-      "2A89": {
-         "name": "Fat Burn Heart Rate Upper Limit"
-      },
-      "2A26": {
-         "name": "Firmware Revision String",
-         "format": "TEXT"
-      },
-      "2A8A": {
-         "name": "First Name",
-         "format": "TEXT"
-      },
-      "2AD9": {
-         "name": "Fitness Machine Control Point"
-      },
-      "2ACC": {
-         "name": "Fitness Machine Feature"
-      },
-      "2ADA": {
-         "name": "Fitness Machine Status"
-      },
-      "2A8B": {
-         "name": "Five Zone Heart Rate Limits"
-      },
-      "2AB2": {
-         "name": "Floor Number"
-      },
-      "2A8C": {
-         "name": "Gender"
-      },
-      "2A51": {
-         "name": "Glucose Feature"
-      },
-      "2A18": {
-         "name": "Glucose Measurement"
-      },
-      "2A34": {
-         "name": "Glucose Measurement Context"
-      },
-      "2A74": {
-         "name": "Gust Factor"
-      },
-      "2A4C": {
-         "name": "HID Control Point"
-      },
-      "2A4A": {
-         "name": "HID Information"
-      },
-      "2ABA": {
-         "name": "HTTP Control Point"
-      },
-      "2AB9": {
-         "name": "HTTP Entity Body",
-         "format": "TEXT"
-      },
-      "2AB7": {
-         "name": "HTTP Headers",
-         "format": "TEXT"
-      },
-      "2AB8": {
-         "name": "HTTP Status Code"
-      },
-      "2ABB": {
-         "name": "HTTPS Security"
-      },
-      "2A27": {
-         "name": "Hardware Revision String",
-         "format": "TEXT"
-      },
-      "2A39": {
-         "name": "Heart Rate Control Point"
-      },
-      "2A8D": {
-         "name": "Heart Rate Max"
-      },
-      "2A37": {
-         "name": "Heart Rate Measurement"
-      },
-      "2A7A": {
-         "name": "Heat Index"
-      },
-      "2A8E": {
-         "name": "Height"
-      },
-      "2A8F": {
-         "name": "Hip Circumference"
-      },
-      "2A6F": {
-         "name": "Humidity"
-      },
-      "2A2A": {
-         "name": "IEEE 11073-20601 Regulatory Certification Data List"
-      },
-      "2AD2": {
-         "name": "Indoor Bike Data"
-      },
-      "2AAD": {
-         "name": "Indoor Positioning Configuration"
-      },
-      "2A36": {
-         "name": "Intermediate Cuff Pressure"
-      },
-      "2A1E": {
-         "name": "Intermediate Temperature"
-      },
-      "2A77": {
-         "name": "Irradiance"
-      },
-      "2A6B": {
-         "name": "LN Control Point"
-      },
-      "2A6A": {
-         "name": "LN Feature"
-      },
-      "2AA2": {
-         "name": "Language",
-         "format": "TEXT"
-      },
-      "2A90": {
-         "name": "Last Name",
-         "format": "TEXT"
-      },
-      "2AAE": {
-         "name": "Latitude"
-      },
-      "2AB1": {
-         "name": "Local East Coordinate"
-      },
-      "2AB0": {
-         "name": "Local North Coordinate"
-      },
-      "2A0F": {
-         "name": "Local Time Information"
-      },
-      "2AB5": {
-         "name": "Location Name",
-         "format": "TEXT"
-      },
-      "2A67": {
-         "name": "Location and Speed"
-      },
-      "2AAF": {
-         "name": "Longitude"
-      },
-      "2A2C": {
-         "name": "Magnetic Declination"
-      },
-      "2AA0": {
-         "name": "Magnetic Flux Density - 2D"
-      },
-      "2AA1": {
-         "name": "Magnetic Flux Density - 3D"
-      },
-      "2A29": {
-         "name": "Manufacturer Name String",
-         "format": "TEXT"
-      },
-      "2A91": {
-         "name": "Maximum Recommended Heart Rate"
-      },
-      "2A21": {
-         "name": "Measurement Interval"
-      },
-      "2ADB": {
-         "name": "Mesh Provisioning Data In"
-      },
-      "2ADC": {
-         "name": "Mesh Provisioning Data Out"
-      },
-      "2ADD": {
-         "name": "Mesh Proxy Data In"
-      },
-      "2ADE": {
-         "name": "Mesh Proxy Data Out"
-      },
-      "2A24": {
-         "name": "Model Number String",
-         "format": "TEXT"
-      },
-      "2A68": {
-         "name": "Navigation"
-      },
-      "2A3E": {
-         "name": "Network Availability"
-      },
-      "2A46": {
-         "name": "New Alert"
-      },
-      "2ABD": {
-         "name": "OTS Feature"
-      },
-      "2AC5": {
-         "name": "Object Action Control Point"
-      },
-      "2AC8": {
-         "name": "Object Changed"
-      },
-      "2AC1": {
-         "name": "Object First-Created"
-      },
-      "2AC3": {
-         "name": "Object ID"
-      },
-      "2AC2": {
-         "name": "Object Last-Modified"
-      },
-      "2AC6": {
-         "name": "Object List Control Point"
-      },
-      "2AC7": {
-         "name": "Object List Filter"
-      },
-      "2ABE": {
-         "name": "Object Name",
-         "format": "TEXT"
-      },
-      "2AC4": {
-         "name": "Object Properties"
-      },
-      "2AC0": {
-         "name": "Object Size"
-      },
-      "2ABF": {
-         "name": "Object Type"
-      },
-      "2A5F": {
-         "name": "PLX Continuous Measurement"
-      },
-      "2A60": {
-         "name": "PLX Features"
-      },
-      "2A5E": {
-         "name": "PLX Spot-Check Measurement"
-      },
-      "2A04": {
-         "name": "Peripheral Preferred Connection Parameters"
-      },
-      "2A02": {
-         "name": "Peripheral Privacy Flag"
-      },
-      "2A50": {
-         "name": "PnP ID"
-      },
-      "2A75": {
-         "name": "Pollen Concentration"
-      },
-      "2A2F": {
-         "name": "Position 2D"
-      },
-      "2A30": {
-         "name": "Position 3D"
-      },
-      "2A69": {
-         "name": "Position Quality"
-      },
-      "2A6D": {
-         "name": "Pressure"
-      },
-      "2A4E": {
-         "name": "Protocol Mode"
-      },
-      "2A62": {
-         "name": "Pulse Oximetry Control Point"
-      },
-      "2A54": {
-         "name": "RSC Feature"
-      },
-      "2A53": {
-         "name": "RSC Measurement"
-      },
-      "2A78": {
-         "name": "Rainfall"
-      },
-      "2A03": {
-         "name": "Reconnection Address"
-      },
-      "2A52": {
-         "name": "Record Access Control Point"
-      },
-      "2A14": {
-         "name": "Reference Time Information"
-      },
-      "2A3A": {
-         "name": "Removable"
-      },
-      "2A4D": {
-         "name": "Report"
-      },
-      "2A4B": {
-         "name": "Report Map"
-      },
-      "2AC9": {
-         "name": "Resolvable Private Address Only"
-      },
-      "2A92": {
-         "name": "Resting Heart Rate"
-      },
-      "2A40": {
-         "name": "Ringer Control Point"
-      },
-      "2A41": {
-         "name": "Ringer Setting"
-      },
-      "2AD1": {
-         "name": "Rower Data"
-      },
-      "2A55": {
-         "name": "SC Control Point"
-      },
-      "2A4F": {
-         "name": "Scan Interval Window"
-      },
-      "2A31": {
-         "name": "Scan Refresh"
-      },
-      "2A3C": {
-         "name": "Scientific Temperature Celsius"
-      },
-      "2A10": {
-         "name": "Secondary Time Zone"
-      },
-      "2A5D": {
-         "name": "Sensor Location"
-      },
-      "2A25": {
-         "name": "Serial Number String",
-         "format": "TEXT"
-      },
-      "2A05": {
-         "name": "Service Changed"
-      },
-      "2A3B": {
-         "name": "Service Required"
-      },
-      "2A28": {
-         "name": "Software Revision String",
-         "format": "TEXT"
-      },
-      "2A93": {
-         "name": "Sport Type for Aerobic and Anaerobic Thresholds"
-      },
-      "2AD0": {
-         "name": "Stair Climber Data"
-      },
-      "2ACF": {
-         "name": "Step Climber Data"
-      },
-      "2A3D": {
-         "name": "String"
-      },
-      "2AD7": {
-         "name": "Supported Heart Rate Range"
-      },
-      "2AD5": {
-         "name": "Supported Inclination Range"
-      },
-      "2A47": {
-         "name": "Supported New Alert Category"
-      },
-      "2AD8": {
-         "name": "Supported Power Range"
-      },
-      "2AD6": {
-         "name": "Supported Resistance Level Range"
-      },
-      "2AD4": {
-         "name": "Supported Speed Range"
-      },
-      "2A48": {
-         "name": "Supported Unread Alert Category"
-      },
-      "2A23": {
-         "name": "System ID"
-      },
-      "2ABC": {
-         "name": "TDS Control Point"
-      },
-      "2A6E": {
-         "name": "Temperature"
-      },
-      "2A1F": {
-         "name": "Temperature Celsius"
-      },
-      "2A20": {
-         "name": "Temperature Fahrenheit"
-      },
-      "2A1C": {
-         "name": "Temperature Measurement"
-      },
-      "2A1D": {
-         "name": "Temperature Type"
-      },
-      "2A94": {
-         "name": "Three Zone Heart Rate Limits"
-      },
-      "2A12": {
-         "name": "Time Accuracy"
-      },
-      "2A15": {
-         "name": "Time Broadcast"
-      },
-      "2A13": {
-         "name": "Time Source"
-      },
-      "2A16": {
-         "name": "Time Update Control Point"
-      },
-      "2A17": {
-         "name": "Time Update State"
-      },
-      "2A0E": {
-         "name": "Time Zone"
-      },
-      "2A11": {
-         "name": "Time with DST"
-      },
-      "2AD3": {
-         "name": "Training Status"
-      },
-      "2ACD": {
-         "name": "Treadmill Data"
-      },
-      "2A71": {
-         "name": "True Wind Direction"
-      },
-      "2A70": {
-         "name": "True Wind Speed"
-      },
-      "2A95": {
-         "name": "Two Zone Heart Rate Limit"
-      },
-      "2A07": {
-         "name": "Tx Power Level"
-      },
-      "2AB6": {
-         "name": "URI",
-         "format": "TEXT"
-      },
-      "2A76": {
-         "name": "UV Index"
-      },
-      "2AB4": {
-         "name": "Uncertainty"
-      },
-      "2A45": {
-         "name": "Unread Alert Status"
-      },
-      "2A9F": {
-         "name": "User Control Point"
-      },
-      "2A9A": {
-         "name": "User Index"
-      },
-      "2A96": {
-         "name": "VO2 Max"
-      },
-      "2A97": {
-         "name": "Waist Circumference"
-      },
-      "2A98": {
-         "name": "Weight"
-      },
-      "2A9D": {
-         "name": "Weight Measurement"
-      },
-      "2A9E": {
-         "name": "Weight Scale Feature"
-      },
-      "2A79": {
-         "name": "Wind Chill"
-      }
-   },
-   "uuid128bitCharacteristicDefinitions": {
-      "a3c875058ed34bdf8a39a01bebede295": {
-         "name": "(Advanced) Advertised Tx Power"
-      },
-      "a3c8750b8ed34bdf8a39a01bebede295": {
-         "name": "(Advanced) Factory Reset"
-      },
-      "a3c8750c8ed34bdf8a39a01bebede295": {
-         "name": "(Advanced) Remain Connectable"
-      },
-      "a3c8750a8ed34bdf8a39a01bebede295": {
-         "name": "ADV Slot Data"
-      },
-      "a3c875028ed34bdf8a39a01bebede295": {
-         "name": "Active Slot"
-      },
-      "a3c875038ed34bdf8a39a01bebede295": {
-         "name": "Advertising Interval"
-      },
-      "be15bee06186407e83810bd89c4d8df4": {
-         "name": "Anki Drive Vehicle Service READ"
-      },
-      "be15bee16186407e83810bd89c4d8df4": {
-         "name": "Anki Drive Vehicle Service WRITE"
-      },
-      "955a15240fe2f5aaa09484b8d4f3e8ad": {
-         "name": "Beacon UUID"
-      },
-      "000015241212efde1523785feabcd123": {
-         "name": "Button"
-      },
-      "8ec90003f3154f609fb8838830daea50": {
-         "name": "Buttonless DFU"
-      },
-      "955a15250fe2f5aaa09484b8d4f3e8ad": {
-         "name": "Calibration"
-      },
-      "a6c313386c07453e961ad8a8a41bf368": {
-         "name": "Candy Control Point"
-      },
-      "a3c875018ed34bdf8a39a01bebede295": {
-         "name": "Capabilities"
-      },
-      "955a15280fe2f5aaa09484b8d4f3e8ad": {
-         "name": "Connection Interval"
-      },
-      "69d1d8f345e149a898219bbdfdaad9d9": {
-         "name": "Control Point"
-      },
-      "000015311212efde1523785feabcd123": {
-         "name": "DFU Control Point"
-      },
-      "8ec90001f3154f609fb8838830daea50": {
-         "name": "DFU Control Point"
-      },
-      "000015321212efde1523785feabcd123": {
-         "name": "DFU Packet"
-      },
-      "8ec90002f3154f609fb8838830daea50": {
-         "name": "DFU Packet"
-      },
-      "000015341212efde1523785feabcd123": {
-         "name": "DFU Version"
-      },
-      "ee0c2084878640baab9699b91ac981d8": {
-         "name": "Data"
-      },
-      "b35d7da9eed44d598f89f6573edea967": {
-         "name": "Data Length"
-      },
-      "b35d7da7eed44d598f89f6573edea967": {
-         "name": "Data One"
-      },
-      "22eac6e924d64bb5be44b36ace7c7bfb": {
-         "name": "Data Source"
-      },
-      "b35d7da8eed44d598f89f6573edea967": {
-         "name": "Data Two"
-      },
-      "a3c875098ed34bdf8a39a01bebede295": {
-         "name": "EID Identity Key"
-      },
-      "c6b2f38c23ab46d8a6aba3a870bbd5d7": {
-         "name": "Entity Attribute"
-      },
-      "2f7cabce808d411f9a0cbb92ba96c102": {
-         "name": "Entity Update"
-      },
-      "8e400001f3154f609fb8838830daea50": {
-         "name": "Experimental Buttonless DFU"
-      },
-      "ee0c2085878640baab9699b91ac981d8": {
-         "name": "Flags"
-      },
-      "88400002e95a844ec53ffbec32ed5e54": {
-         "name": "Fly Button Characteristic"
-      },
-      "000015251212efde1523785feabcd123": {
-         "name": "LED"
-      },
-      "955a15290fe2f5aaa09484b8d4f3e8ad": {
-         "name": "LED Config"
-      },
-      "ee0c2082878640baab9699b91ac981d8": {
-         "name": "Lock"
-      },
-      "ee0c2081878640baab9699b91ac981d8": {
-         "name": "Lock State"
-      },
-      "a3c875068ed34bdf8a39a01bebede295": {
-         "name": "Lock State"
-      },
-      "955a15260fe2f5aaa09484b8d4f3e8ad": {
-         "name": "Major & Minor"
-      },
-      "955a15270fe2f5aaa09484b8d4f3e8ad": {
-         "name": "Manufacturer ID"
-      },
-      "9fbf120d630142d98c5825e699a21dbd": {
-         "name": "Notification Source"
-      },
-      "ee0c2088878640baab9699b91ac981d8": {
-         "name": "Period"
-      },
-      "ee0c2086878640baab9699b91ac981d8": {
-         "name": "Power Levels"
-      },
-      "ee0c2087878640baab9699b91ac981d8": {
-         "name": "Power Mode"
-      },
-      "a3c875088ed34bdf8a39a01bebede295": {
-         "name": "Public ECDH Key"
-      },
-      "6e400002b5a3f393e0a9e50e24dcca9e": {
-         "name": "RX Characteristic"
-      },
-      "a3c875048ed34bdf8a39a01bebede295": {
-         "name": "Radio Tx Power"
-      },
-      "9b3c81d857b14a8ab8df0e56f7ca51c2": {
-         "name": "Remote Command"
-      },
-      "ee0c2089878640baab9699b91ac981d8": {
-         "name": "Reset"
-      },
-      "8ec90004f3154f609fb8838830daea50": {
-         "name": "Secure Buttonless DFU"
-      },
-      "6e400003b5a3f393e0a9e50e24dcca9e": {
-         "name": "TX Characteristic"
-      },
-      "ef6801029b3549339b1052ffa9740042": {
-         "name": "Thingy Advertising Parameters Characteristic"
-      },
-      "ef6802049b3549339b1052ffa9740042": {
-         "name": "Thingy Air Quality Characteristic"
-      },
-      "ef6803029b3549339b1052ffa9740042": {
-         "name": "Thingy Button Characteristic"
-      },
-      "ef6801069b3549339b1052ffa9740042": {
-         "name": "Thingy Cloud Token Characteristic",
-         "format": "TEXT"
-      },
-      "ef6801049b3549339b1052ffa9740042": {
-         "name": "Thingy Connection Parameters Characteristic"
-      },
-      "ef6801059b3549339b1052ffa9740042": {
-         "name": "Thingy Eddystone URL Characteristic"
-      },
-      "ef6802069b3549339b1052ffa9740042": {
-         "name": "Thingy Environment Configuration Characteristic"
-      },
-      "ef6804079b3549339b1052ffa9740042": {
-         "name": "Thingy Euler Characteristic"
-      },
-      "ef6803039b3549339b1052ffa9740042": {
-         "name": "Thingy External Pin Characteristic"
-      },
-      "ef6801079b3549339b1052ffa9740042": {
-         "name": "Thingy FW Version Characteristic"
-      },
-      "ef68040a9b3549339b1052ffa9740042": {
-         "name": "Thingy Gravity Vector Characteristic"
-      },
-      "ef6804099b3549339b1052ffa9740042": {
-         "name": "Thingy Heading Characteristic"
-      },
-      "ef6802039b3549339b1052ffa9740042": {
-         "name": "Thingy Humidity Characteristic"
-      },
-      "ef6803019b3549339b1052ffa9740042": {
-         "name": "Thingy LED Characteristic"
-      },
-      "ef6802059b3549339b1052ffa9740042": {
-         "name": "Thingy Light Intensity Characteristic"
-      },
-      "ef6801089b3549339b1052ffa9740042": {
-         "name": "Thingy MTU Request Characteristic"
-      },
-      "ef6805049b3549339b1052ffa9740042": {
-         "name": "Thingy Microphone Characteristic"
-      },
-      "ef6804019b3549339b1052ffa9740042": {
-         "name": "Thingy Motion Configuration Characteristic"
-      },
-      "ef6801019b3549339b1052ffa9740042": {
-         "name": "Thingy Name Characteristic",
-         "format": "TEXT"
-      },
-      "ef6804039b3549339b1052ffa9740042": {
-         "name": "Thingy Orientation Characteristic"
-      },
-      "ef6804059b3549339b1052ffa9740042": {
-         "name": "Thingy Pedometer Characteristic"
-      },
-      "ef6802029b3549339b1052ffa9740042": {
-         "name": "Thingy Pressure Characteristic"
-      },
-      "ef6804049b3549339b1052ffa9740042": {
-         "name": "Thingy Quaternion Characteristic"
-      },
-      "ef6804069b3549339b1052ffa9740042": {
-         "name": "Thingy Raw Data Characteristic"
-      },
-      "ef6804089b3549339b1052ffa9740042": {
-         "name": "Thingy Rotation Characteristic"
-      },
-      "ef6805019b3549339b1052ffa9740042": {
-         "name": "Thingy Sound Configuration Characteristic"
-      },
-      "ef6805029b3549339b1052ffa9740042": {
-         "name": "Thingy Speaker Data Characteristic"
-      },
-      "ef6805039b3549339b1052ffa9740042": {
-         "name": "Thingy Speaker Status Characteristic"
-      },
-      "ef6804029b3549339b1052ffa9740042": {
-         "name": "Thingy Tap Characteristic"
-      },
-      "ef6802019b3549339b1052ffa9740042": {
-         "name": "Thingy Temperature Characteristic"
-      },
-      "ee0c2083878640baab9699b91ac981d8": {
-         "name": "Unlock"
-      },
-      "a3c875078ed34bdf8a39a01bebede295": {
-         "name": "Unlock"
-      },
-      "e95dca4b251d470aa062fa1922dfa9a8": {
-         "name": "micro:bit Accelerometer Data"
-      },
-      "e95dfb24251d470aa062fa1922dfa9a8": {
-         "name": "micro:bit Accelerometer Period"
-      },
-      "e95dda90251d470aa062fa1922dfa9a8": {
-         "name": "micro:bit Button A State"
-      },
-      "e95dda91251d470aa062fa1922dfa9a8": {
-         "name": "micro:bit Button B State"
-      },
-      "e95d5404251d470aa062fa1922dfa9a8": {
-         "name": "micro:bit Client Event"
-      },
-      "e95d23c4251d470aa062fa1922dfa9a8": {
-         "name": "micro:bit Client Requirements"
-      },
-      "e95d93b1251d470aa062fa1922dfa9a8": {
-         "name": "micro:bit DFU Control"
-      },
-      "e95d9775251d470aa062fa1922dfa9a8": {
-         "name": "micro:bit Event"
-      },
-      "e95d7b77251d470aa062fa1922dfa9a8": {
-         "name": "micro:bit LED Matrix State"
-      },
-      "e95d93ee251d470aa062fa1922dfa9a8": {
-         "name": "micro:bit LED Text"
-      },
-      "e95d9715251d470aa062fa1922dfa9a8": {
-         "name": "micro:bit Magnetometer Bearing"
-      },
-      "e95dfb11251d470aa062fa1922dfa9a8": {
-         "name": "micro:bit Magnetometer Data"
-      },
-      "e95d386c251d470aa062fa1922dfa9a8": {
-         "name": "micro:bit Magnetometer Period"
-      },
-      "e95dd822251d470aa062fa1922dfa9a8": {
-         "name": "micro:bit PWM Control"
-      },
-      "e95d5899251d470aa062fa1922dfa9a8": {
-         "name": "micro:bit Pin AD Configuration"
-      },
-      "e95d8d00251d470aa062fa1922dfa9a8": {
-         "name": "micro:bit Pin Data"
-      },
-      "e95db9fe251d470aa062fa1922dfa9a8": {
-         "name": "micro:bit Pin IO Configuration"
-      },
-      "e95db84c251d470aa062fa1922dfa9a8": {
-         "name": "micro:bit Requirements"
-      },
-      "e95d0d2d251d470aa062fa1922dfa9a8": {
-         "name": "micro:bit Scrolling Delay"
-      },
-      "e95d9250251d470aa062fa1922dfa9a8": {
-         "name": "micro:bit Temperature"
-      },
-      "e95d1b25251d470aa062fa1922dfa9a8": {
-         "name": "micro:bit Temperature Period"
-      }
-   },
-   "uuid16bitDescriptorDefinitions": {
-      "2905": {
-         "name": "Characteristic Aggregate Format"
-      },
-      "2904": {
-         "name": "Characteristic Presentation Format"
-      },
-      "2901": {
-         "name": "Characteristic User Description",
-         "format": "TEXT"
-      },
-      "290B": {
-         "name": "Environmental Sensing Configuration"
-      },
-      "290C": {
-         "name": "Environmental Sensing Measurement"
-      },
-      "290D": {
-         "name": "Environmental Sensing Trigger Setting"
-      },
-      "2907": {
-         "name": "External Report Reference"
-      },
-      "2909": {
-         "name": "Number of Digitals"
-      },
-      "2908": {
-         "name": "Report Reference"
-      },
-      "2903": {
-         "name": "Server Characteristic Configuration"
-      },
-      "290E": {
-         "name": "Time Trigger Setting"
-      },
-      "2906": {
-         "name": "Valid Range"
-      },
-      "290A": {
-         "name": "Value Trigger Setting"
-      }
-   },
-   "uuid128bitDescriptorDefinitions": {}
+	 "_comment": [
+			"Add UUIDs for your services, characteristics, and descriptors in this file.",
+			"The format is the UUID of the item, followed by an object containing the data.",
+			"'name' is a mandatory handle, while 'format' is optional.",
+			"Currently the only supported format is 'TEXT', default is 'NO_FORMAT'.",
+			"The application must be reloaded to access changes in this file."
+	 ],
+	 "uuid16bitServiceDefinitions": {
+			"1811": {
+				 "name": "Alert Notification Service"
+			},
+			"1815": {
+				 "name": "Automation IO"
+			},
+			"180F": {
+				 "name": "Battery Service"
+			},
+			"1810": {
+				 "name": "Blood Pressure"
+			},
+			"181B": {
+				 "name": "Body Composition"
+			},
+			"181E": {
+				 "name": "Bond Management"
+			},
+			"181F": {
+				 "name": "Continuous Glucose Monitoring"
+			},
+			"1805": {
+				 "name": "Current Time Service"
+			},
+			"1818": {
+				 "name": "Cycling Power"
+			},
+			"1816": {
+				 "name": "Cycling Speed and Cadence"
+			},
+			"180A": {
+				 "name": "Device Information"
+			},
+			"181A": {
+				 "name": "Environmental Sensing"
+			},
+			"1826": {
+				 "name": "Fitness Machine"
+			},
+			"1800": {
+				 "name": "Generic Access"
+			},
+			"1801": {
+				 "name": "Generic Attribute"
+			},
+			"1808": {
+				 "name": "Glucose"
+			},
+			"1823": {
+				 "name": "HTTP Proxy"
+			},
+			"1809": {
+				 "name": "Health Thermometer"
+			},
+			"180D": {
+				 "name": "Heart Rate"
+			},
+			"1812": {
+				 "name": "Human Interface Device"
+			},
+			"1802": {
+				 "name": "Immediate Alert"
+			},
+			"1821": {
+				 "name": "Indoor Positioning"
+			},
+			"1820": {
+				 "name": "Internet Protocol Support"
+			},
+			"1803": {
+				 "name": "Link Loss"
+			},
+			"1819": {
+				 "name": "Location and Navigation"
+			},
+			"1827": {
+				 "name": "Mesh Provisioning Service"
+			},
+			"1828": {
+				 "name": "Mesh Proxy Service"
+			},
+			"1807": {
+				 "name": "Next DST Change Service"
+			},
+			"1825": {
+				 "name": "Object Transfer Service"
+			},
+			"180E": {
+				 "name": "Phone Alert Status Service"
+			},
+			"1822": {
+				 "name": "Pulse Oximeter"
+			},
+			"1806": {
+				 "name": "Reference Time Update Service"
+			},
+			"1814": {
+				 "name": "Running Speed and Cadence"
+			},
+			"1813": {
+				 "name": "Scan Parameters"
+			},
+			"FE59": {
+				 "name": "Secure DFU Service"
+			},
+			"1824": {
+				 "name": "Transport Discovery"
+			},
+			"1804": {
+				 "name": "Tx Power"
+			},
+			"181C": {
+				 "name": "User Data"
+			},
+			"181D": {
+				 "name": "Weight Scale"
+			}
+	 },
+	 "uuid128bitServiceDefinitions": {
+			"be15beef6186407e83810bd89c4d8df4": {
+				 "name": "Anki Drive Vehicle Service"
+			},
+			"89d3502b0f36433a8ef4c502ad55f8dc": {
+				 "name": "Apple Media Service"
+			},
+			"7905f431b5ce4e99a40f4b1e122d00d0": {
+				 "name": "Apple Notification Center Service"
+			},
+			"955a15230fe2f5aaa09484b8d4f3e8ad": {
+				 "name": "Beacon Config"
+			},
+			"a6c313376c07453e961ad8a8a41bf368": {
+				 "name": "Candy Dispenser Service"
+			},
+			"000015301212efde1523785feabcd123": {
+				 "name": "Device Firmware Update Service"
+			},
+			"88400001e95a844ec53ffbec32ed5e54": {
+				 "name": "Digital Bird Service"
+			},
+			"a3c875008ed34bdf8a39a01bebede295": {
+				 "name": "Eddystone Configuration Service"
+			},
+			"ee0c2080878640baab9699b91ac981d8": {
+				 "name": "Eddystone-URL Configuration Service"
+			},
+			"8e400001f3154f609fb8838830daea50": {
+				 "name": "Experimental Buttonless DFU Service"
+			},
+			"000015231212efde1523785feabcd123": {
+				 "name": "Nordic LED Button Service"
+			},
+			"6e400001b5a3f393e0a9e50e24dcca9e": {
+				 "name": "Nordic UART Service"
+			},
+			"ef6801009b3549339b1052ffa9740042": {
+				 "name": "Thingy Configuration Service"
+			},
+			"ef6802009b3549339b1052ffa9740042": {
+				 "name": "Thingy Environment Service"
+			},
+			"ef6804009b3549339b1052ffa9740042": {
+				 "name": "Thingy Motion Service"
+			},
+			"ef6805009b3549339b1052ffa9740042": {
+				 "name": "Thingy Sound Service"
+			},
+			"ef6803009b3549339b1052ffa9740042": {
+				 "name": "Thingy User Interface Service"
+			},
+			"b35d7da6eed44d598f89f6573edea967": {
+				 "name": "URI Beacon Config (V1)"
+			},
+			"e95d0753251d470aa062fa1922dfa9a8": {
+				 "name": "micro:bit Accelerometer Service"
+			},
+			"e95d9882251d470aa062fa1922dfa9a8": {
+				 "name": "micro:bit Button Service"
+			},
+			"e95d93b0251d470aa062fa1922dfa9a8": {
+				 "name": "micro:bit DFU Control Service"
+			},
+			"e95d93af251d470aa062fa1922dfa9a8": {
+				 "name": "micro:bit Event Service"
+			},
+			"e95d127b251d470aa062fa1922dfa9a8": {
+				 "name": "micro:bit IO Pin Service"
+			},
+			"e95dd91d251d470aa062fa1922dfa9a8": {
+				 "name": "micro:bit LED Service"
+			},
+			"e95df2d8251d470aa062fa1922dfa9a8": {
+				 "name": "micro:bit Magnetometer Service"
+			},
+			"e95d6100251d470aa062fa1922dfa9a8": {
+				 "name": "micro:bit Temperature Service"
+			}
+	 },
+	 "uuid16bitCharacteristicDefinitions": {
+			"2A7E": {
+				 "name": "Aerobic Heart Rate Lower Limit"
+			},
+			"2A84": {
+				 "name": "Aerobic Heart Rate Upper Limit"
+			},
+			"2A7F": {
+				 "name": "Aerobic Threshold"
+			},
+			"2A80": {
+				 "name": "Age"
+			},
+			"2A5A": {
+				 "name": "Aggregate"
+			},
+			"2A43": {
+				 "name": "Alert Category ID"
+			},
+			"2A42": {
+				 "name": "Alert Category ID Bit Mask"
+			},
+			"2A06": {
+				 "name": "Alert Level"
+			},
+			"2A44": {
+				 "name": "Alert Notification Control Point"
+			},
+			"2A3F": {
+				 "name": "Alert Status"
+			},
+			"2AB3": {
+				 "name": "Altitude"
+			},
+			"2A81": {
+				 "name": "Anaerobic Heart Rate Lower Limit"
+			},
+			"2A82": {
+				 "name": "Anaerobic Heart Rate Upper Limit"
+			},
+			"2A83": {
+				 "name": "Anaerobic Threshold"
+			},
+			"2A58": {
+				 "name": "Analog"
+			},
+			"2A59": {
+				 "name": "Analog Output"
+			},
+			"2A73": {
+				 "name": "Apparent Wind Direction "
+			},
+			"2A72": {
+				 "name": "Apparent Wind Speed"
+			},
+			"2A01": {
+				 "name": "Appearance"
+			},
+			"2AA3": {
+				 "name": "Barometric Pressure Trend"
+			},
+			"2A19": {
+				 "name": "Battery Level"
+			},
+			"2A1B": {
+				 "name": "Battery Level State"
+			},
+			"2A1A": {
+				 "name": "Battery Power State"
+			},
+			"2A49": {
+				 "name": "Blood Pressure Feature"
+			},
+			"2A35": {
+				 "name": "Blood Pressure Measurement"
+			},
+			"2A9B": {
+				 "name": "Body Composition Feature"
+			},
+			"2A9C": {
+				 "name": "Body Composition Measurement"
+			},
+			"2A38": {
+				 "name": "Body Sensor Location"
+			},
+			"2AA4": {
+				 "name": "Bond Management Control Point"
+			},
+			"2AA5": {
+				 "name": "Bond Management Feature"
+			},
+			"2A22": {
+				 "name": "Boot Keyboard Input Report"
+			},
+			"2A32": {
+				 "name": "Boot Keyboard Output Report"
+			},
+			"2A33": {
+				 "name": "Boot Mouse Input Report"
+			},
+			"2AA8": {
+				 "name": "CGM Feature"
+			},
+			"2AA7": {
+				 "name": "CGM Measurement"
+			},
+			"2AAB": {
+				 "name": "CGM Session Run Time"
+			},
+			"2AAA": {
+				 "name": "CGM Session Start Time"
+			},
+			"2AAC": {
+				 "name": "CGM Specific Ops Control Point"
+			},
+			"2AA9": {
+				 "name": "CGM Status"
+			},
+			"2A5C": {
+				 "name": "CSC Feature"
+			},
+			"2A5B": {
+				 "name": "CSC Measurement"
+			},
+			"2AA6": {
+				 "name": "Central Address Resolution"
+			},
+			"2ACE": {
+				 "name": "Cross Trainer Data"
+			},
+			"2A2B": {
+				 "name": "Current Time"
+			},
+			"2A66": {
+				 "name": "Cycling Power Control Point"
+			},
+			"2A65": {
+				 "name": "Cycling Power Feature"
+			},
+			"2A63": {
+				 "name": "Cycling Power Measurement"
+			},
+			"2A64": {
+				 "name": "Cycling Power Vector"
+			},
+			"2A0D": {
+				 "name": "DST Offset"
+			},
+			"2A99": {
+				 "name": "Database Change Increment"
+			},
+			"2A08": {
+				 "name": "Date Time"
+			},
+			"2A85": {
+				 "name": "Date of Birth"
+			},
+			"2A86": {
+				 "name": "Date of Threshold Assessment"
+			},
+			"2A0A": {
+				 "name": "Day Date Time"
+			},
+			"2A09": {
+				 "name": "Day of Week"
+			},
+			"2A7D": {
+				 "name": "Descriptor Value Changed"
+			},
+			"2A00": {
+				 "name": "Device Name",
+				 "format": "TEXT"
+			},
+			"2A7B": {
+				 "name": "Dew Point"
+			},
+			"2A56": {
+				 "name": "Digital"
+			},
+			"2A57": {
+				 "name": "Digital Output"
+			},
+			"2A6C": {
+				 "name": "Elevation"
+			},
+			"2A87": {
+				 "name": "Email Address",
+				 "format": "TEXT"
+			},
+			"2A0B": {
+				 "name": "Exact Time 100"
+			},
+			"2A0C": {
+				 "name": "Exact Time 256"
+			},
+			"2A88": {
+				 "name": "Fat Burn Heart Rate Lower Limit"
+			},
+			"2A89": {
+				 "name": "Fat Burn Heart Rate Upper Limit"
+			},
+			"2A26": {
+				 "name": "Firmware Revision String",
+				 "format": "TEXT"
+			},
+			"2A8A": {
+				 "name": "First Name",
+				 "format": "TEXT"
+			},
+			"2AD9": {
+				 "name": "Fitness Machine Control Point"
+			},
+			"2ACC": {
+				 "name": "Fitness Machine Feature"
+			},
+			"2ADA": {
+				 "name": "Fitness Machine Status"
+			},
+			"2A8B": {
+				 "name": "Five Zone Heart Rate Limits"
+			},
+			"2AB2": {
+				 "name": "Floor Number"
+			},
+			"2A8C": {
+				 "name": "Gender"
+			},
+			"2A51": {
+				 "name": "Glucose Feature"
+			},
+			"2A18": {
+				 "name": "Glucose Measurement"
+			},
+			"2A34": {
+				 "name": "Glucose Measurement Context"
+			},
+			"2A74": {
+				 "name": "Gust Factor"
+			},
+			"2A4C": {
+				 "name": "HID Control Point"
+			},
+			"2A4A": {
+				 "name": "HID Information"
+			},
+			"2ABA": {
+				 "name": "HTTP Control Point"
+			},
+			"2AB9": {
+				 "name": "HTTP Entity Body",
+				 "format": "TEXT"
+			},
+			"2AB7": {
+				 "name": "HTTP Headers",
+				 "format": "TEXT"
+			},
+			"2AB8": {
+				 "name": "HTTP Status Code"
+			},
+			"2ABB": {
+				 "name": "HTTPS Security"
+			},
+			"2A27": {
+				 "name": "Hardware Revision String",
+				 "format": "TEXT"
+			},
+			"2A39": {
+				 "name": "Heart Rate Control Point"
+			},
+			"2A8D": {
+				 "name": "Heart Rate Max"
+			},
+			"2A37": {
+				 "name": "Heart Rate Measurement"
+			},
+			"2A7A": {
+				 "name": "Heat Index"
+			},
+			"2A8E": {
+				 "name": "Height"
+			},
+			"2A8F": {
+				 "name": "Hip Circumference"
+			},
+			"2A6F": {
+				 "name": "Humidity"
+			},
+			"2A2A": {
+				 "name": "IEEE 11073-20601 Regulatory Certification Data List"
+			},
+			"2AD2": {
+				 "name": "Indoor Bike Data"
+			},
+			"2AAD": {
+				 "name": "Indoor Positioning Configuration"
+			},
+			"2A36": {
+				 "name": "Intermediate Cuff Pressure"
+			},
+			"2A1E": {
+				 "name": "Intermediate Temperature"
+			},
+			"2A77": {
+				 "name": "Irradiance"
+			},
+			"2A6B": {
+				 "name": "LN Control Point"
+			},
+			"2A6A": {
+				 "name": "LN Feature"
+			},
+			"2AA2": {
+				 "name": "Language",
+				 "format": "TEXT"
+			},
+			"2A90": {
+				 "name": "Last Name",
+				 "format": "TEXT"
+			},
+			"2AAE": {
+				 "name": "Latitude"
+			},
+			"2AB1": {
+				 "name": "Local East Coordinate"
+			},
+			"2AB0": {
+				 "name": "Local North Coordinate"
+			},
+			"2A0F": {
+				 "name": "Local Time Information"
+			},
+			"2AB5": {
+				 "name": "Location Name",
+				 "format": "TEXT"
+			},
+			"2A67": {
+				 "name": "Location and Speed"
+			},
+			"2AAF": {
+				 "name": "Longitude"
+			},
+			"2A2C": {
+				 "name": "Magnetic Declination"
+			},
+			"2AA0": {
+				 "name": "Magnetic Flux Density - 2D"
+			},
+			"2AA1": {
+				 "name": "Magnetic Flux Density - 3D"
+			},
+			"2A29": {
+				 "name": "Manufacturer Name String",
+				 "format": "TEXT"
+			},
+			"2A91": {
+				 "name": "Maximum Recommended Heart Rate"
+			},
+			"2A21": {
+				 "name": "Measurement Interval"
+			},
+			"2ADB": {
+				 "name": "Mesh Provisioning Data In"
+			},
+			"2ADC": {
+				 "name": "Mesh Provisioning Data Out"
+			},
+			"2ADD": {
+				 "name": "Mesh Proxy Data In"
+			},
+			"2ADE": {
+				 "name": "Mesh Proxy Data Out"
+			},
+			"2A24": {
+				 "name": "Model Number String",
+				 "format": "TEXT"
+			},
+			"2A68": {
+				 "name": "Navigation"
+			},
+			"2A3E": {
+				 "name": "Network Availability"
+			},
+			"2A46": {
+				 "name": "New Alert"
+			},
+			"2ABD": {
+				 "name": "OTS Feature"
+			},
+			"2AC5": {
+				 "name": "Object Action Control Point"
+			},
+			"2AC8": {
+				 "name": "Object Changed"
+			},
+			"2AC1": {
+				 "name": "Object First-Created"
+			},
+			"2AC3": {
+				 "name": "Object ID"
+			},
+			"2AC2": {
+				 "name": "Object Last-Modified"
+			},
+			"2AC6": {
+				 "name": "Object List Control Point"
+			},
+			"2AC7": {
+				 "name": "Object List Filter"
+			},
+			"2ABE": {
+				 "name": "Object Name",
+				 "format": "TEXT"
+			},
+			"2AC4": {
+				 "name": "Object Properties"
+			},
+			"2AC0": {
+				 "name": "Object Size"
+			},
+			"2ABF": {
+				 "name": "Object Type"
+			},
+			"2A5F": {
+				 "name": "PLX Continuous Measurement"
+			},
+			"2A60": {
+				 "name": "PLX Features"
+			},
+			"2A5E": {
+				 "name": "PLX Spot-Check Measurement"
+			},
+			"2A04": {
+				 "name": "Peripheral Preferred Connection Parameters"
+			},
+			"2A02": {
+				 "name": "Peripheral Privacy Flag"
+			},
+			"2A50": {
+				 "name": "PnP ID"
+			},
+			"2A75": {
+				 "name": "Pollen Concentration"
+			},
+			"2A2F": {
+				 "name": "Position 2D"
+			},
+			"2A30": {
+				 "name": "Position 3D"
+			},
+			"2A69": {
+				 "name": "Position Quality"
+			},
+			"2A6D": {
+				 "name": "Pressure"
+			},
+			"2A4E": {
+				 "name": "Protocol Mode"
+			},
+			"2A62": {
+				 "name": "Pulse Oximetry Control Point"
+			},
+			"2A54": {
+				 "name": "RSC Feature"
+			},
+			"2A53": {
+				 "name": "RSC Measurement"
+			},
+			"2A78": {
+				 "name": "Rainfall"
+			},
+			"2A03": {
+				 "name": "Reconnection Address"
+			},
+			"2A52": {
+				 "name": "Record Access Control Point"
+			},
+			"2A14": {
+				 "name": "Reference Time Information"
+			},
+			"2A3A": {
+				 "name": "Removable"
+			},
+			"2A4D": {
+				 "name": "Report"
+			},
+			"2A4B": {
+				 "name": "Report Map"
+			},
+			"2AC9": {
+				 "name": "Resolvable Private Address Only"
+			},
+			"2A92": {
+				 "name": "Resting Heart Rate"
+			},
+			"2A40": {
+				 "name": "Ringer Control Point"
+			},
+			"2A41": {
+				 "name": "Ringer Setting"
+			},
+			"2AD1": {
+				 "name": "Rower Data"
+			},
+			"2A55": {
+				 "name": "SC Control Point"
+			},
+			"2A4F": {
+				 "name": "Scan Interval Window"
+			},
+			"2A31": {
+				 "name": "Scan Refresh"
+			},
+			"2A3C": {
+				 "name": "Scientific Temperature Celsius"
+			},
+			"2A10": {
+				 "name": "Secondary Time Zone"
+			},
+			"2A5D": {
+				 "name": "Sensor Location"
+			},
+			"2A25": {
+				 "name": "Serial Number String",
+				 "format": "TEXT"
+			},
+			"2A05": {
+				 "name": "Service Changed"
+			},
+			"2A3B": {
+				 "name": "Service Required"
+			},
+			"2A28": {
+				 "name": "Software Revision String",
+				 "format": "TEXT"
+			},
+			"2A93": {
+				 "name": "Sport Type for Aerobic and Anaerobic Thresholds"
+			},
+			"2AD0": {
+				 "name": "Stair Climber Data"
+			},
+			"2ACF": {
+				 "name": "Step Climber Data"
+			},
+			"2A3D": {
+				 "name": "String"
+			},
+			"2AD7": {
+				 "name": "Supported Heart Rate Range"
+			},
+			"2AD5": {
+				 "name": "Supported Inclination Range"
+			},
+			"2A47": {
+				 "name": "Supported New Alert Category"
+			},
+			"2AD8": {
+				 "name": "Supported Power Range"
+			},
+			"2AD6": {
+				 "name": "Supported Resistance Level Range"
+			},
+			"2AD4": {
+				 "name": "Supported Speed Range"
+			},
+			"2A48": {
+				 "name": "Supported Unread Alert Category"
+			},
+			"2A23": {
+				 "name": "System ID"
+			},
+			"2ABC": {
+				 "name": "TDS Control Point"
+			},
+			"2A6E": {
+				 "name": "Temperature"
+			},
+			"2A1F": {
+				 "name": "Temperature Celsius"
+			},
+			"2A20": {
+				 "name": "Temperature Fahrenheit"
+			},
+			"2A1C": {
+				 "name": "Temperature Measurement"
+			},
+			"2A1D": {
+				 "name": "Temperature Type"
+			},
+			"2A94": {
+				 "name": "Three Zone Heart Rate Limits"
+			},
+			"2A12": {
+				 "name": "Time Accuracy"
+			},
+			"2A15": {
+				 "name": "Time Broadcast"
+			},
+			"2A13": {
+				 "name": "Time Source"
+			},
+			"2A16": {
+				 "name": "Time Update Control Point"
+			},
+			"2A17": {
+				 "name": "Time Update State"
+			},
+			"2A0E": {
+				 "name": "Time Zone"
+			},
+			"2A11": {
+				 "name": "Time with DST"
+			},
+			"2AD3": {
+				 "name": "Training Status"
+			},
+			"2ACD": {
+				 "name": "Treadmill Data"
+			},
+			"2A71": {
+				 "name": "True Wind Direction"
+			},
+			"2A70": {
+				 "name": "True Wind Speed"
+			},
+			"2A95": {
+				 "name": "Two Zone Heart Rate Limit"
+			},
+			"2A07": {
+				 "name": "Tx Power Level"
+			},
+			"2AB6": {
+				 "name": "URI",
+				 "format": "TEXT"
+			},
+			"2A76": {
+				 "name": "UV Index"
+			},
+			"2AB4": {
+				 "name": "Uncertainty"
+			},
+			"2A45": {
+				 "name": "Unread Alert Status"
+			},
+			"2A9F": {
+				 "name": "User Control Point"
+			},
+			"2A9A": {
+				 "name": "User Index"
+			},
+			"2A96": {
+				 "name": "VO2 Max"
+			},
+			"2A97": {
+				 "name": "Waist Circumference"
+			},
+			"2A98": {
+				 "name": "Weight"
+			},
+			"2A9D": {
+				 "name": "Weight Measurement"
+			},
+			"2A9E": {
+				 "name": "Weight Scale Feature"
+			},
+			"2A79": {
+				 "name": "Wind Chill"
+			}
+	 },
+	 "uuid128bitCharacteristicDefinitions": {
+			"a3c875058ed34bdf8a39a01bebede295": {
+				 "name": "(Advanced) Advertised Tx Power"
+			},
+			"a3c8750b8ed34bdf8a39a01bebede295": {
+				 "name": "(Advanced) Factory Reset"
+			},
+			"a3c8750c8ed34bdf8a39a01bebede295": {
+				 "name": "(Advanced) Remain Connectable"
+			},
+			"a3c8750a8ed34bdf8a39a01bebede295": {
+				 "name": "ADV Slot Data"
+			},
+			"a3c875028ed34bdf8a39a01bebede295": {
+				 "name": "Active Slot"
+			},
+			"a3c875038ed34bdf8a39a01bebede295": {
+				 "name": "Advertising Interval"
+			},
+			"be15bee06186407e83810bd89c4d8df4": {
+				 "name": "Anki Drive Vehicle Service READ"
+			},
+			"be15bee16186407e83810bd89c4d8df4": {
+				 "name": "Anki Drive Vehicle Service WRITE"
+			},
+			"955a15240fe2f5aaa09484b8d4f3e8ad": {
+				 "name": "Beacon UUID"
+			},
+			"000015241212efde1523785feabcd123": {
+				 "name": "Button"
+			},
+			"8ec90003f3154f609fb8838830daea50": {
+				 "name": "Buttonless DFU"
+			},
+			"955a15250fe2f5aaa09484b8d4f3e8ad": {
+				 "name": "Calibration"
+			},
+			"a6c313386c07453e961ad8a8a41bf368": {
+				 "name": "Candy Control Point"
+			},
+			"a3c875018ed34bdf8a39a01bebede295": {
+				 "name": "Capabilities"
+			},
+			"955a15280fe2f5aaa09484b8d4f3e8ad": {
+				 "name": "Connection Interval"
+			},
+			"69d1d8f345e149a898219bbdfdaad9d9": {
+				 "name": "Control Point"
+			},
+			"000015311212efde1523785feabcd123": {
+				 "name": "DFU Control Point"
+			},
+			"8ec90001f3154f609fb8838830daea50": {
+				 "name": "DFU Control Point"
+			},
+			"000015321212efde1523785feabcd123": {
+				 "name": "DFU Packet"
+			},
+			"8ec90002f3154f609fb8838830daea50": {
+				 "name": "DFU Packet"
+			},
+			"000015341212efde1523785feabcd123": {
+				 "name": "DFU Version"
+			},
+			"ee0c2084878640baab9699b91ac981d8": {
+				 "name": "Data"
+			},
+			"b35d7da9eed44d598f89f6573edea967": {
+				 "name": "Data Length"
+			},
+			"b35d7da7eed44d598f89f6573edea967": {
+				 "name": "Data One"
+			},
+			"22eac6e924d64bb5be44b36ace7c7bfb": {
+				 "name": "Data Source"
+			},
+			"b35d7da8eed44d598f89f6573edea967": {
+				 "name": "Data Two"
+			},
+			"a3c875098ed34bdf8a39a01bebede295": {
+				 "name": "EID Identity Key"
+			},
+			"c6b2f38c23ab46d8a6aba3a870bbd5d7": {
+				 "name": "Entity Attribute"
+			},
+			"2f7cabce808d411f9a0cbb92ba96c102": {
+				 "name": "Entity Update"
+			},
+			"8e400001f3154f609fb8838830daea50": {
+				 "name": "Experimental Buttonless DFU"
+			},
+			"ee0c2085878640baab9699b91ac981d8": {
+				 "name": "Flags"
+			},
+			"88400002e95a844ec53ffbec32ed5e54": {
+				 "name": "Fly Button Characteristic"
+			},
+			"000015251212efde1523785feabcd123": {
+				 "name": "LED"
+			},
+			"955a15290fe2f5aaa09484b8d4f3e8ad": {
+				 "name": "LED Config"
+			},
+			"ee0c2082878640baab9699b91ac981d8": {
+				 "name": "Lock"
+			},
+			"ee0c2081878640baab9699b91ac981d8": {
+				 "name": "Lock State"
+			},
+			"a3c875068ed34bdf8a39a01bebede295": {
+				 "name": "Lock State"
+			},
+			"955a15260fe2f5aaa09484b8d4f3e8ad": {
+				 "name": "Major & Minor"
+			},
+			"955a15270fe2f5aaa09484b8d4f3e8ad": {
+				 "name": "Manufacturer ID"
+			},
+			"9fbf120d630142d98c5825e699a21dbd": {
+				 "name": "Notification Source"
+			},
+			"ee0c2088878640baab9699b91ac981d8": {
+				 "name": "Period"
+			},
+			"ee0c2086878640baab9699b91ac981d8": {
+				 "name": "Power Levels"
+			},
+			"ee0c2087878640baab9699b91ac981d8": {
+				 "name": "Power Mode"
+			},
+			"a3c875088ed34bdf8a39a01bebede295": {
+				 "name": "Public ECDH Key"
+			},
+			"6e400002b5a3f393e0a9e50e24dcca9e": {
+				 "name": "RX Characteristic"
+			},
+			"a3c875048ed34bdf8a39a01bebede295": {
+				 "name": "Radio Tx Power"
+			},
+			"9b3c81d857b14a8ab8df0e56f7ca51c2": {
+				 "name": "Remote Command"
+			},
+			"ee0c2089878640baab9699b91ac981d8": {
+				 "name": "Reset"
+			},
+			"8ec90004f3154f609fb8838830daea50": {
+				 "name": "Secure Buttonless DFU"
+			},
+			"6e400003b5a3f393e0a9e50e24dcca9e": {
+				 "name": "TX Characteristic"
+			},
+			"ef6801029b3549339b1052ffa9740042": {
+				 "name": "Thingy Advertising Parameters Characteristic"
+			},
+			"ef6802049b3549339b1052ffa9740042": {
+				 "name": "Thingy Air Quality Characteristic"
+			},
+			"ef6803029b3549339b1052ffa9740042": {
+				 "name": "Thingy Button Characteristic"
+			},
+			"ef6801069b3549339b1052ffa9740042": {
+				 "name": "Thingy Cloud Token Characteristic",
+				 "format": "TEXT"
+			},
+			"ef6801049b3549339b1052ffa9740042": {
+				 "name": "Thingy Connection Parameters Characteristic"
+			},
+			"ef6801059b3549339b1052ffa9740042": {
+				 "name": "Thingy Eddystone URL Characteristic"
+			},
+			"ef6802069b3549339b1052ffa9740042": {
+				 "name": "Thingy Environment Configuration Characteristic"
+			},
+			"ef6804079b3549339b1052ffa9740042": {
+				 "name": "Thingy Euler Characteristic"
+			},
+			"ef6803039b3549339b1052ffa9740042": {
+				 "name": "Thingy External Pin Characteristic"
+			},
+			"ef6801079b3549339b1052ffa9740042": {
+				 "name": "Thingy FW Version Characteristic"
+			},
+			"ef68040a9b3549339b1052ffa9740042": {
+				 "name": "Thingy Gravity Vector Characteristic"
+			},
+			"ef6804099b3549339b1052ffa9740042": {
+				 "name": "Thingy Heading Characteristic"
+			},
+			"ef6802039b3549339b1052ffa9740042": {
+				 "name": "Thingy Humidity Characteristic"
+			},
+			"ef6803019b3549339b1052ffa9740042": {
+				 "name": "Thingy LED Characteristic"
+			},
+			"ef6802059b3549339b1052ffa9740042": {
+				 "name": "Thingy Light Intensity Characteristic"
+			},
+			"ef6801089b3549339b1052ffa9740042": {
+				 "name": "Thingy MTU Request Characteristic"
+			},
+			"ef6805049b3549339b1052ffa9740042": {
+				 "name": "Thingy Microphone Characteristic"
+			},
+			"ef6804019b3549339b1052ffa9740042": {
+				 "name": "Thingy Motion Configuration Characteristic"
+			},
+			"ef6801019b3549339b1052ffa9740042": {
+				 "name": "Thingy Name Characteristic",
+				 "format": "TEXT"
+			},
+			"ef6804039b3549339b1052ffa9740042": {
+				 "name": "Thingy Orientation Characteristic"
+			},
+			"ef6804059b3549339b1052ffa9740042": {
+				 "name": "Thingy Pedometer Characteristic"
+			},
+			"ef6802029b3549339b1052ffa9740042": {
+				 "name": "Thingy Pressure Characteristic"
+			},
+			"ef6804049b3549339b1052ffa9740042": {
+				 "name": "Thingy Quaternion Characteristic"
+			},
+			"ef6804069b3549339b1052ffa9740042": {
+				 "name": "Thingy Raw Data Characteristic"
+			},
+			"ef6804089b3549339b1052ffa9740042": {
+				 "name": "Thingy Rotation Characteristic"
+			},
+			"ef6805019b3549339b1052ffa9740042": {
+				 "name": "Thingy Sound Configuration Characteristic"
+			},
+			"ef6805029b3549339b1052ffa9740042": {
+				 "name": "Thingy Speaker Data Characteristic"
+			},
+			"ef6805039b3549339b1052ffa9740042": {
+				 "name": "Thingy Speaker Status Characteristic"
+			},
+			"ef6804029b3549339b1052ffa9740042": {
+				 "name": "Thingy Tap Characteristic"
+			},
+			"ef6802019b3549339b1052ffa9740042": {
+				 "name": "Thingy Temperature Characteristic"
+			},
+			"ee0c2083878640baab9699b91ac981d8": {
+				 "name": "Unlock"
+			},
+			"a3c875078ed34bdf8a39a01bebede295": {
+				 "name": "Unlock"
+			},
+			"e95dca4b251d470aa062fa1922dfa9a8": {
+				 "name": "micro:bit Accelerometer Data"
+			},
+			"e95dfb24251d470aa062fa1922dfa9a8": {
+				 "name": "micro:bit Accelerometer Period"
+			},
+			"e95dda90251d470aa062fa1922dfa9a8": {
+				 "name": "micro:bit Button A State"
+			},
+			"e95dda91251d470aa062fa1922dfa9a8": {
+				 "name": "micro:bit Button B State"
+			},
+			"e95d5404251d470aa062fa1922dfa9a8": {
+				 "name": "micro:bit Client Event"
+			},
+			"e95d23c4251d470aa062fa1922dfa9a8": {
+				 "name": "micro:bit Client Requirements"
+			},
+			"e95d93b1251d470aa062fa1922dfa9a8": {
+				 "name": "micro:bit DFU Control"
+			},
+			"e95d9775251d470aa062fa1922dfa9a8": {
+				 "name": "micro:bit Event"
+			},
+			"e95d7b77251d470aa062fa1922dfa9a8": {
+				 "name": "micro:bit LED Matrix State"
+			},
+			"e95d93ee251d470aa062fa1922dfa9a8": {
+				 "name": "micro:bit LED Text"
+			},
+			"e95d9715251d470aa062fa1922dfa9a8": {
+				 "name": "micro:bit Magnetometer Bearing"
+			},
+			"e95dfb11251d470aa062fa1922dfa9a8": {
+				 "name": "micro:bit Magnetometer Data"
+			},
+			"e95d386c251d470aa062fa1922dfa9a8": {
+				 "name": "micro:bit Magnetometer Period"
+			},
+			"e95dd822251d470aa062fa1922dfa9a8": {
+				 "name": "micro:bit PWM Control"
+			},
+			"e95d5899251d470aa062fa1922dfa9a8": {
+				 "name": "micro:bit Pin AD Configuration"
+			},
+			"e95d8d00251d470aa062fa1922dfa9a8": {
+				 "name": "micro:bit Pin Data"
+			},
+			"e95db9fe251d470aa062fa1922dfa9a8": {
+				 "name": "micro:bit Pin IO Configuration"
+			},
+			"e95db84c251d470aa062fa1922dfa9a8": {
+				 "name": "micro:bit Requirements"
+			},
+			"e95d0d2d251d470aa062fa1922dfa9a8": {
+				 "name": "micro:bit Scrolling Delay"
+			},
+			"e95d9250251d470aa062fa1922dfa9a8": {
+				 "name": "micro:bit Temperature"
+			},
+			"e95d1b25251d470aa062fa1922dfa9a8": {
+				 "name": "micro:bit Temperature Period"
+			}
+	 },
+	 "uuid16bitDescriptorDefinitions": {
+			"2905": {
+				 "name": "Characteristic Aggregate Format"
+			},
+			"2904": {
+				 "name": "Characteristic Presentation Format"
+			},
+			"2901": {
+				 "name": "Characteristic User Description",
+				 "format": "TEXT"
+			},
+			"290B": {
+				 "name": "Environmental Sensing Configuration"
+			},
+			"290C": {
+				 "name": "Environmental Sensing Measurement"
+			},
+			"290D": {
+				 "name": "Environmental Sensing Trigger Setting"
+			},
+			"2907": {
+				 "name": "External Report Reference"
+			},
+			"2909": {
+				 "name": "Number of Digitals"
+			},
+			"2908": {
+				 "name": "Report Reference"
+			},
+			"2903": {
+				 "name": "Server Characteristic Configuration"
+			},
+			"290E": {
+				 "name": "Time Trigger Setting"
+			},
+			"2906": {
+				 "name": "Valid Range"
+			},
+			"290A": {
+				 "name": "Value Trigger Setting"
+			}
+	 },
+	 "uuid128bitDescriptorDefinitions": {}
 }

@@ -49,9 +49,9 @@ void touchPad3ISR();
  * Attach interrupts to the touch pad pins
  */
 void initTouch() {
-  touchAttachInterrupt(PAD1, touchPad1ISR, 20);
-  touchAttachInterrupt(PAD2, touchPad2ISR, 20);
-  touchAttachInterrupt(PAD3, touchPad3ISR, 20);
+	touchAttachInterrupt(PAD1, touchPad1ISR, 20);
+	touchAttachInterrupt(PAD2, touchPad2ISR, 20);
+	touchAttachInterrupt(PAD3, touchPad3ISR, 20);
 }
 
 /**
@@ -59,12 +59,12 @@ void initTouch() {
  * Called when touch pin value goes below treshold
 */
 void touchPad1ISR() {
-  if (!pad1Touched) {
-    touchTickerPad1.attach_ms(50, checkPad1TouchStatus);
-    touchTimePad1= millis();
-    pad1Touched = true;
-    // Serial.println("Pad 1 touch start at " + String(touchTimePad1));
-  }
+	if (!pad1Touched) {
+		touchTickerPad1.attach_ms(50, checkPad1TouchStatus);
+		touchTimePad1= millis();
+		pad1Touched = true;
+		// Serial.println("Pad 1 touch start at " + String(touchTimePad1));
+	}
 }
 
 /**
@@ -72,17 +72,17 @@ void touchPad1ISR() {
  * Checks if pad 1 is still touched
 */
 void checkPad1TouchStatus() {
-  if (touchRead(PAD1) > 50) { // No longer touched
-    if ((millis()-touchTimePad1) >= 500) { //  500ms => long touch!
-      // Serial.println("Pad 1 long touch detected after " + String((millis()-touchTimePad1)));
-      longTouchPad1 = true;
-    } else { // short touch!
-      // Serial.println("Pad 1 short touch detected after " + String((millis()-touchTimePad1)));
-      shortTouchPad1 = true;
-    }
-    pad1Touched = false;
-    touchTickerPad1.detach();
-  }
+	if (touchRead(PAD1) > 50) { // No longer touched
+		if ((millis()-touchTimePad1) >= 500) { //	500ms => long touch!
+			// Serial.println("Pad 1 long touch detected after " + String((millis()-touchTimePad1)));
+			longTouchPad1 = true;
+		} else { // short touch!
+			// Serial.println("Pad 1 short touch detected after " + String((millis()-touchTimePad1)));
+			shortTouchPad1 = true;
+		}
+		pad1Touched = false;
+		touchTickerPad1.detach();
+	}
 }
 
 /**
@@ -90,12 +90,12 @@ void checkPad1TouchStatus() {
  * Called when touch pin value goes below treshold
 */
 void touchPad2ISR() {
-  if (!pad2Touched) {
-    touchTickerPad2.attach_ms(50, checkPad2TouchStatus);
-    touchTimePad2= millis();
-    pad2Touched = true;
-    // Serial.println("Pad 2 touch start at " + String(touchTimePad2));
-  }
+	if (!pad2Touched) {
+		touchTickerPad2.attach_ms(50, checkPad2TouchStatus);
+		touchTimePad2= millis();
+		pad2Touched = true;
+		// Serial.println("Pad 2 touch start at " + String(touchTimePad2));
+	}
 }
 
 /**
@@ -103,27 +103,27 @@ void touchPad2ISR() {
  * Checks if pad 2 is still touched
 */
 void checkPad2TouchStatus() {
-  if (touchRead(PAD2) > 50) { // No longer touched
-    if ((millis()-touchTimePad2) >= 500) { //  500ms => long touch!
-      Serial.println("Pad 2 long touch detected after " + String((millis()-touchTimePad2)));
-      addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec() + " RESET request", false);
-      delay(2000);
-      esp_restart();
-    } else { // short touch!
-      Serial.println("Pad 2 short touch detected after " + String((millis()-touchTimePad2)));
-      if (lightTaskHandle != NULL) {
-        xTaskResumeFromISR(lightTaskHandle);
-      }
-      if (tempTaskHandle != NULL) {
-        xTaskResumeFromISR(tempTaskHandle);
-      }
-      if (weatherTaskHandle != NULL) {
-        xTaskResumeFromISR(weatherTaskHandle);
-      }
-    }
-    pad2Touched = false;
-    touchTickerPad2.detach();
-  }
+	if (touchRead(PAD2) > 50) { // No longer touched
+		if ((millis()-touchTimePad2) >= 500) { //	500ms => long touch!
+			Serial.println("Pad 2 long touch detected after " + String((millis()-touchTimePad2)));
+			addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec() + " RESET request", false);
+			delay(2000);
+			esp_restart();
+		} else { // short touch!
+			Serial.println("Pad 2 short touch detected after " + String((millis()-touchTimePad2)));
+			if (lightTaskHandle != NULL) {
+				xTaskResumeFromISR(lightTaskHandle);
+			}
+			if (tempTaskHandle != NULL) {
+				xTaskResumeFromISR(tempTaskHandle);
+			}
+			if (weatherTaskHandle != NULL) {
+				xTaskResumeFromISR(weatherTaskHandle);
+			}
+		}
+		pad2Touched = false;
+		touchTickerPad2.detach();
+	}
 }
 
 /**
@@ -131,12 +131,12 @@ void checkPad2TouchStatus() {
  * Called when touch pin value goes below treshold
 */
 void touchPad3ISR() {
-  if (!pad3Touched) {
-    touchTickerPad3.attach_ms(50, checkPad3TouchStatus);
-    touchTimePad3= millis();
-    pad3Touched = true;
-    // Serial.println("Pad 3 touch start at " + String(touchTimePad1));
-  }
+	if (!pad3Touched) {
+		touchTickerPad3.attach_ms(50, checkPad3TouchStatus);
+		touchTimePad3= millis();
+		pad3Touched = true;
+		// Serial.println("Pad 3 touch start at " + String(touchTimePad1));
+	}
 }
 
 /**
@@ -144,15 +144,15 @@ void touchPad3ISR() {
  * Checks if pad 3 is still touched
 */
 void checkPad3TouchStatus() {
-  if (touchRead(PAD3) > 50) { // No longer touched
-    if ((millis()-touchTimePad3) >= 500) { //  500ms => long touch!
-      // Serial.println("Pad 3 long touch detected after " + String((millis()-touchTimePad3)));
-      longTouchPad3 = true;
-    } else { // short touch!
-      // Serial.println("Pad 3 short touch detected after " + String((millis()-touchTimePad3)));
-      shortTouchPad3 = true;
-    }
-    pad3Touched = false;
-    touchTickerPad3.detach();
-  }
+	if (touchRead(PAD3) > 50) { // No longer touched
+		if ((millis()-touchTimePad3) >= 500) { //	500ms => long touch!
+			// Serial.println("Pad 3 long touch detected after " + String((millis()-touchTimePad3)));
+			longTouchPad3 = true;
+		} else { // short touch!
+			// Serial.println("Pad 3 short touch detected after " + String((millis()-touchTimePad3)));
+			shortTouchPad3 = true;
+		}
+		pad3Touched = false;
+		touchTickerPad3.detach();
+	}
 }

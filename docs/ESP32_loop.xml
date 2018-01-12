@@ -1,23 +1,23 @@
 <macro name="Test" icon="PLAY">
-   <assert-service description="Ensure Environmental Sensing" uuid="0000181a-0000-1000-8000-00805f9b34fb">
-      <assert-characteristic description="Ensure Date Time" uuid="00002a08-0000-1000-8000-00805f9b34fb">
-         <assert-cccd description="Ensure CCCD"/>
-         <property name="NOTIFY" requirement="MANDATORY"/>
-         <write-descriptor description="Enable notifications for Date Time" characteristic-uuid="00002a08-0000-1000-8000-00805f9b34fb" service-uuid="0000181a-0000-1000-8000-00805f9b34fb" uuid="00002902-0000-1000-8000-00805f9b34fb" value="0100"/>
-      </assert-characteristic>
-   </assert-service>
-   <wait-for-notification description="Wait for notification to Date Time" characteristic-uuid="00002a08-0000-1000-8000-00805f9b34fb" service-uuid="0000181a-0000-1000-8000-00805f9b34fb">
-   </wait-for-notification>
-   <read description="Read value of Temperature" characteristic-uuid="00002a6e-0000-1000-8000-00805f9b34fb" service-uuid="0000181a-0000-1000-8000-00805f9b34fb">
-   </read>
-   <read description="Read value of Humidity" characteristic-uuid="00002a6f-0000-1000-8000-00805f9b34fb" service-uuid="0000181a-0000-1000-8000-00805f9b34fb">
-   </read>
-   <read description="Read value of Dew Point" characteristic-uuid="00002a7b-0000-1000-8000-00805f9b34fb" service-uuid="0000181a-0000-1000-8000-00805f9b34fb">
-   </read>
-   <read description="Read value of Heat Index" characteristic-uuid="00002a7a-0000-1000-8000-00805f9b34fb" service-uuid="0000181a-0000-1000-8000-00805f9b34fb">
-   </read>
-   <read description="Read value of Perception" characteristic-uuid="10002a3d-ead2-11e7-80c1-9a214cf093ae" service-uuid="0000181a-0000-1000-8000-00805f9b34fb">
-   </read>
-   <read description="Read value of Comfort" characteristic-uuid="00002a3d-ead2-11e7-80c1-9a214cf093ae" service-uuid="0000181a-0000-1000-8000-00805f9b34fb">
-   </read>
+	 <assert-service description="Ensure Environmental Sensing" uuid="0000181a-0000-1000-8000-00805f9b34fb">
+			<assert-characteristic description="Ensure Date Time" uuid="00002a08-0000-1000-8000-00805f9b34fb">
+				 <assert-cccd description="Ensure CCCD"/>
+				 <property name="NOTIFY" requirement="MANDATORY"/>
+				 <write-descriptor description="Enable notifications for Date Time" characteristic-uuid="00002a08-0000-1000-8000-00805f9b34fb" service-uuid="0000181a-0000-1000-8000-00805f9b34fb" uuid="00002902-0000-1000-8000-00805f9b34fb" value="0100"/>
+			</assert-characteristic>
+	 </assert-service>
+	 <wait-for-notification description="Wait for notification to Date Time" characteristic-uuid="00002a08-0000-1000-8000-00805f9b34fb" service-uuid="0000181a-0000-1000-8000-00805f9b34fb">
+	 </wait-for-notification>
+	 <read description="Read value of Temperature" characteristic-uuid="00002a6e-0000-1000-8000-00805f9b34fb" service-uuid="0000181a-0000-1000-8000-00805f9b34fb">
+	 </read>
+	 <read description="Read value of Humidity" characteristic-uuid="00002a6f-0000-1000-8000-00805f9b34fb" service-uuid="0000181a-0000-1000-8000-00805f9b34fb">
+	 </read>
+	 <read description="Read value of Dew Point" characteristic-uuid="00002a7b-0000-1000-8000-00805f9b34fb" service-uuid="0000181a-0000-1000-8000-00805f9b34fb">
+	 </read>
+	 <read description="Read value of Heat Index" characteristic-uuid="00002a7a-0000-1000-8000-00805f9b34fb" service-uuid="0000181a-0000-1000-8000-00805f9b34fb">
+	 </read>
+	 <read description="Read value of Perception" characteristic-uuid="10002a3d-ead2-11e7-80c1-9a214cf093ae" service-uuid="0000181a-0000-1000-8000-00805f9b34fb">
+	 </read>
+	 <read description="Read value of Comfort" characteristic-uuid="00002a3d-ead2-11e7-80c1-9a214cf093ae" service-uuid="0000181a-0000-1000-8000-00805f9b34fb">
+	 </read>
 </macro>

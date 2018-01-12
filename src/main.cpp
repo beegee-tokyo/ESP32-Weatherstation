@@ -83,26 +83,26 @@ void loop(void)
 		longTouchPad1 = false;
 		// if (connected) {
 		// 	std::string value = pRemoteCharacteristic->readValue();
-		//   addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec()
-		//         + " BLE characteristic value was: " + value.c_str(), false);
-		//   Serial.print("The characteristic value was: ");
-		//   Serial.println(value.c_str());
+		//	 addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec()
+		//				 + " BLE characteristic value was: " + value.c_str(), false);
+		//	 Serial.print("The characteristic value was: ");
+		//	 Serial.println(value.c_str());
 		// }
 	}
 
 	// Check if we found a BLE server
 	// if (doConnect) {
 	// 	if (connectToServer(*pServerAddress)) {
-  //     Serial.println("We are now connected to the BLE Server.");
+	//		 Serial.println("We are now connected to the BLE Server.");
 	// 		addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec()
-	//           + " BLE Connected to server", false);
-  //     connected = true;
-  //   } else {
-  //     Serial.println("We have failed to connect to the server; there is nothin more we will do.");
+	//					 + " BLE Connected to server", false);
+	//		 connected = true;
+	//	 } else {
+	//		 Serial.println("We have failed to connect to the server; there is nothin more we will do.");
 	// 		addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec()
-	//           + " BLE Connection to server failed", false);
-  //   }
-  //   doConnect = false;
+	//					 + " BLE Connection to server failed", false);
+	//	 }
+	//	 doConnect = false;
 	// }
 
 	// Check if Pad 3 was touched
@@ -110,7 +110,7 @@ void loop(void)
 		shortTouchPad3 = false;
 		// Testing SPI master code
 		checkSPISlave();
-}
+	}
 
 	// Check if Pad 1 was long touched
 	if (longTouchPad3) {

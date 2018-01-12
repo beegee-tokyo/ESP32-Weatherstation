@@ -3,7 +3,7 @@
 void ledFlash();
 
 /** Pin number for onboard LED */
-uint8_t  ledPin = 16;
+uint8_t	ledPin = 16;
 /** Ticker for LED flashing */
 Ticker ledTicker;
 
