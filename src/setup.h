@@ -25,11 +25,11 @@
 
 // App specific includes
 #include "TFT_eSPI.h"
-#ifdef CONNWIFIMANAGER // WiFiManager used for intial WiFi connection?
-	#include "DNSServer.h"
-	#include "WebServer.h"
-	#include "WiFiManager.h"
-#endif
+// #ifdef CONNWIFIMANAGER // WiFiManager used for intial WiFi connection?
+// 	#include "DNSServer.h"
+// 	#include "WebServer.h"
+// 	#include "WiFiManager.h"
+// #endif
 
 // App specific includes
 #include "Wire.h"
@@ -44,7 +44,7 @@
 #include <BLEDevice.h>
 
 // My libraries
-#include "myLib.h"
+// #include "myLib.h"
 #include "ESP32Ticker.h"
 #include "globals.h"
 

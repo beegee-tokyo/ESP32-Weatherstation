@@ -14,7 +14,7 @@ WiFiClient mqttReceiver;
 /** Label for consumption/production chart */
 int solarLabel = 1;
 /** Max number of messages in buffer */
-#define msgBufferSize 20
+#define msgBufferSize 15
 
 void mqttTask(void *pvParameters);
 void messageReceived(String &topic, String &payload);
@@ -98,7 +98,7 @@ bool addMqttMsg (String topic, String payload, bool retained) {
  *		pointer to task parameters
  */
 void mqttTask(void *pvParameters) {
-	Serial.println("mqttTask loop started");
+	// Serial.println("mqttTask loop started");
 	while (1) // mqttTask loop
 	{
 		if (otaRunning) {
@@ -114,7 +114,7 @@ void mqttTask(void *pvParameters) {
 				} else if (mqttClient.publish("/"+mqttMsg[index].topic,mqttMsg[index].payload,mqttMsg[index].retained,0)) {
 					mqttMsg[index].waiting = false;
 				} else { // Publishing error. Maybe we lost connection ???
-					Serial.println("Sending to MQTT broker failed");
+					// Serial.println("Sending to MQTT broker failed");
 					if (connectMQTT()) { // Try to reconnect and resend the message
 						if (mqttClient.publish("/"+mqttMsg[index].topic,mqttMsg[index].payload,mqttMsg[index].retained,0)) {
 							mqttMsg[index].waiting = false;
@@ -144,7 +144,7 @@ void mqttTask(void *pvParameters) {
  *			false if connection failed
  **/
 bool connectMQTT() {
-	Serial.println("Connecting to MQTT broker");
+	// Serial.println("Connecting to MQTT broker");
 
 	// Connect to MQTT broker
 	mqttClient.begin(mqttBroker, mqttReceiver);
@@ -157,11 +157,11 @@ bool connectMQTT() {
 		delay(100);
 		connectTimeout++;
 		if (connectTimeout > 10) { // Wait for 1 seconds to connect
-			Serial.println("Can't connect to MQTT broker");
+			// Serial.println("Can't connect to MQTT broker");
 			return false;
 		}
 	}
-	Serial.println("Connected to MQTT");
+	// Serial.println("Connected to MQTT");
 
 	// Set MQTT last will
 	mqttClient.setWill("/DEV/ESP32", "Dead");
@@ -179,5 +179,5 @@ bool connectMQTT() {
  *			payload of message
 */
 void messageReceived(String &topic, String &payload) {
-	Serial.println("MQTT - received from topic: " + topic +	" payload: " + payload);
+	// Serial.println("MQTT - received from topic: " + topic +	" payload: " + payload);
 }

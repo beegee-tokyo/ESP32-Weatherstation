@@ -50,7 +50,7 @@ bool initUGWeather() {
  * Triggered by timer to get weather and time update every 30 minutes
  */
 void triggerGetUGWeather() {
-	addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec() + " Weather update triggered", false);
+	addMqttMsg(debugLabel, infoLabel + digitalTimeDisplaySec() + " Weather update triggered", false);
 	xTaskResumeFromISR(weatherTaskHandle);
 }
 
@@ -58,7 +58,7 @@ void triggerGetUGWeather() {
  * Task to get current weather from Underground Weather
  */
 void ugWeatherTask(void *pvParameters) {
-	Serial.println("weatherTask loop started");
+	// Serial.println("weatherTask loop started");
 	while (1) // weatherTask loop
 	{
 		if (otaRunning)
@@ -69,16 +69,16 @@ void ugWeatherTask(void *pvParameters) {
 			// Update NTP time
 			if (!tryGetTime()) {
 				// Serial.println("Failed to get update from NTP");
-				addMqttMsg("debug", "[ERROR] " + digitalTimeDisplaySec() + " Failed to get update from NTP", false);
+				addMqttMsg(debugLabel, errorLabel + digitalTimeDisplaySec() + " NTP error", false);
 			}
 			// Get weather info
 			if (getUGWeather()) {
 				// Serial.println("Got weather conditions");
-				Serial.println(ugWeatherText);
+				// Serial.println(ugWeatherText);
 				addMqttMsg("WEA", ugWeatherText, true);
 			} else {
 				// Serial.println("Failed to get weather conditions");
-				addMqttMsg("debug", "[ERROR] " + digitalTimeDisplaySec() + " Failed to get weather conditions", false);
+				addMqttMsg(debugLabel, errorLabel + digitalTimeDisplaySec() + " Weather error", false);
 				// delay(60000); // try again in 60 seconds
 			}
 		}
@@ -117,17 +117,17 @@ bool getUGWeather() {
 				payload = http.getString();
 				http.end();
 			} else {
-				payload = "[HTTP] GET error code: " + http.errorToString(httpCode);
+				// payload = "[HTTP] GET error code: " + http.errorToString(httpCode);
+				// Serial.println(payload);
+				// addMqttMsg(debugLabel, errorLabel + digitalTimeDisplaySec() + " getWGWeather() http.getString() -> " + payload, false);
 				http.end();
-				Serial.println(payload);
-				addMqttMsg("debug", "[ERROR] " + digitalTimeDisplaySec() + " getWGWeather() http.getString() -> " + payload, false);
 				return false;
 			}
 	} else {
-		payload = "[HTTP] GET error code: " + http.errorToString(httpCode);
+		// payload = "[HTTP] GET error code: " + http.errorToString(httpCode);
+		// Serial.println(payload);
+		// addMqttMsg(debugLabel, errorLabel + digitalTimeDisplaySec() + " getWGWeather() http.GET() -> " + payload, false);
 		http.end();
-		Serial.println(payload);
-		addMqttMsg("debug", "[ERROR] " + digitalTimeDisplaySec() + " getWGWeather() http.GET() -> " + payload, false);
 		return false;
 	}
 
@@ -186,9 +186,9 @@ bool getUGWeather() {
 					break;
 				}
 			}
-		} else {
-			Serial.println("Could not find the icon");
-			addMqttMsg("debug", "[ERROR] " + digitalTimeDisplaySec() + "Could not find weather icon", false);
+		// } else {
+		// 	Serial.println("Could not find the icon");
+		// 	addMqttMsg(debugLabel, errorLabel + digitalTimeDisplaySec() + "Could not find weather icon", false);
 		}
 		// drawIcon(icon,	(tft.width() -	ugIconWidth)/2, 88,	ugIconWidth,	ugIconHeight);
 		drawIcon(icon,	5, 88,	ugIconWidth,	ugIconHeight);

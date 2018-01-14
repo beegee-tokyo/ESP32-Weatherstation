@@ -54,7 +54,7 @@ void getUDPbroadcast(int udpMsgLength) {
 			tft.print(displayText);
 		}
 	} else {
-		addMqttMsg("debug", "[ERROR] " + digitalTimeDisplaySec() + "Received invalid JSON", false);
+		addMqttMsg(debugLabel, errorLabel + digitalTimeDisplaySec() + "Received invalid JSON", false);
 	}
 }
 
@@ -81,7 +81,7 @@ bool udpSendMessage(IPAddress ipAddr, String udpMsg, int udpPort) {
 
 	if (connOK == 0) {
 		Serial.println("UDP could not get socket");
-		addMqttMsg("debug", "[ERROR] " + digitalTimeDisplaySec() + "UDP could not get socket", false);
+		// addMqttMsg(debugLabel, errorLabel + digitalTimeDisplaySec() + "UDP could not get socket", false);
 		return false;
 	}
 	int beginOK = udpClientServer.beginPacket(ipAddr, udpPort);
@@ -89,7 +89,7 @@ bool udpSendMessage(IPAddress ipAddr, String udpMsg, int udpPort) {
 	if (beginOK == 0) { // Problem occured!
 		udpClientServer.stop();
 		Serial.println("UDP connection failed");
-		addMqttMsg("debug", "[ERROR] " + digitalTimeDisplaySec() + "UDP connection failed", false);
+		// addMqttMsg(debugLabel, errorLabel + digitalTimeDisplaySec() + "UDP connection failed", false);
 		return false;
 	}
 	int bytesSent = udpClientServer.print(udpMsg);
@@ -99,7 +99,7 @@ bool udpSendMessage(IPAddress ipAddr, String udpMsg, int udpPort) {
 		return true;
 	} else {
 		Serial.println("Failed to send " + udpMsg + ", sent " + String(bytesSent) + " of " + String(udpMsg.length()) + " bytes");
-		addMqttMsg("debug", "[ERROR] " + digitalTimeDisplaySec() + "Failed to send " + udpMsg + ", sent " + String(bytesSent) + " of " + String(udpMsg.length()) + " bytes", false);
+		// addMqttMsg(debugLabel, errorLabel + digitalTimeDisplaySec() + "Failed to send " + udpMsg + ", sent " + String(bytesSent) + " of " + String(udpMsg.length()) + " bytes", false);
 		udpClientServer.endPacket();
 		udpClientServer.stop();
 		return false;
@@ -120,7 +120,7 @@ void sendDebug(String debugMsg, String senderID) {
 	WiFiClient tcpDebugClient;
 
 	if (!tcpDebugClient.connect(ipDebug, tcpDebugPort)) {
-		Serial.println("connection to Debug Android " + String(ipDebug[0]) + "." + String(ipDebug[1]) + "." + String(ipDebug[2]) + "." + String(ipDebug[3]) + " failed");
+		// Serial.println("connection to Debug Android " + String(ipDebug[0]) + "." + String(ipDebug[1]) + "." + String(ipDebug[2]) + "." + String(ipDebug[3]) + " failed");
 		tcpDebugClient.stop();
 		return;
 	}

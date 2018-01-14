@@ -25,10 +25,10 @@ static void notifyCallback(
 		char data[length];
 		memcpy(data,pData,length);
 
-		// addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec()
+		// addMqttMsg(debugLabel, infoLabel + digitalTimeDisplaySec()
 		//			 + " BLE Notification: " + String(data)
 		//			 + " from: " + pBLERemoteCharacteristic->getUUID().toString().c_str(), false);
-		Serial.println("[INFO] " + digitalTimeDisplaySec()
+		Serial.println(infoLabel + digitalTimeDisplaySec()
 					+ " BLE Notification: " + String(data)
 					+ " from: " + pBLERemoteCharacteristic->getUUID().toString().c_str());
 		// TODO send notification to main loop to read data
@@ -44,7 +44,7 @@ bool connectToServer(BLEAddress pAddress) {
 	BLERemoteService* pRemoteService = pClient->getService(serviceUUID);
 	if (pRemoteService == nullptr) {
 		pClient->disconnect();
-		// addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec()
+		// addMqttMsg(debugLabel, infoLabel + digitalTimeDisplaySec()
 		//			 + " BLE Failed to find service UUID: " + serviceUUID.toString().c_str(), false);
 		// Serial.print("Failed to find our service UUID: ");
 		// Serial.println(serviceUUID.toString().c_str());
@@ -56,7 +56,7 @@ bool connectToServer(BLEAddress pAddress) {
 	pRemoteCharacteristic = pRemoteService->getCharacteristic(charUUID);
 	if (pRemoteCharacteristic == nullptr) {
 		pClient->disconnect();
-		// addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec()
+		// addMqttMsg(debugLabel, infoLabel + digitalTimeDisplaySec()
 		//			 + " BLE Failed to find characteristic UUID: " + charUUID.toString().c_str(), false);
 		Serial.print("Failed to find our characteristic UUID: ");
 		Serial.println(charUUID.toString().c_str());
@@ -65,13 +65,13 @@ bool connectToServer(BLEAddress pAddress) {
 
 	// Read the value of the characteristic.
 	// std::string value = pRemoteCharacteristic->readValue();
-	// addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec()
+	// addMqttMsg(debugLabel, infoLabel + digitalTimeDisplaySec()
 	//			 + " BLE characteristic value was: " + value.c_str(), false);
 	// Serial.print("The characteristic value was: ");
 	// Serial.println(value.c_str());
 
 	uint8_t value = pRemoteCharacteristic->readUInt8();
-	// addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec()
+	// addMqttMsg(debugLabel, infoLabel + digitalTimeDisplaySec()
 	//			 + " BLE characteristic value was: " + String(value), false);
 	Serial.print("The characteristic value was: ");
 	Serial.println(value);
@@ -87,14 +87,14 @@ class MyAdvertisedDeviceCallbacks: public BLEAdvertisedDeviceCallbacks {
 	 * Called for each advertising BLE server.
 	 */
 	void onResult(BLEAdvertisedDevice advertisedDevice) {
-		addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec()
+		addMqttMsg(debugLabel, infoLabel + digitalTimeDisplaySec()
 					+ " BLE Advertised Device found: " + advertisedDevice.toString().c_str(), false);
 		Serial.println("BLE scan: " + digitalTimeDisplaySec()
 					+ " BLE Advertised Device found: " + advertisedDevice.toString().c_str());
 
 		// // We have found a device, let us now see if it contains the service we are looking for.
 		// if (advertisedDevice.haveServiceUUID() && advertisedDevice.getServiceUUID().equals(serviceUUID)) {
-		//	 // addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec()
+		//	 // addMqttMsg(debugLabel, infoLabel + digitalTimeDisplaySec()
 		//	 //						 + " Found correct service UUID", false);
 		//	 advertisedDevice.getScan()->stop();
 		//
@@ -105,8 +105,8 @@ class MyAdvertisedDeviceCallbacks: public BLEAdvertisedDeviceCallbacks {
 	} // onResult
 
 	void onFinish() {
-		Serial.println("[INFO] " + digitalTimeDisplaySec() + " BLE Scan finished");
-		addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec() + " BLE Scan finished", false);
+		Serial.println(infoLabel + digitalTimeDisplaySec() + " BLE Scan finished");
+		addMqttMsg(debugLabel, infoLabel + digitalTimeDisplaySec() + " BLE Scan finished", false);
 		isScanning = false;
 	} // onFinish
 }; // MyAdvertisedDeviceCallbacks

@@ -30,4 +30,8 @@ Ticker weatherTicker;
 /** Flag for tasks if main app is ready */
 bool tasksEnabled = false;
 
+/** Log String */
+String debugLabel;
+String infoLabel;
+String errorLabel;
 #endif

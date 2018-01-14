@@ -64,18 +64,32 @@ void loop(void)
 		getUDPbroadcast(udpMsgLength);
 	}
 
+	// Check if new digital output value was received
+	if (digOutChanged) {
+		digOutChanged = false;
+		if (((digitalOut & 0x01) == 0x01) && (lightTaskHandle != NULL)) {
+			xTaskResumeFromISR(lightTaskHandle);
+		}
+		if (((digitalOut & 0x02) == 0x02) && (tempTaskHandle != NULL)) {
+			xTaskResumeFromISR(tempTaskHandle);
+		}
+		if (((digitalOut & 0x04) == 0x04) && (weatherTaskHandle != NULL)) {
+			xTaskResumeFromISR(weatherTaskHandle);
+		}
+	}
+
 	// Check if Pad 1 was touched
 	if (shortTouchPad1) {
 		shortTouchPad1 = false;
 
-		if (!isScanning) {
-			if (pClient != NULL && pClient->isConnected()) {
-				pClient->disconnect();
-				connected = false;
-			}
-			Serial.println("[INFO] " + digitalTimeDisplaySec() + " BLE Scan started");
-			scanBLEdevices();
-		}
+		// if (!isScanning) {
+		// 	if (pClient != NULL && pClient->isConnected()) {
+		// 		pClient->disconnect();
+		// 		connected = false;
+		// 	}
+		// 	Serial.println(infoLabel + digitalTimeDisplaySec() + " BLE Scan started");
+		// 	scanBLEdevices();
+		// }
 	}
 
 	// Check if Pad 1 was long touched
@@ -83,7 +97,7 @@ void loop(void)
 		longTouchPad1 = false;
 		// if (connected) {
 		// 	std::string value = pRemoteCharacteristic->readValue();
-		//	 addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec()
+		//	 addMqttMsg(debugLabel, infoLabel + digitalTimeDisplaySec()
 		//				 + " BLE characteristic value was: " + value.c_str(), false);
 		//	 Serial.print("The characteristic value was: ");
 		//	 Serial.println(value.c_str());
@@ -94,26 +108,14 @@ void loop(void)
 	// if (doConnect) {
 	// 	if (connectToServer(*pServerAddress)) {
 	//		 Serial.println("We are now connected to the BLE Server.");
-	// 		addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec()
+	// 		addMqttMsg(debugLabel, infoLabel + digitalTimeDisplaySec()
 	//					 + " BLE Connected to server", false);
 	//		 connected = true;
 	//	 } else {
 	//		 Serial.println("We have failed to connect to the server; there is nothin more we will do.");
-	// 		addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec()
+	// 		addMqttMsg(debugLabel, infoLabel + digitalTimeDisplaySec()
 	//					 + " BLE Connection to server failed", false);
 	//	 }
 	//	 doConnect = false;
 	// }
-
-	// Check if Pad 3 was touched
-	if (shortTouchPad3) {
-		shortTouchPad3 = false;
-		// Testing SPI master code
-		checkSPISlave();
-	}
-
-	// Check if Pad 1 was long touched
-	if (longTouchPad3) {
-		longTouchPad3 = false;
-	}
 }

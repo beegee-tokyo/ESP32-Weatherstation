@@ -1,6 +1,15 @@
 #include "setup.h"
 #include "DHTesp.h"
 
+extern BLECharacteristic *pCharacteristicNotify;
+extern BLECharacteristic *pCharacteristicTemp;
+extern BLECharacteristic *pCharacteristicHumid;
+extern BLECharacteristic *pCharacteristicHeatIndex;
+extern BLECharacteristic *pCharacteristicDewPoint;
+extern BLECharacteristic *pCharacteristicComfort;
+extern BLECharacteristic *pCharacteristicPerception;
+// extern BLEAdvertising* pAdvertising;
+
 void triggerGetTemp();
 void triggerSendTemp();
 void tempTask(void *pvParameters);
@@ -35,7 +44,7 @@ bool initTemp() {
 	byte resultValue = 0;
 	// Initialize temperature sensor
 	dht.setup(dhtPin, DHTesp::DHT11);
-	Serial.println("DHT initiated");
+	// Serial.println("DHT initiated");
 
 	// Start task to get temperature
 	xTaskCreatePinnedToCore(
@@ -48,8 +57,8 @@ bool initTemp() {
 			1);                  /* Core where the task should run */
 
 	if (tempTaskHandle == NULL) {
-		Serial.println("[ERROR] " + digitalTimeDisplaySec() + " Failed to start task for temperature update");
-		addMqttMsg("debug", "[ERROR] " + digitalTimeDisplaySec() + " Failed to start task for temperature update", false);
+		Serial.println(errorLabel + digitalTimeDisplaySec() + " Failed to start task for temperature update");
+		addMqttMsg(debugLabel, errorLabel + digitalTimeDisplaySec() + " Failed to start task for temperature update", false);
 		return false;
 	} else {
 		// Start update of environment data every 20 seconds
@@ -87,7 +96,7 @@ void triggerSendTemp() {
  *		pointer to task parameters
  */
 void tempTask(void *pvParameters) {
-	Serial.println("tempTask loop started");
+	// Serial.println("tempTask loop started");
 	while (1) // tempTask loop
 	{
 		if (otaRunning)
@@ -123,7 +132,7 @@ bool getTemperature() {
 	// Check if any reads failed and exit early (to try again).
 	if (dht.getStatus() != 0) {
 		Serial.println("DHT11 error status: " + String(dht.getStatusString()));
-		addMqttMsg("debug", "[ERROR] " + digitalTimeDisplaySec() + " DHT11 error status: " + String(dht.getStatusString()), false);
+		addMqttMsg(debugLabel, errorLabel + digitalTimeDisplaySec() + " DHT11 error status: " + String(dht.getStatusString()), false);
 		tft.fillRect(0, 32, 128, 8, TFT_RED);
 		tft.setCursor(0, 33);
 		tft.setTextColor(TFT_BLACK);
@@ -155,11 +164,11 @@ bool getTemperature() {
 	float dewPoint = dht.computeDewPoint(lastValues.temperature, lastValues.humidity);
 	String comfortStatus = comfortRatioString(lastValues.temperature, lastValues.humidity);
 	String humanPerception = computePerceptionString(lastValues.temperature, lastValues.humidity);
-	// String dbgMessage = "[INFO] " + digitalTimeDisplaySec();
+	// String dbgMessage = infoLabel + digitalTimeDisplaySec();
 	// dbgMessage += " T: " + String(newTempValue) + " H: " + String(newHumidValue);
 	// dbgMessage += " I: " + String(heatIndex) + " D: " + String(dewPoint);
 	// dbgMessage += " C: " + comfortStatus + " P: " + humanPerception;
-	// addMqttMsg("debug", dbgMessage, false);
+	// addMqttMsg(debugLabel, dbgMessage, false);
 
 
 	// Send notification if any BLE client is connected

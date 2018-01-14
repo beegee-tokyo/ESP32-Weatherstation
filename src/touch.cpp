@@ -2,7 +2,6 @@
 
 #define PAD1 T8 // GPIO33
 #define PAD2 T9 // GPIO32
-#define PAD3 T7 // GPIO27
 
 /** Touch status of Touch pad 1 */
 bool shortTouchPad1 = false;
@@ -26,23 +25,10 @@ Ticker touchTickerPad2;
 /** Flag if pad 2 was touched */
 bool pad2Touched = false;
 
-/** Touch status of pad 3 */
-bool shortTouchPad3 = false;
-/** Long touch status of pad 3 */
-bool longTouchPad3 = false;
-/** Time that pad 3 was touched */
-long touchTimePad3 = 0;
-/** Ticker for touch pad 3 check */
-Ticker touchTickerPad3;
-/** Flag if pad 3 was touched */
-bool pad3Touched = false;
-
 void checkPad1TouchStatus();
 void checkPad2TouchStatus();
-void checkPad3TouchStatus();
 void touchPad1ISR();
 void touchPad2ISR();
-void touchPad3ISR();
 
 /**
  * initTouch
@@ -51,7 +37,6 @@ void touchPad3ISR();
 void initTouch() {
 	touchAttachInterrupt(PAD1, touchPad1ISR, 20);
 	touchAttachInterrupt(PAD2, touchPad2ISR, 20);
-	touchAttachInterrupt(PAD3, touchPad3ISR, 20);
 }
 
 /**
@@ -106,7 +91,7 @@ void checkPad2TouchStatus() {
 	if (touchRead(PAD2) > 50) { // No longer touched
 		if ((millis()-touchTimePad2) >= 500) { //	500ms => long touch!
 			Serial.println("Pad 2 long touch detected after " + String((millis()-touchTimePad2)));
-			addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec() + " RESET request", false);
+			addMqttMsg(debugLabel, infoLabel + digitalTimeDisplaySec() + " RESET request", false);
 			delay(2000);
 			esp_restart();
 		} else { // short touch!
@@ -123,36 +108,5 @@ void checkPad2TouchStatus() {
 		}
 		pad2Touched = false;
 		touchTickerPad2.detach();
-	}
-}
-
-/**
- * touchPad3ISR
- * Called when touch pin value goes below treshold
-*/
-void touchPad3ISR() {
-	if (!pad3Touched) {
-		touchTickerPad3.attach_ms(50, checkPad3TouchStatus);
-		touchTimePad3= millis();
-		pad3Touched = true;
-		// Serial.println("Pad 3 touch start at " + String(touchTimePad1));
-	}
-}
-
-/**
- * checkPad3TouchStatus
- * Checks if pad 3 is still touched
-*/
-void checkPad3TouchStatus() {
-	if (touchRead(PAD3) > 50) { // No longer touched
-		if ((millis()-touchTimePad3) >= 500) { //	500ms => long touch!
-			// Serial.println("Pad 3 long touch detected after " + String((millis()-touchTimePad3)));
-			longTouchPad3 = true;
-		} else { // short touch!
-			// Serial.println("Pad 3 short touch detected after " + String((millis()-touchTimePad3)));
-			shortTouchPad3 = true;
-		}
-		pad3Touched = false;
-		touchTickerPad3.detach();
 	}
 }

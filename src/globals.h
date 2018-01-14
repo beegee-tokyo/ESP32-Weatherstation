@@ -1,10 +1,10 @@
 /** Build time */
-extern const char compileDate[];
+// extern const char compileDate[];
 
 /** mDNS and Access point name */
 extern char apName[];
 /** Index to add module ID to apName */
-extern int apIndex;
+// extern int apIndex;
 
 /** OTA update status */
 extern bool otaRunning;
@@ -18,11 +18,11 @@ extern TFT_eSPI tft;
 /**
  * Activate OTA
  */
-void activateOTA(const char *MODULTYPE, const char *MODULID);
+// void activateOTA(const char *MODULTYPE, const char *MODULID);
 /**
  * Connect to WiFi with pre-defined method
  */
-bool connectWiFi();
+// bool connectWiFi();
 /**
  * Get reset reason as string array
  */
@@ -35,15 +35,22 @@ String reset_reason(RESET_REASON reason);
 /**********************************************************/
 // Global variables
 extern bool tasksEnabled;
+extern String debugLabel;
+extern String infoLabel;
+extern String errorLabel;
+
+// WiFi utilities
+void createName(char *apName, int apIndex);
+bool connDirect(const char *ssid, const char *password, uint32_t timeout);
+bool initNTP();
+bool tryGetTime();
+String digitalTimeDisplay();
+String digitalTimeDisplaySec();
 
 // Weather interface
 extern HTTPClient http;
-/** Task handle for the weather and time update task */
 extern TaskHandle_t weatherTaskHandle;
-/** Ticker for weather and time update */
 extern Ticker weatherTicker;
-/** Ticker for MQTT weather update every minute */
-extern Ticker mqttTicker;
 
 // UDP interface
 void getUDPbroadcast(int udpMsgLength);
@@ -51,44 +58,31 @@ bool udpSendMessage(IPAddress ipAddr, String udpMsg, int udpPort);
 extern WiFiUDP udpListener;
 extern int udpMsgLength;
 
-// BLE interface
+// BLE Server interface
 void initBLEserver();
 void stopBLE();
-void scanBLEdevices();
-bool connectToServer(BLEAddress pAddress);
 extern BLEServer *pServer;
-extern BLECharacteristic *pCharacteristicNotify;
-extern BLECharacteristic *pCharacteristicTemp;
-extern BLECharacteristic *pCharacteristicHumid;
-extern BLECharacteristic *pCharacteristicHeatIndex;
-extern BLECharacteristic *pCharacteristicDewPoint;
-extern BLECharacteristic *pCharacteristicComfort;
-extern BLECharacteristic *pCharacteristicPerception;
-extern BLEAdvertising* pAdvertising;
-extern bool bleConnected;
-extern float bleTemperature;
-extern float bleHumidity;
+extern uint8_t digitalOut;
+extern bool digOutChanged;
 
-extern bool doConnect;
-extern bool connected;
-extern bool isScanning;
-extern BLEAddress *pServerAddress;
-extern BLEClient* pClient;
-extern BLERemoteCharacteristic* pRemoteCharacteristic;
-
-extern void btScan();
+// BLE Client interface
+// void scanBLEdevices();
+// bool connectToServer(BLEAddress pAddress);
+// extern bool doConnect;
+// extern bool connected;
+// extern bool isScanning;
+// extern BLEAddress *pServerAddress;
+// extern BLEClient* pClient;
+// extern BLERemoteCharacteristic* pRemoteCharacteristic;
 
 // Touch interface
 void initTouch();
 extern Ticker touchTickerPad1;
 extern Ticker touchTickerPad2;
-extern Ticker touchTickerPad3;
 extern bool shortTouchPad1;
 extern bool longTouchPad1;
 extern bool shortTouchPad2;
 extern bool longTouchPad2;
-extern bool shortTouchPad3;
-extern bool longTouchPad3;
 
 // Graphics functions
 void drawIcon(const unsigned short* icon, int16_t x, int16_t y, int8_t width, int8_t height);

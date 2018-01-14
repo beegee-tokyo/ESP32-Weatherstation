@@ -29,32 +29,32 @@ void checkSPISlave() {
 	String spiAnswer;
 	uint32_t esp8266Status = spiGetStatus();
 	if (esp8266Status == 0) {
-		addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec() + " ESP8266 SPI status: " + String(esp8266Status) + " -> no device found?", false);
+		addMqttMsg(debugLabel, infoLabel + digitalTimeDisplaySec() + " ESP8266 SPI status: " + String(esp8266Status) + " -> no device found?", false);
 	} else {
-		addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec() + " ESP8266 SPI status: " + String(esp8266Status), false);
+		addMqttMsg(debugLabel, infoLabel + digitalTimeDisplaySec() + " ESP8266 SPI status: " + String(esp8266Status), false);
 		spiWriteData((uint8_t*) "Hello Slave!",(size_t)12);
 		delay(10);
 		spiAnswer = spiReadData();
 		if (spiAnswer[0] != 'H') {
-			addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec() + " ESP8266 SPI Hello Slave! got no response", false);
+			addMqttMsg(debugLabel, infoLabel + digitalTimeDisplaySec() + " ESP8266 SPI Hello Slave! got no response", false);
 		} else {
-			addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec() + " ESP8266 SPI Hello Slave! response: " + spiAnswer, false);
+			addMqttMsg(debugLabel, infoLabel + digitalTimeDisplaySec() + " ESP8266 SPI Hello Slave! response: " + spiAnswer, false);
 		}
 		spiWriteData("Are you alive?");
 		delay(10);
 		spiAnswer = spiReadData();
 		if (spiAnswer[0] != 'A') {
-			addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec() + " ESP8266 SPI Are you alive? got no response", false);
+			addMqttMsg(debugLabel, infoLabel + digitalTimeDisplaySec() + " ESP8266 SPI Are you alive? got no response", false);
 		} else {
-			addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec() + " ESP8266 SPI Are you alive? response: " + spiAnswer, false);
+			addMqttMsg(debugLabel, infoLabel + digitalTimeDisplaySec() + " ESP8266 SPI Are you alive? response: " + spiAnswer, false);
 		}
 		spiWriteData("Invalid question");
 		delay(10);
 		spiAnswer = spiReadData();
 		if (spiAnswer[0] != 'S') {
-			addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec() + " ESP8266 SPI Invalid question got no response", false);
+			addMqttMsg(debugLabel, infoLabel + digitalTimeDisplaySec() + " ESP8266 SPI Invalid question got no response", false);
 		} else {
-			addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec() + " ESP8266 SPI Invalid question response: " + spiAnswer, false);
+			addMqttMsg(debugLabel, infoLabel + digitalTimeDisplaySec() + " ESP8266 SPI Invalid question response: " + spiAnswer, false);
 		}
 	}
 }

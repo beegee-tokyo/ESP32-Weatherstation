@@ -18,7 +18,7 @@ void activateOTA(const char *MODULTYPE, const char *MODULID) {
 	ArduinoOTA
 		.setHostname(apName)
 		.onStart([]() {
-			addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec() + " OTA_START", false);
+			addMqttMsg(debugLabel, infoLabel + digitalTimeDisplaySec() + " OTA_START", false);
 			// Set OTA flag
 			otaRunning = true;
 
@@ -32,8 +32,9 @@ void activateOTA(const char *MODULTYPE, const char *MODULID) {
 			// Just in case the touch pad timers are active (should not happen!)
 			touchTickerPad1.detach();
 			touchTickerPad2.detach();
-			touchTickerPad3.detach();
 
+			// Stop SPI
+			stopSPI();
 			// Stop BLE advertising
 			stopBLE();
 			// Stop MQTT WiFi client

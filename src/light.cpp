@@ -34,8 +34,7 @@ Ticker lightTicker;
  * Starts task and timer for repeated measurement
  * @return byte
  *		0 if light sensor was found and update task and timer are inialized
- *		1 if no no TSL2561 sensor was found but update task and timer are inialized
- *		2 if update timer could not be started
+ *		1 if update task and update timer could not be started
  */
 byte initLight() {
 	byte resultValue = 0;
@@ -45,15 +44,6 @@ byte initLight() {
 	analogReadResolution(11);
 	analogSetAttenuation(ADC_6db);
 
-	// Initialize light sensor with SDA,SCL,frequency
-	esp32Wire.begin(21,22,100000);
-	if (tsl.begin(&esp32Wire)) {
-		hasTSLSensor = true;
-		configureSensor();
-	} else {
-		hasTSLSensor = false;
-		resultValue = 1;
-	}
 	// Start task for light value readings
 	xTaskCreatePinnedToCore(
 			lightTask,            /* Function to implement the task */
@@ -88,7 +78,7 @@ void triggerGetLight() {
  *		pointer to task parameters
  */
 void lightTask(void *pvParameters) {
-	Serial.println("lightTask loop started");
+	// Serial.println("lightTask loop started");
 	while (1) // lightTask loop
 	{
 		if (otaRunning)
@@ -103,8 +93,8 @@ void lightTask(void *pvParameters) {
 					newTSLValue = collLight;
 				} else {
 					newTSLValue = 0;
-					Serial.println("[ERROR] " + digitalTimeDisplaySec() + " Failed to read from TSL2561");
-					addMqttMsg("debug", "[ERROR] " + digitalTimeDisplaySec() + " Failed to read from TSL2561", false);
+					Serial.println(errorLabel + digitalTimeDisplaySec() + " Failed to read from TSL2561");
+					addMqttMsg(debugLabel, errorLabel + digitalTimeDisplaySec() + " Failed to read from TSL2561", false);
 					hasTSLSensor = false;
 				}
 				esp32Wire.reset();
@@ -116,6 +106,7 @@ void lightTask(void *pvParameters) {
 				if (tsl.begin(&esp32Wire)) {
 					hasTSLSensor = true;
 					configureSensor();
+					addMqttMsg(debugLabel, infoLabel + digitalTimeDisplaySec() + " Light sensors available and initialized", false);
 				} else {
 					hasTSLSensor = false;
 				}
@@ -166,7 +157,7 @@ long readLux() {
 			/* Test new integration time */
 			gotLux = tsl.getEvent();
 			if (gotLux != 65536) { // True if we are not saturated
-				addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec() + " Switched up to 402ms", false);
+				addMqttMsg(debugLabel, infoLabel + digitalTimeDisplaySec() + " Switched up to 402ms", false);
 				lightInteg = 2;
 				return gotLux;
 			} else {
@@ -179,7 +170,7 @@ long readLux() {
 			/* Test new integration time */
 			gotLux = tsl.getEvent();
 			if (gotLux != 65536) { // True if we are not saturated
-				addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec() + " Switched up to 101ms", false);
+				addMqttMsg(debugLabel, infoLabel + digitalTimeDisplaySec() + " Switched up to 101ms", false);
 				lightInteg = 1;
 				return gotLux;
 			} else {
@@ -194,7 +185,7 @@ long readLux() {
 			tsl.setIntegrationTime ( TSL2561_INTEGRATIONTIME_101MS ); /* medium resolution and speed	 */
 			gotLux = tsl.getEvent ();
 			if (gotLux != 65536) { // True if we are not saturated
-				addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec() + " Switched down to 101ms", false);
+				addMqttMsg(debugLabel, infoLabel + digitalTimeDisplaySec() + " Switched down to 101ms", false);
 				lightInteg = 1;
 				return gotLux;
 			} else {
@@ -202,7 +193,7 @@ long readLux() {
 				tsl.setIntegrationTime ( TSL2561_INTEGRATIONTIME_13MS ); /* medium resolution and speed */
 				gotLux = tsl.getEvent ();
 				if (gotLux != 65536) { // True if we are not saturated
-					addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec() + " Switched down to 13ms", false);
+					addMqttMsg(debugLabel, infoLabel + digitalTimeDisplaySec() + " Switched down to 13ms", false);
 					lightInteg = 1;
 					return gotLux;
 				} else {
