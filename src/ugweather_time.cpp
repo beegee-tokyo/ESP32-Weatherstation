@@ -45,6 +45,18 @@ bool initUGWeather() {
 }
 
 /**
+ * stopUGWeather
+ * Detach ticker for weather refresh
+ * Stop weather refresh task
+ */
+void stopUGWeather() {
+	weatherTicker.detach();
+	if (weatherTaskHandle != NULL) {
+		vTaskSuspend(weatherTaskHandle);
+	}
+}
+
+/**
  * triggerGetWeather
  *
  * Triggered by timer to get weather and time update every 30 minutes

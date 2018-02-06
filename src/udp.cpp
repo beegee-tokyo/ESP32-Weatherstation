@@ -74,34 +74,34 @@ void getUDPbroadcast(int udpMsgLength) {
  */
 bool udpSendMessage(IPAddress ipAddr, String udpMsg, int udpPort) {
 	/** WiFiUDP class for creating UDP communication */
-	WiFiUDP udpClientServer;
+	WiFiUDP udpServer;
 
 	// Start UDP client for sending packets
-	int connOK = udpClientServer.begin(udpPort);
+	int connOK = udpServer.begin(udpPort);
 
 	if (connOK == 0) {
 		Serial.println("UDP could not get socket");
 		// addMqttMsg(debugLabel, errorLabel + digitalTimeDisplaySec() + "UDP could not get socket", false);
 		return false;
 	}
-	int beginOK = udpClientServer.beginPacket(ipAddr, udpPort);
+	int beginOK = udpServer.beginPacket(ipAddr, udpPort);
 
 	if (beginOK == 0) { // Problem occured!
-		udpClientServer.stop();
+		udpServer.stop();
 		Serial.println("UDP connection failed");
 		// addMqttMsg(debugLabel, errorLabel + digitalTimeDisplaySec() + "UDP connection failed", false);
 		return false;
 	}
-	int bytesSent = udpClientServer.print(udpMsg);
+	int bytesSent = udpServer.print(udpMsg);
 	if (bytesSent == udpMsg.length()) {
-		udpClientServer.endPacket();
-		udpClientServer.stop();
+		udpServer.endPacket();
+		udpServer.stop();
 		return true;
 	} else {
 		Serial.println("Failed to send " + udpMsg + ", sent " + String(bytesSent) + " of " + String(udpMsg.length()) + " bytes");
 		// addMqttMsg(debugLabel, errorLabel + digitalTimeDisplaySec() + "Failed to send " + udpMsg + ", sent " + String(bytesSent) + " of " + String(udpMsg.length()) + " bytes", false);
-		udpClientServer.endPacket();
-		udpClientServer.stop();
+		udpServer.endPacket();
+		udpServer.stop();
 		return false;
 	}
 }

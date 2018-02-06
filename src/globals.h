@@ -77,12 +77,16 @@ extern bool digOutChanged;
 
 // Touch interface
 void initTouch();
+void disableTouch();
 extern Ticker touchTickerPad1;
 extern Ticker touchTickerPad2;
+extern Ticker touchTickerPad3;
 extern bool shortTouchPad1;
 extern bool longTouchPad1;
 extern bool shortTouchPad2;
 extern bool longTouchPad2;
+extern bool shortTouchPad3;
+extern bool longTouchPad3;
 
 // Graphics functions
 void drawIcon(const unsigned short* icon, int16_t x, int16_t y, int8_t width, int8_t height);
@@ -101,6 +105,7 @@ extern Ticker ledTicker;
 
 // Light functions / variables
 byte initLight();
+void stopLight();
 extern long newLDRValue;
 extern int newTSLValue;
 extern TaskHandle_t lightTaskHandle;
@@ -108,11 +113,13 @@ extern Ticker lightTicker;
 
 // Temperature functions / variables
 bool initTemp();
+void stopTemp();
 extern TaskHandle_t tempTaskHandle;
 extern Ticker tempTicker;
 
 // Underground Weather & NTP time update functions / variables
 bool initUGWeather();
+void stopUGWeather();
 void ugWeatherTask(void *pvParameters);
 
 // SPI interface
@@ -124,3 +131,13 @@ void spiWriteData(uint8_t * data, size_t len);
 void spiWriteData(const char * data);
 void spiReadData(uint8_t * data);
 String spiReadData();
+
+// I2C interface
+void initI2C();
+void i2cWrite(uint8_t value);
+
+esp_err_t initSPIidf();
+esp_err_t stopSPIidf();
+esp_err_t checkSPISlaveIDF();
+
+esp_err_t initSPIslave();

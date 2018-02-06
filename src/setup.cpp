@@ -171,8 +171,16 @@ void setup(void)
 	resetReason = reset_reason(rtc_get_reset_reason(1));
 	addMqttMsg(debugLabel, infoLabel + digitalTimeDisplaySec() + " Reset reason CPU1: " + resetReason, false);
 
+	addMqttMsg(debugLabel, infoLabel + digitalTimeDisplaySec() + " SDK Version: " + ESP.getSdkVersion(), false);
+
 	// Initialize SPI connection to ESP8266
-	initSPI();
+	// Slave on ESP8266 not working atm !!!!!!!!!!!!!!!!
+	// initSPI();
+	// Serial.println("Result of SPI initializaton: " + String(initSPIidf(),HEX));
+	// Serial.println("Result of SPI initializaton: 0x" + String(initSPIslave(),HEX));
+
+	// Initialize I2C connection to ESP8266
+	// initI2C();
 
 	// Initialize BLE server
 	initBLEserver();

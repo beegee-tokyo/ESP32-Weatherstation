@@ -26,19 +26,22 @@ void activateOTA(const char *MODULTYPE, const char *MODULID) {
 			stopFlashing();
 
 			// Stop all timers
-			lightTicker.detach();
-			tempTicker.detach();
-			weatherTicker.detach();
+			stopLight();
+			stopTemp();
+			stopUGWeather();
+
 			// Just in case the touch pad timers are active (should not happen!)
-			touchTickerPad1.detach();
-			touchTickerPad2.detach();
+			disableTouch();
 
 			// Stop SPI
-			stopSPI();
+			// stopSPI();
+			
 			// Stop BLE advertising
 			stopBLE();
+
 			// Stop MQTT WiFi client
 			mqttClient.disconnect();
+			
 			// Stop UDP listener
 			udpListener.stop();
 
@@ -114,14 +117,11 @@ void activateOTA(const char *MODULTYPE, const char *MODULID) {
 
 	ArduinoOTA.begin();
 
-	const char * mhcTxtData[7] = {
-		"board=" ARDUINO_BOARD,
-		"tcp_check=no",
-		"ssh_upload=no",
-		"auth_upload=no",
-		MODULTYPE,
-		MODULID,
-		"service=MHC"
-	};
-	MDNS.addMultiServiceTxt("_arduino", "_tcp", mhcTxtData, 7);
+	MDNS.addServiceTxt("_arduino", "_tcp", "service", "MHC");
+	MDNS.addServiceTxt("_arduino", "_tcp", "type", "TestBoard");
+	MDNS.addServiceTxt("_arduino", "_tcp", "id", "ESP32-Test");
+
+  MDNS.addService("_mhc_cmd","_tcp",9998);
+  MDNS.addService("_mhc_brc","_udp",9997);
+  MDNS.addService("_mhc_dbg","_tcp",9999);
 }

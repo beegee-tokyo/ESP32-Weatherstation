@@ -41,6 +41,7 @@
 #include "HTTPClient.h"
 #include "WiFiClientSecure.h"
 
+#include <driver/spi_master.h>
 #include <BLEDevice.h>
 
 // My libraries

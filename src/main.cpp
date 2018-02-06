@@ -1,5 +1,7 @@
 #include <setup.h>
 
+uint8_t i2cValue = 0xAA;
+
 /**
  * loop
  * Arduino loop function, called once 'setup' is complete (your own code
@@ -17,6 +19,14 @@ void loop(void)
 	/**********************************************************/
 	if (!tasksEnabled) {
 		delay(2000); // Wait two seconds to let things settle down
+
+		shortTouchPad1 = false;
+		longTouchPad1 = false;
+		shortTouchPad2 = false;
+		longTouchPad2 = false;
+		shortTouchPad3 = false;
+		longTouchPad3 = false;
+		
 		tft.fillRect(0, 0, 128, 120, TFT_BLACK); // Clear screen
 		tasksEnabled = true;
 		if (tempTaskHandle != NULL) {
@@ -64,7 +74,7 @@ void loop(void)
 		getUDPbroadcast(udpMsgLength);
 	}
 
-	// Check if new digital output value was received
+	// Check if new digital output value was received on BLE
 	if (digOutChanged) {
 		digOutChanged = false;
 		if (((digitalOut & 0x01) == 0x01) && (lightTaskHandle != NULL)) {
@@ -118,4 +128,33 @@ void loop(void)
 	//	 }
 	//	 doConnect = false;
 	// }
+
+	// Check if Pad 3 was touched
+	if (shortTouchPad3) {
+		shortTouchPad3 = false;
+		// Testing SPI master code
+		// Slave on ESP8266 not working atm !!!!!!!!!!!!!!!!
+		// addMqttMsg(debugLabel, infoLabel + digitalTimeDisplaySec()
+		// 				 + " Check SPI started", false);
+		// checkSPISlave();
+		// esp_err_t result = checkSPISlaveIDF();
+		
+
+		// addMqttMsg(debugLabel, infoLabel + digitalTimeDisplaySec()
+		// 				 + " I2C sending 0x" + String(i2cValue,HEX), false);
+		// Serial.println(infoLabel + digitalTimeDisplaySec()
+		// 				 + " I2C sending 0x" + String(i2cValue,HEX));
+		// initI2C();
+		// i2cWrite(i2cValue);
+		// if (i2cValue == 0x55) {
+		// 	i2cValue = 0xAA;
+		// } else {
+		// 	i2cValue = 0x55;
+		// }
+	}
+
+	// Check if Pad 1 was long touched
+	if (longTouchPad3) {
+		longTouchPad3 = false;
+	}
 }

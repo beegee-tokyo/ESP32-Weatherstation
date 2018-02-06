@@ -63,6 +63,19 @@ byte initLight() {
 
 	return resultValue;
 }
+
+/**
+ * stopLight
+ * Detach ticker for light measurement
+ * Stop light measurement task
+ */
+void stopLight() {
+	lightTicker.detach();
+	if (lightTaskHandle != NULL) {
+		vTaskSuspend(lightTaskHandle);
+	}
+}
+
 /**
  * Start task to reads TSL2561 light sensor and LDR analog value
  */

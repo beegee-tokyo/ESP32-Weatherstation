@@ -70,6 +70,20 @@ bool initTemp() {
 }
 
 /**
+ * stopTemp
+ * Detach ticker for temperature measurement
+ * Detach ticker for mqtt
+ * Stop temperature measurement task
+ */
+void stopTemp() {
+	tempTicker.detach();
+	mqttTicker.detach();
+	if (tempTaskHandle != NULL) {
+		vTaskSuspend(tempTaskHandle);
+	}
+}
+
+/**
  * triggerGetTemp
  * Sets flag dhtUpdated to true for handling in loop()
  * called by Ticker tempTicker
@@ -144,7 +158,7 @@ bool getTemperature() {
 	/******************************************************* */
 	/* Trying to calibrate the humidity values							 */
 	/******************************************************* */
-	lastValues.humidity =	(int)(20.0 + lastValues.humidity)*1.6;
+	lastValues.humidity =	(int)(lastValues.humidity * 4.2);
 	String displayTxt = "";
 
 	tft.fillRect(0, 32, 128, 16, TFT_DARKGREY);
@@ -178,6 +192,7 @@ bool getTemperature() {
 		tempValue = (uint16_t)(lastValues.temperature*100);
 		tempData[1] = tempValue>>8;
 		tempData[0] = tempValue;
+
 		pCharacteristicTemp->setValue(tempData, 2);
 
 		tempValue = (uint16_t)(lastValues.humidity*100);

@@ -122,7 +122,6 @@ void initBLEserver() {
 	pService = pServer->createService(BLEUUID((uint16_t)SERVICE_UUID),20);
 
 	// Create BLE Characteristic for Alert
-	
 	pCharacteristicNotify = pService->createCharacteristic(
 		BLEUUID((uint16_t)NOTIFICATION_UUID),
 		BLECharacteristic::PROPERTY_READ	 |
@@ -169,19 +168,19 @@ void initBLEserver() {
 		BLECharacteristic::PROPERTY_READ
 	);
 
+	// Create BLE Characteristic for Device Name
+	pCharacteristicDeviceName = pService->createCharacteristic(
+		BLEUUID((uint16_t)DEVICENAME_UUID),
+		BLECharacteristic::PROPERTY_READ
+	);
+	pCharacteristicDeviceName->setValue((uint8_t*)apName,16);
+
 	// Create BLE Characteristic for Digital output
 	pCharacteristicOutput = pService->createCharacteristic(
 		BLEUUID((uint16_t)OUTPUT_UUID),
 		BLECharacteristic::PROPERTY_WRITE
 	);
 	pCharacteristicOutput->setCallbacks(new MyCallbackHandler());
-
-	// Create BLE Characteristic for Digital output
-	pCharacteristicDeviceName = pService->createCharacteristic(
-		BLEUUID((uint16_t)DEVICENAME_UUID),
-		BLECharacteristic::PROPERTY_READ
-	);
-	pCharacteristicDeviceName->setValue((uint8_t*)apName,16);
 
 	// Start the service
 	pService->start();
