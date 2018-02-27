@@ -58,7 +58,7 @@ class MyServerCallbacks: public BLEServerCallbacks {
 	// TODO this doesn't take into account several clients being connected
 		void onConnect(BLEServer* pServer) {
 			bleConnected = true;
-			// addMqttMsg(debugLabel, infoLabel + digitalTimeDisplaySec() + " BLE connected #" + String(pServer->getConnId()), false);
+			// sendDebug(debugLabel, infoLabel + digitalTimeDisplaySec() + " BLE connected #" + String(pServer->getConnId()), false);
 			pAdvertising->start();
 		};
 
@@ -66,7 +66,7 @@ class MyServerCallbacks: public BLEServerCallbacks {
 			if (pServer->getConnectedCount() == 0) {
 				bleConnected = false;
 			}
-			// addMqttMsg(debugLabel, infoLabel + digitalTimeDisplaySec() + " BLE disconnected #" + String(pServer->getConnId()), false);
+			// sendDebug(debugLabel, infoLabel + digitalTimeDisplaySec() + " BLE disconnected #" + String(pServer->getConnId()), false);
 		}
 };
 
@@ -85,15 +85,15 @@ class MyCallbackHandler: public BLECharacteristicCallbacks {
 			digitalOut = (uint8_t) value[0];
 			digOutChanged = true;
 
-      Serial.println("*********");
-      Serial.print("New value: ");
+      // Serial.println("*********");
+      // Serial.print("New value: ");
       for (int i = 0; i < value.length(); i++) {
-        Serial.print(String(value[i]));
+        // Serial.print(String(value[i]));
         strValue += value[i];
       }
-      Serial.println();
-      Serial.println("*********");
-      addMqttMsg("debug", "[INFO] " + digitalTimeDisplaySec() + " BLE received: " + strValue, false);
+      // Serial.println();
+      // Serial.println("*********");
+      sendDebug(debugLabel, infoLabel + digitalTimeDisplaySec() + " BLE received: " + strValue, false);
     }
   }
 };
@@ -106,11 +106,11 @@ class MyCallbackHandler: public BLECharacteristicCallbacks {
  */
 void initBLEserver() {
 
-	addMqttMsg(debugLabel, infoLabel + digitalTimeDisplaySec() + " BLE initBLEserver()", false);
+	sendDebug(debugLabel, infoLabel + digitalTimeDisplaySec() + " BLE initBLEserver()", false);
 
 	// Initialize BLE
 	BLEDevice::init(apName);
-	// BLEDevice::setPower(ESP_PWR_LVL_P7);
+	BLEDevice::setPower(ESP_PWR_LVL_P7);
 
 	// Create BLE Server
 	pServer = BLEDevice::createServer();
@@ -190,7 +190,18 @@ void initBLEserver() {
 
 	pAdvertising->start();
 
-	addMqttMsg(debugLabel, infoLabel + digitalTimeDisplaySec() + " BLE active now", false);
+	sendDebug(debugLabel, infoLabel + digitalTimeDisplaySec() + " BLE active now", false);
+}
+
+/**
+ * restartBLE
+ * Restart advertising of the BLE service
+ * Should be called only after init
+ */
+void restartBLE() {
+	if (pAdvertising != NULL) {
+		pAdvertising->start();
+	}
 }
 
 /**

@@ -1,7 +1,5 @@
 #include "setup.h"
 #include <TSL2561.h>
-// #include <Adafruit_Sensor.h>
-// #include <Adafruit_TSL2561_U.h>
 
 void configureSensor ();
 long readLux();
@@ -47,8 +45,8 @@ byte initLight() {
 	// Start task for light value readings
 	xTaskCreatePinnedToCore(
 			lightTask,            /* Function to implement the task */
-			"LightMeasure ",      /* Name of the task */
-			4000,                 /* Stack size in words */
+			"Light ",             /* Name of the task */
+			2000,                 /* Stack size in words */
 			NULL,                 /* Task input parameter */
 			5,                    /* Priority of the task */
 			&lightTaskHandle,     /* Task handle. */
@@ -106,8 +104,7 @@ void lightTask(void *pvParameters) {
 					newTSLValue = collLight;
 				} else {
 					newTSLValue = 0;
-					Serial.println(errorLabel + digitalTimeDisplaySec() + " Failed to read from TSL2561");
-					addMqttMsg(debugLabel, errorLabel + digitalTimeDisplaySec() + " Failed to read from TSL2561", false);
+					sendDebug(debugLabel, errorLabel + digitalTimeDisplaySec() + " Failed to read from TSL2561", false);
 					hasTSLSensor = false;
 				}
 				esp32Wire.reset();
@@ -119,7 +116,7 @@ void lightTask(void *pvParameters) {
 				if (tsl.begin(&esp32Wire)) {
 					hasTSLSensor = true;
 					configureSensor();
-					addMqttMsg(debugLabel, infoLabel + digitalTimeDisplaySec() + " Light sensors available and initialized", false);
+					sendDebug(debugLabel, infoLabel + digitalTimeDisplaySec() + " Light sensors available and initialized", false);
 				} else {
 					hasTSLSensor = false;
 				}
@@ -170,7 +167,7 @@ long readLux() {
 			/* Test new integration time */
 			gotLux = tsl.getEvent();
 			if (gotLux != 65536) { // True if we are not saturated
-				addMqttMsg(debugLabel, infoLabel + digitalTimeDisplaySec() + " Switched up to 402ms", false);
+				sendDebug(debugLabel, infoLabel + digitalTimeDisplaySec() + " Switched up to 402ms", false);
 				lightInteg = 2;
 				return gotLux;
 			} else {
@@ -183,7 +180,7 @@ long readLux() {
 			/* Test new integration time */
 			gotLux = tsl.getEvent();
 			if (gotLux != 65536) { // True if we are not saturated
-				addMqttMsg(debugLabel, infoLabel + digitalTimeDisplaySec() + " Switched up to 101ms", false);
+				sendDebug(debugLabel, infoLabel + digitalTimeDisplaySec() + " Switched up to 101ms", false);
 				lightInteg = 1;
 				return gotLux;
 			} else {
@@ -198,7 +195,7 @@ long readLux() {
 			tsl.setIntegrationTime ( TSL2561_INTEGRATIONTIME_101MS ); /* medium resolution and speed	 */
 			gotLux = tsl.getEvent ();
 			if (gotLux != 65536) { // True if we are not saturated
-				addMqttMsg(debugLabel, infoLabel + digitalTimeDisplaySec() + " Switched down to 101ms", false);
+				sendDebug(debugLabel, infoLabel + digitalTimeDisplaySec() + " Switched down to 101ms", false);
 				lightInteg = 1;
 				return gotLux;
 			} else {
@@ -206,7 +203,7 @@ long readLux() {
 				tsl.setIntegrationTime ( TSL2561_INTEGRATIONTIME_13MS ); /* medium resolution and speed */
 				gotLux = tsl.getEvent ();
 				if (gotLux != 65536) { // True if we are not saturated
-					addMqttMsg(debugLabel, infoLabel + digitalTimeDisplaySec() + " Switched down to 13ms", false);
+					sendDebug(debugLabel, infoLabel + digitalTimeDisplaySec() + " Switched down to 13ms", false);
 					lightInteg = 1;
 					return gotLux;
 				} else {

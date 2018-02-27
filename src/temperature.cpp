@@ -32,6 +32,9 @@ String tempMsg;
 /** Comfort profile */
 ComfortState cf;
 
+/** PortMux to disable task switching */
+portMUX_TYPE mux;
+
 /**
  * initTemp
  * Setup DHT library
@@ -49,16 +52,15 @@ bool initTemp() {
 	// Start task to get temperature
 	xTaskCreatePinnedToCore(
 			tempTask,            /* Function to implement the task */
-			"tempTask ",         /* Name of the task */
-			4000,                /* Stack size in words */
+			"temp ",             /* Name of the task */
+			2000,                /* Stack size in words */
 			NULL,                /* Task input parameter */
 			5,                   /* Priority of the task */
 			&tempTaskHandle,     /* Task handle. */
 			1);                  /* Core where the task should run */
 
 	if (tempTaskHandle == NULL) {
-		Serial.println(errorLabel + digitalTimeDisplaySec() + " Failed to start task for temperature update");
-		addMqttMsg(debugLabel, errorLabel + digitalTimeDisplaySec() + " Failed to start task for temperature update", false);
+		sendDebug(debugLabel, errorLabel + digitalTimeDisplaySec() + " Failed to start task for temperature update", false);
 		return false;
 	} else {
 		// Start update of environment data every 20 seconds
@@ -101,7 +103,7 @@ void triggerGetTemp() {
  * called by Ticker mqttTicker
  */
 void triggerSendTemp() {
-	addMqttMsg("WEI", tempMsg, false);
+	sendDebug("WEI", tempMsg, false);
 }
 
 /**
@@ -132,12 +134,15 @@ void tempTask(void *pvParameters) {
  *		false if aquisition failed
 */
 bool getTemperature() {
+	mux = portMUX_INITIALIZER_UNLOCKED;
+	portENTER_CRITICAL(&mux);
 	tft.fillRect(0, 32, 128, 8, TFT_WHITE);
 	tft.setCursor(0, 33);
 	tft.setTextColor(TFT_BLACK);
 	tft.setTextSize(0);
 	tft.println("Getting temperature");
 	tft.setTextColor(TFT_WHITE);
+	portEXIT_CRITICAL(&mux);
 
 	// Reading temperature and humidity takes about 250 milliseconds!
 	// Sensor readings may also be up to 2 seconds 'old' (it's a very slow sensor)
@@ -145,14 +150,16 @@ bool getTemperature() {
 
 	// Check if any reads failed and exit early (to try again).
 	if (dht.getStatus() != 0) {
-		Serial.println("DHT11 error status: " + String(dht.getStatusString()));
-		addMqttMsg(debugLabel, errorLabel + digitalTimeDisplaySec() + " DHT11 error status: " + String(dht.getStatusString()), false);
+		sendDebug(debugLabel, errorLabel + digitalTimeDisplaySec() + " DHT11 error status: " + String(dht.getStatusString()), false);
+		mux = portMUX_INITIALIZER_UNLOCKED;
+		portENTER_CRITICAL(&mux);
 		tft.fillRect(0, 32, 128, 8, TFT_RED);
 		tft.setCursor(0, 33);
 		tft.setTextColor(TFT_BLACK);
 		tft.setTextSize(0);
 		tft.println("DHT11 failure");
 		tft.setTextColor(TFT_WHITE);
+		portEXIT_CRITICAL(&mux);
 		return false;
 	}
 	/******************************************************* */
@@ -161,6 +168,8 @@ bool getTemperature() {
 	lastValues.humidity =	(int)(lastValues.humidity * 4.2);
 	String displayTxt = "";
 
+	mux = portMUX_INITIALIZER_UNLOCKED;
+	portENTER_CRITICAL(&mux);
 	tft.fillRect(0, 32, 128, 16, TFT_DARKGREY);
 	tft.setCursor(0, 33);
 	tft.setTextSize(1);
@@ -173,6 +182,7 @@ bool getTemperature() {
 	tft.setTextColor(TFT_WHITE);
 	displayTxt = "I " + String(lastValues.temperature,0) + "'C " + String(lastValues.humidity,0) + "%";
 	tft.print(displayTxt);
+	portEXIT_CRITICAL(&mux);
 
 	float heatIndex = dht.computeHeatIndex(lastValues.temperature, lastValues.humidity);
 	float dewPoint = dht.computeDewPoint(lastValues.temperature, lastValues.humidity);
@@ -182,7 +192,7 @@ bool getTemperature() {
 	// dbgMessage += " T: " + String(newTempValue) + " H: " + String(newHumidValue);
 	// dbgMessage += " I: " + String(heatIndex) + " D: " + String(dewPoint);
 	// dbgMessage += " C: " + comfortStatus + " P: " + humanPerception;
-	// addMqttMsg(debugLabel, dbgMessage, false);
+	// sendDebug(debugLabel, dbgMessage, false);
 
 
 	// Send notification if any BLE client is connected

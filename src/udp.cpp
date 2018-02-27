@@ -1,6 +1,6 @@
 #include "setup.h"
 
-/** Network address mask for TCP debug */
+/** Network address for TCP debug */
 static IPAddress ipDebug (192, 168, 0, 10);
 /** TCP debug port */
 static const int tcpDebugPort = 9999;
@@ -46,15 +46,18 @@ void getUDPbroadcast(int udpMsgLength) {
 				outsideHeat = jsonIn["he"].as<double>();
 			}
 
+			portMUX_TYPE mux = portMUX_INITIALIZER_UNLOCKED;
+			portENTER_CRITICAL(&mux);
 			tft.fillRect(0, 69, 128, 14, TFT_BLACK);
 			tft.setTextSize(2);
 			tft.setTextColor(TFT_WHITE);
 			tft.setCursor(0,69);
 			String displayText = "E " + String(outsideTemp,0) + "'C " + String(outsideHumid,0) + "%";
 			tft.print(displayText);
+			portEXIT_CRITICAL(&mux);
 		}
 	} else {
-		addMqttMsg(debugLabel, errorLabel + digitalTimeDisplaySec() + "Received invalid JSON", false);
+		sendDebug(debugLabel, errorLabel + digitalTimeDisplaySec() + "Received invalid JSON", false);
 	}
 }
 
@@ -80,16 +83,14 @@ bool udpSendMessage(IPAddress ipAddr, String udpMsg, int udpPort) {
 	int connOK = udpServer.begin(udpPort);
 
 	if (connOK == 0) {
-		Serial.println("UDP could not get socket");
-		// addMqttMsg(debugLabel, errorLabel + digitalTimeDisplaySec() + "UDP could not get socket", false);
+		// sendDebug(debugLabel, errorLabel + digitalTimeDisplaySec() + "UDP could not get socket", false);
 		return false;
 	}
 	int beginOK = udpServer.beginPacket(ipAddr, udpPort);
 
 	if (beginOK == 0) { // Problem occured!
 		udpServer.stop();
-		Serial.println("UDP connection failed");
-		// addMqttMsg(debugLabel, errorLabel + digitalTimeDisplaySec() + "UDP connection failed", false);
+		// sendDebug(debugLabel, errorLabel + digitalTimeDisplaySec() + "UDP connection failed", false);
 		return false;
 	}
 	int bytesSent = udpServer.print(udpMsg);
@@ -98,35 +99,9 @@ bool udpSendMessage(IPAddress ipAddr, String udpMsg, int udpPort) {
 		udpServer.stop();
 		return true;
 	} else {
-		Serial.println("Failed to send " + udpMsg + ", sent " + String(bytesSent) + " of " + String(udpMsg.length()) + " bytes");
-		// addMqttMsg(debugLabel, errorLabel + digitalTimeDisplaySec() + "Failed to send " + udpMsg + ", sent " + String(bytesSent) + " of " + String(udpMsg.length()) + " bytes", false);
+		// sendDebug(debugLabel, errorLabel + digitalTimeDisplaySec() + "Failed to send " + udpMsg + ", sent " + String(bytesSent) + " of " + String(udpMsg.length()) + " bytes", false);
 		udpServer.endPacket();
 		udpServer.stop();
 		return false;
 	}
-}
-
-/**
- * sendDebug
- * Send a debug message over TCP
- *
- * @param debugMsg
- *				debug message
- * @param senderID
- *				device ID
- **/
-void sendDebug(String debugMsg, String senderID) {
-	/** WiFiClient class to create TCP communication */
-	WiFiClient tcpDebugClient;
-
-	if (!tcpDebugClient.connect(ipDebug, tcpDebugPort)) {
-		// Serial.println("connection to Debug Android " + String(ipDebug[0]) + "." + String(ipDebug[1]) + "." + String(ipDebug[2]) + "." + String(ipDebug[3]) + " failed");
-		tcpDebugClient.stop();
-		return;
-	}
-
-	debugMsg = senderID + " " + debugMsg;
-	tcpDebugClient.print(debugMsg);
-
-	tcpDebugClient.stop();
 }

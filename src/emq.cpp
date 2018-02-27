@@ -11,10 +11,8 @@ static const char * mqttPwd = "teresa1963";
 
 /** WiFi client class to receive messages from mqtt broker */
 WiFiClient mqttReceiver;
-/** Label for consumption/production chart */
-int solarLabel = 1;
 /** Max number of messages in buffer */
-#define msgBufferSize 15
+#define msgBufferSize 10
 
 void mqttTask(void *pvParameters);
 void messageReceived(String &topic, String &payload);
@@ -23,7 +21,6 @@ void messageReceived(String &topic, String &payload);
 struct mqttMsgStruct {
 	String topic = "";
 	String payload = "";
-	bool waiting = false;
 	bool retained = false;
 };
 
@@ -39,20 +36,20 @@ TaskHandle_t mqttTaskHandle = NULL;
 void initMqtt() {
 	// Clear message structure
 	for (int index = 0; index < msgBufferSize; index++) {
-		mqttMsg[index].waiting = false;
+		mqttMsg[index].topic = "";
 	}
 
 	// Connect to MQTT broker
 	if (!connectMQTT()) {
-		Serial.println("Can't connect to MQTT broker");
+		// Serial.println("Can't connect to MQTT broker");
 		return;
 	}
 
 	// Start task for MEEO publishing
 	xTaskCreatePinnedToCore(
 			mqttTask,              /* Function to implement the task */
-			"MQTTPublisher ",      /* Name of the task */
-			4000,                  /* Stack size in words */
+			"MQTT ",               /* Name of the task */
+			2000,                  /* Stack size in words */
 			NULL,                  /* Task input parameter */
 			5,                     /* Priority of the task */
 			&mqttTaskHandle,       /* Task handle. */
@@ -77,10 +74,9 @@ void initMqtt() {
 bool addMqttMsg (String topic, String payload, bool retained) {
 	bool queueResults = false;
 	for (byte index = 0; index < msgBufferSize; index ++) {
-		if (!mqttMsg[index].waiting) { // found an empty slot?
+		if (mqttMsg[index].topic.length() == 0) { // found an empty slot?
 			mqttMsg[index].topic = topic;
 			mqttMsg[index].payload = payload;
-			mqttMsg[index].waiting = true;
 			mqttMsg[index].retained = retained;
 			queueResults = true;
 			break;
@@ -105,19 +101,19 @@ void mqttTask(void *pvParameters) {
 			vTaskDelete(NULL);
 		}
 		for (byte index = 0; index < msgBufferSize; index ++) {
-			if (mqttMsg[index].waiting) {
+			if (mqttMsg[index].topic.length() != 0) {
 				if (mqttMsg[index].topic == "WEI") {
 					// Broadcast weather status over UDP
 					IPAddress multiIP (192,	168, 0, 255);
 					udpSendMessage(multiIP, mqttMsg[index].payload, 9997);
-					mqttMsg[index].waiting = false;
+					mqttMsg[index].topic = "";
 				} else if (mqttClient.publish("/"+mqttMsg[index].topic,mqttMsg[index].payload,mqttMsg[index].retained,0)) {
-					mqttMsg[index].waiting = false;
+					mqttMsg[index].topic = "";
 				} else { // Publishing error. Maybe we lost connection ???
 					// Serial.println("Sending to MQTT broker failed");
 					if (connectMQTT()) { // Try to reconnect and resend the message
 						if (mqttClient.publish("/"+mqttMsg[index].topic,mqttMsg[index].payload,mqttMsg[index].retained,0)) {
-							mqttMsg[index].waiting = false;
+							mqttMsg[index].topic = "";
 							mqttClient.publish((char *)"/DEV/ESP32",(char *)"esp32",5,true,0);
 						}
 					}
@@ -126,7 +122,7 @@ void mqttTask(void *pvParameters) {
 		}
 		bool queueIsEmpty = true;
 		for (byte index = 0; index < msgBufferSize; index ++) {
-			if (mqttMsg[index].waiting) {
+			if (mqttMsg[index].topic.length() != 0) {
 				queueIsEmpty = false;
 			}
 		}

@@ -198,7 +198,7 @@ esp_err_t checkSPISlaveIDF() {
 	memset(status,0,4);
 	memset(recvBuf,0,32);
 	transmitResult = transmitSPIidf(READ_STATUS, sendBuf, status, 1); // 0x04 => read status
-	addMqttMsg(debugLabel, infoLabel + digitalTimeDisplaySec() 
+	sendDebug(debugLabel, infoLabel + digitalTimeDisplaySec() 
 		+ " Transmit result: " + String(transmitResult)
 		+ " ESP8266 SPI status: " + String((uint32_t)status,HEX), false);
 
@@ -211,32 +211,32 @@ return transmitResult;
 	// 		// Serial.println(infoLabel 
 	// 		// 	+ digitalTimeDisplaySec() 
 	// 		// 	+ " ESP8266 SPI Hello Slave! got no response: " + spiAnswer);
-	// 		addMqttMsg(debugLabel, infoLabel + digitalTimeDisplaySec() + " ESP8266 SPI Hello Slave! got no response", false);
+	// 		sendDebug(debugLabel, infoLabel + digitalTimeDisplaySec() + " ESP8266 SPI Hello Slave! got no response", false);
 	// 	} else {
 	// 		// Serial.println(infoLabel 
 	// 		// 	+ digitalTimeDisplaySec() 
 	// 		// 	+ " ESP8266 SPI Hello Slave! response: " + spiAnswer);
-	// 		addMqttMsg(debugLabel, infoLabel + digitalTimeDisplaySec() + " ESP8266 SPI Hello Slave! response: " + spiAnswer, false);
+	// 		sendDebug(debugLabel, infoLabel + digitalTimeDisplaySec() + " ESP8266 SPI Hello Slave! response: " + spiAnswer, false);
 	// 	}
 	// 	spiWriteData("Are you alive?");
 	// 	delay(20);
 	// 	spiAnswer = spiReadData();
 	// 	if (spiAnswer[0] != 'A') {
 	// 		// Serial.println(infoLabel + digitalTimeDisplaySec() + " ESP8266 SPI Are you alive? got no response: " + spiAnswer);
-	// 		addMqttMsg(debugLabel, infoLabel + digitalTimeDisplaySec() + " ESP8266 SPI Are you alive? got no response", false);
+	// 		sendDebug(debugLabel, infoLabel + digitalTimeDisplaySec() + " ESP8266 SPI Are you alive? got no response", false);
 	// 	} else {
 	// 		// Serial.println(infoLabel + digitalTimeDisplaySec() + " ESP8266 SPI Are you alive? response: " + spiAnswer);
-	// 		addMqttMsg(debugLabel, infoLabel + digitalTimeDisplaySec() + " ESP8266 SPI Are you alive? response: " + spiAnswer, false);
+	// 		sendDebug(debugLabel, infoLabel + digitalTimeDisplaySec() + " ESP8266 SPI Are you alive? response: " + spiAnswer, false);
 	// 	}
 	// 	spiWriteData("Invalid question");
 	// 	delay(20);
 	// 	spiAnswer = spiReadData();
 	// 	if (spiAnswer[0] != 'S') {
 	// 		// Serial.println(infoLabel + digitalTimeDisplaySec() + " ESP8266 SPI Invalid question got no response: " + spiAnswer);
-	// 		addMqttMsg(debugLabel, infoLabel + digitalTimeDisplaySec() + " ESP8266 SPI Invalid question got no response", false);
+	// 		sendDebug(debugLabel, infoLabel + digitalTimeDisplaySec() + " ESP8266 SPI Invalid question got no response", false);
 	// 	} else {
 	// 		// Serial.println(infoLabel + digitalTimeDisplaySec() + " ESP8266 SPI Invalid question response: " + spiAnswer);
-	// 		addMqttMsg(debugLabel, infoLabel + digitalTimeDisplaySec() + " ESP8266 SPI Invalid question response: " + spiAnswer, false);
+	// 		sendDebug(debugLabel, infoLabel + digitalTimeDisplaySec() + " ESP8266 SPI Invalid question response: " + spiAnswer, false);
 	// 	}
 	// }
 }

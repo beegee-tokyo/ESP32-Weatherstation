@@ -115,12 +115,12 @@ void touchPad2ISR() {
 void checkPad2TouchStatus() {
 	if (touchRead(PAD2) > 50) { // No longer touched
 		if ((millis()-touchTimePad2) >= 500) { //	500ms => long touch!
-			Serial.println("Pad 2 long touch detected after " + String((millis()-touchTimePad2)));
-			addMqttMsg(debugLabel, infoLabel + digitalTimeDisplaySec() + " RESET request", false);
+			// Serial.println("Pad 2 long touch detected after " + String((millis()-touchTimePad2)));
+			sendDebug(debugLabel, infoLabel + digitalTimeDisplaySec() + " RESET request", false);
 			delay(2000);
 			esp_restart();
 		} else { // short touch!
-			Serial.println("Pad 2 short touch detected after " + String((millis()-touchTimePad2)));
+			// Serial.println("Pad 2 short touch detected after " + String((millis()-touchTimePad2)));
 			if (lightTaskHandle != NULL) {
 				xTaskResumeFromISR(lightTaskHandle);
 			}
@@ -159,7 +159,7 @@ void checkPad3TouchStatus() {
 			// Serial.println("Pad 3 long touch detected after " + String((millis()-touchTimePad3)));
 			longTouchPad3 = true;
 		} else { // short touch!
-			// Serial.println("Pad 3 short touch detected after " + String((millis()-touchTimePad3)));
+			Serial.println("Pad 3 short touch detected after " + String((millis()-touchTimePad3)));
 			shortTouchPad3 = true;
 		}
 		pad3Touched = false;

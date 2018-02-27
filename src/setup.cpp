@@ -34,7 +34,9 @@ void setup(void)
 	Serial.begin(115200);
 #ifdef ENA_DEBUG
 	Serial.setDebugOutput(true);
+	debugOn = true;
 #endif
+
 	/**********************************************************/
 	// If TFT is connected, initialize it
 	/**********************************************************/
@@ -89,41 +91,18 @@ void setup(void)
 	// Initialize other stuff from here on
 	/**********************************************************/
 
+	// At the moment either BLE or Bluetooth Serial can be used.
+	// They are not working both at the same time.
+	// Initialize only one of the two!!!!!!
+
+	// Initialize BLE server
+	// param 0 for BLE only
+	// param 1 for Serial BT only
+	// param 2 for both
+	initBlueTooth(1);
+
 	// Initialize MQTT connection
 	initMqtt();
-
-	// Get Partitionsizes
-	size_t ul;
-	esp_partition_iterator_t _mypartiterator;
-	const esp_partition_t *_mypart;
-	ul = spi_flash_get_chip_size(); Serial.print("Flash chip size: "); Serial.println(ul);
-	Serial.println("Partition table:");
-	char mqttMsg[1024];
-
-	_mypartiterator = esp_partition_find(ESP_PARTITION_TYPE_APP, ESP_PARTITION_SUBTYPE_ANY, NULL);
-	if (_mypartiterator) {
-		Serial.println("App Partition table:");
-		addMqttMsg(debugLabel, infoLabel + digitalTimeDisplaySec() + " App partition table:", false);
-		do {
-			_mypart = esp_partition_get(_mypartiterator);
-			printf("Type: %02x SubType %02x Address 0x%06X Size 0x%06X Encryption %i Label %s\n", _mypart->type, _mypart->subtype, _mypart->address, _mypart->size, _mypart->encrypted, _mypart->label);
-			sprintf(mqttMsg,"Type: %02x SubType %x Address 0x%06X Size 0x%06X Encryption %i Label %s", _mypart->type, _mypart->subtype, _mypart->address, _mypart->size, _mypart->encrypted, _mypart->label);
-			addMqttMsg(debugLabel, infoLabel + String(mqttMsg), false);
-		} while (_mypartiterator = esp_partition_next(_mypartiterator));
-	}
-	esp_partition_iterator_release(_mypartiterator);
-	_mypartiterator = esp_partition_find(ESP_PARTITION_TYPE_DATA, ESP_PARTITION_SUBTYPE_ANY, NULL);
-	if (_mypartiterator) {
-		Serial.println("Data Partition table:");
-		addMqttMsg(debugLabel, infoLabel + digitalTimeDisplaySec() + " Data partition table:", false);
-		do {
-			_mypart = esp_partition_get(_mypartiterator);
-			printf("Type: %02x SubType %02x Address 0x%06X Size 0x%06X Encryption %i Label %s\n", _mypart->type, _mypart->subtype, _mypart->address, _mypart->size, _mypart->encrypted, _mypart->label);
-			sprintf(mqttMsg,"Type: %02x SubType %02x Address 0x%06X Size 0x%06X Encryption %i Label %s", _mypart->type, _mypart->subtype, _mypart->address, _mypart->size, _mypart->encrypted, _mypart->label);
-			addMqttMsg(debugLabel, infoLabel + String(mqttMsg), false);
-		} while (_mypartiterator = esp_partition_next(_mypartiterator));
-	}
-	esp_partition_iterator_release(_mypartiterator);
 
 	// Initialize touch interface
 	initTouch();
@@ -144,44 +123,27 @@ void setup(void)
 	switch (lightInitResult) {
 		case 0:
 			// Serial.println(infoLabel + digitalTimeDisplaySec() + " Light sensors available and initialized");
-			addMqttMsg(debugLabel, infoLabel + digitalTimeDisplaySec() + " Light task initialized", false);
+			sendDebug(debugLabel, infoLabel + digitalTimeDisplaySec() + " Light task initialized", false);
 			break;
 		case 1:
 		default:
 			// Serial.println(errorLabel + digitalTimeDisplaySec() + " Failed to start timer for light measurement");
-			addMqttMsg(debugLabel, errorLabel + digitalTimeDisplaySec() + " Failed to start timer for light measurement", false);
+			sendDebug(debugLabel, errorLabel + digitalTimeDisplaySec() + " Failed to start timer for light measurement", false);
 			break;
 	}
 
 	// Initialize temperature measurements
 	if (!initTemp()) {
 		// Serial.println(errorLabel + digitalTimeDisplaySec() + " Failed to start temperature measurement");
-		addMqttMsg(debugLabel, errorLabel + digitalTimeDisplaySec() + " Failed to start temperature measurement", false);
+		sendDebug(debugLabel, errorLabel + digitalTimeDisplaySec() + " Failed to start temperature measurement", false);
 	}
 
 	// Initialize Weather and NTP time updates
 	if (!initUGWeather()) {
 		// Serial.println(errorLabel + digitalTimeDisplaySec() + " Failed to start weather & time updates");
-		addMqttMsg(debugLabel, errorLabel + digitalTimeDisplaySec() + " Failed to start weather & time updates", false);
+		sendDebug(debugLabel, errorLabel + digitalTimeDisplaySec() + " Failed to start weather & time updates", false);
 	}
 
-	// Get last reset reason and publish it
-	String resetReason = reset_reason(rtc_get_reset_reason(0));
-	addMqttMsg(debugLabel, infoLabel + digitalTimeDisplaySec() + " Reset reason CPU0: " + resetReason, false);
-	resetReason = reset_reason(rtc_get_reset_reason(1));
-	addMqttMsg(debugLabel, infoLabel + digitalTimeDisplaySec() + " Reset reason CPU1: " + resetReason, false);
-
-	addMqttMsg(debugLabel, infoLabel + digitalTimeDisplaySec() + " SDK Version: " + ESP.getSdkVersion(), false);
-
-	// Initialize SPI connection to ESP8266
-	// Slave on ESP8266 not working atm !!!!!!!!!!!!!!!!
-	// initSPI();
-	// Serial.println("Result of SPI initializaton: " + String(initSPIidf(),HEX));
-	// Serial.println("Result of SPI initializaton: 0x" + String(initSPIslave(),HEX));
-
-	// Initialize I2C connection to ESP8266
-	// initI2C();
-
-	// Initialize BLE server
-	initBLEserver();
+	// Start the TCP server to receive commands
+	tcpServer.begin();
 }

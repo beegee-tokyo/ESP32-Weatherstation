@@ -3,6 +3,8 @@
 
 /** OTA update status */
 bool otaRunning = false;
+/** Flag for debug output */
+bool debugOn = false;
 
 /**********************************************************/
 // Initialize TFT
@@ -19,6 +21,8 @@ TFT_eSPI tft = TFT_eSPI();
 WiFiUDP udpListener;
 /** Length of received UDP broadcast message */
 int udpMsgLength = 0;
+/** WiFiServer class to create TCP socket server on port 9998*/
+WiFiServer tcpServer(9998);
 /** MQTT client class to access mqtt broker */
 MQTTClient mqttClient(2560);
 /** HTTPClient class to get data from Weather website*/

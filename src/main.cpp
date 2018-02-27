@@ -1,6 +1,6 @@
 #include <setup.h>
 
-uint8_t i2cValue = 0xAA;
+bool btSerialActive = false;
 
 /**
  * loop
@@ -48,6 +48,11 @@ void loop(void)
 		ArduinoOTA.handle();
 		// Try to reconnect to MQTT
 		connectMQTT();
+	}
+
+	WiFiClient tcpClient = tcpServer.available();
+	if (tcpClient) {
+		getTCPPacket(tcpClient);
 	}
 
 	// Check if LDR light values are updated
@@ -107,7 +112,7 @@ void loop(void)
 		longTouchPad1 = false;
 		// if (connected) {
 		// 	std::string value = pRemoteCharacteristic->readValue();
-		//	 addMqttMsg(debugLabel, infoLabel + digitalTimeDisplaySec()
+		//	 sendDebug(debugLabel, infoLabel + digitalTimeDisplaySec()
 		//				 + " BLE characteristic value was: " + value.c_str(), false);
 		//	 Serial.print("The characteristic value was: ");
 		//	 Serial.println(value.c_str());
@@ -118,12 +123,12 @@ void loop(void)
 	// if (doConnect) {
 	// 	if (connectToServer(*pServerAddress)) {
 	//		 Serial.println("We are now connected to the BLE Server.");
-	// 		addMqttMsg(debugLabel, infoLabel + digitalTimeDisplaySec()
+	// 		sendDebug(debugLabel, infoLabel + digitalTimeDisplaySec()
 	//					 + " BLE Connected to server", false);
 	//		 connected = true;
 	//	 } else {
 	//		 Serial.println("We have failed to connect to the server; there is nothin more we will do.");
-	// 		addMqttMsg(debugLabel, infoLabel + digitalTimeDisplaySec()
+	// 		sendDebug(debugLabel, infoLabel + digitalTimeDisplaySec()
 	//					 + " BLE Connection to server failed", false);
 	//	 }
 	//	 doConnect = false;
@@ -132,24 +137,20 @@ void loop(void)
 	// Check if Pad 3 was touched
 	if (shortTouchPad3) {
 		shortTouchPad3 = false;
-		// Testing SPI master code
-		// Slave on ESP8266 not working atm !!!!!!!!!!!!!!!!
-		// addMqttMsg(debugLabel, infoLabel + digitalTimeDisplaySec()
-		// 				 + " Check SPI started", false);
-		// checkSPISlave();
-		// esp_err_t result = checkSPISlaveIDF();
-		
-
-		// addMqttMsg(debugLabel, infoLabel + digitalTimeDisplaySec()
-		// 				 + " I2C sending 0x" + String(i2cValue,HEX), false);
-		// Serial.println(infoLabel + digitalTimeDisplaySec()
-		// 				 + " I2C sending 0x" + String(i2cValue,HEX));
-		// initI2C();
-		// i2cWrite(i2cValue);
-		// if (i2cValue == 0x55) {
-		// 	i2cValue = 0xAA;
+		sendDebug(debugLabel, infoLabel + digitalTimeDisplaySec() + " Pad 3 was touched", false);
+		// if (!btSerialActive) {
+		// 	// Initialize BT serial interface
+		// 	initBtSerial();
+		// 	btSerialActive = true;
+		// 	Serial.println("Started Bluetooth Serial");
+		// 	restartBLE();
 		// } else {
-		// 	i2cValue = 0x55;
+		// 	stopBtSerial();
+		// 	stopBLE();
+		// 	// initBlueTooth();
+		// 	restartBLE();
+		// 	btSerialActive = false;
+		// 	Serial.println("Started BLE");
 		// }
 	}
 

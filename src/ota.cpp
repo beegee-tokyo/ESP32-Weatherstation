@@ -18,7 +18,7 @@ void activateOTA(const char *MODULTYPE, const char *MODULID) {
 	ArduinoOTA
 		.setHostname(apName)
 		.onStart([]() {
-			addMqttMsg(debugLabel, infoLabel + digitalTimeDisplaySec() + " OTA_START", false);
+			sendDebug(debugLabel, infoLabel + digitalTimeDisplaySec() + " OTA_START", false);
 			// Set OTA flag
 			otaRunning = true;
 
@@ -33,8 +33,8 @@ void activateOTA(const char *MODULTYPE, const char *MODULID) {
 			// Just in case the touch pad timers are active (should not happen!)
 			disableTouch();
 
-			// Stop SPI
-			// stopSPI();
+			// Stop Bluetooth Serial
+			stopBtSerial();
 			
 			// Stop BLE advertising
 			stopBLE();
@@ -93,35 +93,33 @@ void activateOTA(const char *MODULTYPE, const char *MODULID) {
 			tft.setTextDatum(MC_DATUM);
 			tft.setTextColor(TFT_BLACK);
 			tft.setTextSize(2);
-			tft.drawString("OTA",64,30,2);
-			tft.drawString("ERROR:",64,60,2);
+			tft.drawString("OTA",64,60);
+			tft.drawString("ERROR:",64,90);
 
 			Serial.printf("\nOTA Error[%u]: ", error);
 			if (error == OTA_AUTH_ERROR) {
 				Serial.println("Auth Failed");
-				tft.drawString("Auth Failed",64,80,2);
+				tft.drawString("Auth Failed",64,120);
 			} else if (error == OTA_BEGIN_ERROR) {
 				Serial.println("Begin Failed");
-				tft.drawString("Begin Failed",64,80,2);
+				tft.drawString("Begin Failed",64,120);
 			} else if (error == OTA_CONNECT_ERROR) {
 				Serial.println("Connect Failed");
-				tft.drawString("Connect Failed",64,80,2);
+				tft.drawString("Connect Failed",64,120);
 			} else if (error == OTA_RECEIVE_ERROR) {
 				Serial.println("Receive Failed");
-				tft.drawString("Receive Failed",64,80,2);
+				tft.drawString("Receive Failed",64,120);
 			} else if (error == OTA_END_ERROR) {
 				Serial.println("End Failed");
-				tft.drawString("End Failed",64,80,2);
+				tft.drawString("End Failed",64,120);
 			}
 		});
 
 	ArduinoOTA.begin();
 
 	MDNS.addServiceTxt("_arduino", "_tcp", "service", "MHC");
-	MDNS.addServiceTxt("_arduino", "_tcp", "type", "TestBoard");
-	MDNS.addServiceTxt("_arduino", "_tcp", "id", "ESP32-Test");
+	MDNS.addServiceTxt("_arduino", "_tcp", "type", MODULTYPE); //"TestBoard");
+	MDNS.addServiceTxt("_arduino", "_tcp", "id", MODULID); //"ESP32-Test");
 
-  MDNS.addService("_mhc_cmd","_tcp",9998);
-  MDNS.addService("_mhc_brc","_udp",9997);
-  MDNS.addService("_mhc_dbg","_tcp",9999);
+	MDNS.enableWorkstation(ESP_IF_WIFI_STA);
 }

@@ -1,10 +1,5 @@
-/** Build time */
-// extern const char compileDate[];
-
 /** mDNS and Access point name */
 extern char apName[];
-/** Index to add module ID to apName */
-// extern int apIndex;
 
 /** OTA update status */
 extern bool otaRunning;
@@ -15,14 +10,6 @@ extern TFT_eSPI tft;
 /**********************************************************/
 // Function declarations
 /**********************************************************/
-/**
- * Activate OTA
- */
-// void activateOTA(const char *MODULTYPE, const char *MODULID);
-/**
- * Connect to WiFi with pre-defined method
- */
-// bool connectWiFi();
 /**
  * Get reset reason as string array
  */
@@ -38,6 +25,7 @@ extern bool tasksEnabled;
 extern String debugLabel;
 extern String infoLabel;
 extern String errorLabel;
+extern bool debugOn;
 
 // WiFi utilities
 void createName(char *apName, int apIndex);
@@ -58,12 +46,28 @@ bool udpSendMessage(IPAddress ipAddr, String udpMsg, int udpPort);
 extern WiFiUDP udpListener;
 extern int udpMsgLength;
 
+// TCP server interface
+void getTCPPacket(WiFiClient tcpClient);
+extern WiFiServer tcpServer;
+
 // BLE Server interface
-void initBLEserver();
+void initBlueTooth(byte which);
 void stopBLE();
+void restartBLE();
 extern BLEServer *pServer;
 extern uint8_t digitalOut;
 extern bool digOutChanged;
+
+// BT serial interface
+extern BluetoothSerial SerialBT;
+bool initBtSerial();
+bool sendBtSerial(String message);
+void stopBtSerial();
+
+// Debug and system stuff
+void sendDebug(String topic, String payload, bool retained);
+void printPartitions();
+void printLastResetReason();
 
 // BLE Client interface
 // void scanBLEdevices();
@@ -121,23 +125,3 @@ extern Ticker tempTicker;
 bool initUGWeather();
 void stopUGWeather();
 void ugWeatherTask(void *pvParameters);
-
-// SPI interface
-void initSPI();
-void stopSPI();
-void checkSPISlave();
-uint32_t spiGetStatus();
-void spiWriteData(uint8_t * data, size_t len);
-void spiWriteData(const char * data);
-void spiReadData(uint8_t * data);
-String spiReadData();
-
-// I2C interface
-void initI2C();
-void i2cWrite(uint8_t value);
-
-esp_err_t initSPIidf();
-esp_err_t stopSPIidf();
-esp_err_t checkSPISlaveIDF();
-
-esp_err_t initSPIslave();
