@@ -2,6 +2,8 @@
 ESP32 based Weatherstation		
 Uses attached sensors, remote sensors and Internet weather information to display current weather on a 1.44" TFT display.		
 
+Detailed informations about it are on my [website](http://desire.giesecke.tk/index.php/2018/01/29/esp32-weatherstation/)
+
 ## Development platform		
 PlatformIO
 
@@ -16,7 +18,8 @@ PlatformIO
 
 ## SW practices used	 
 - Use of ESP32 HW timer		
-- Use of SPI		
+- Use of SPI (for the TFT display)		
+- Use of I2C (for the TSL2561 light sensor) 		
 - Use of bit-banging 1 wire interface to DHT11		
 - Use of ESP32 touch interface		
 - Use of ESP32 multi tasking		
@@ -24,7 +27,9 @@ PlatformIO
 - Use of MQTT for web based information display
 - Use of UDP broadcast messaging
 - Use of UDP broadcast receiving		
+- Use of TCP socket server to receive commands		
 - Use of BLE for sending sensor data		
+- Use of Bluetooth Serial for debugging		
 
 ## Library dependencies		
 PlatformIO library ID - Library name / Github link
@@ -38,4 +43,3 @@ PlatformIO library ID - Library name / Github link
 - ID2029 [DHTesp by Bernd Giesecke](https://github.com/beegee-tokyo/DHTesp)		
 - ID1559 [TFT_eSPI by Bodmer](https://github.com/Bodmer/TFT_eSPI)		
 - [ESP32-MyLib by Bernd Giesecke](https://github.com/beegee-tokyo/ESP32-MyLib)		
-- ID1841 [ESP32 BLE Arduino by Neil Kolban](https://github.com/nkolban/ESP32_BLE_Arduino)		
