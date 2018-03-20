@@ -104,14 +104,9 @@ class MyCallbackHandler: public BLECharacteristicCallbacks {
 			digitalOut = (uint8_t) value[0];
 			digOutChanged = true;
 
-      // Serial.println("*********");
-      // Serial.print("New value: ");
       for (int i = 0; i < value.length(); i++) {
-        // Serial.print(String(value[i]));
         strValue += value[i];
       }
-      // Serial.println();
-      // Serial.println("*********");
       sendDebug(debugLabel, infoLabel + digitalTimeDisplaySec() + " BLE received: " + strValue, false);
     }
 	};
@@ -147,7 +142,7 @@ void initBlueTooth(byte which) {
 			for (int index = 0; index < sppMsgBufferSize; index++) {
 				btSppMsg[index].payload = "";
 			}
-			// Start task for MEEO publishing
+			// Start task for Serial Bluetooth
 			xTaskCreatePinnedToCore(
 					btSppTask,             /* Function to implement the task */
 					"BtSpp ",              /* Name of the task */
@@ -256,9 +251,27 @@ void stopBtSerial() {
 	if (btSppTaskHandle != NULL) {
 		// Stop Bluetooth Serial sending task
 		vTaskDelete(btSppTaskHandle);
+		btSppTaskHandle = NULL;
 		// Stop Bluetooth Serial
 		SerialBT.end();
 	}
+}
+
+void reStartBtSerial() {
+	stopBtSerial();
+	delay(500);
+	// Try to restart Serial Bluetooth
+	SerialBT.begin(apName);
+
+	// Restart the task
+	xTaskCreatePinnedToCore(
+			btSppTask,             /* Function to implement the task */
+			"BtSpp ",              /* Name of the task */
+			2000,                  /* Stack size in words */
+			NULL,                  /* Task input parameter */
+			5,                     /* Priority of the task */
+			&btSppTaskHandle,      /* Task handle. */
+			1);                    /* Core where the task should run */		
 }
 
 bool sendBtSerial(String message) {
@@ -297,7 +310,8 @@ void btSppTask(void *pvParameters) {
 				if (SerialBT.hasClient()) {
 					// Try to send the message
 					// int result = SerialBT.println(btSppMsg[index].payload);
-					int result = SerialBT.write(btSppMsg[index].payload);
+					// int result = SerialBT.write(btSppMsg[index].payload);
+					int result = SerialBT.write((uint8_t*)&btSppMsg[index].payload[0],btSppMsg[index].payload.length()); 
 					if (result == -1) { 
 						// Sending failed, try to reinitialize the Bluetooth Serial
 						SerialBT.end();
@@ -305,9 +319,10 @@ void btSppTask(void *pvParameters) {
 						SerialBT.begin(btSppName);
 						// Retry to send the message
 						// SerialBT.println(btSppMsg[index].payload);
-						int result = SerialBT.write(btSppMsg[index].payload);
+						// int result = SerialBT.write(btSppMsg[index].payload);
+						int result = SerialBT.write((uint8_t*)&btSppMsg[index].payload[0],btSppMsg[index].payload.length()); 
 					}
-					SerialBT.write("\n");
+					SerialBT.println(""); // Write a new line character
 					// Flush the send buffer
 					SerialBT.flush();
 					delay(250);

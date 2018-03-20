@@ -93,10 +93,12 @@ void loop(void)
 		}
 	}
 
-	// Check if Pad 1 was touched
+	// Check if Pad 1 (T8) was touched
 	if (shortTouchPad1) {
 		shortTouchPad1 = false;
-
+		reStartBtSerial();
+		sendDebug(debugLabel, infoLabel + digitalTimeDisplaySec()
+						 + " BT Serial restart", false);
 		// if (!isScanning) {
 		// 	if (pClient != NULL && pClient->isConnected()) {
 		// 		pClient->disconnect();
@@ -107,7 +109,7 @@ void loop(void)
 		// }
 	}
 
-	// Check if Pad 1 was long touched
+	// Check if Pad 1 (T8) was long touched
 	if (longTouchPad1) {
 		longTouchPad1 = false;
 		// if (connected) {
@@ -134,7 +136,7 @@ void loop(void)
 	//	 doConnect = false;
 	// }
 
-	// Check if Pad 3 was touched
+	// Check if Pad 3 (T7) was touched
 	if (shortTouchPad3) {
 		shortTouchPad3 = false;
 		sendDebug(debugLabel, infoLabel + digitalTimeDisplaySec() + " Pad 3 was touched", false);
@@ -154,7 +156,7 @@ void loop(void)
 		// }
 	}
 
-	// Check if Pad 1 was long touched
+	// Check if Pad 3 (T7) was long touched
 	if (longTouchPad3) {
 		longTouchPad3 = false;
 	}

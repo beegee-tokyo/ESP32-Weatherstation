@@ -54,6 +54,7 @@ extern WiFiServer tcpServer;
 void initBlueTooth(byte which);
 void stopBLE();
 void restartBLE();
+void reStartBtSerial();
 extern BLEServer *pServer;
 extern uint8_t digitalOut;
 extern bool digOutChanged;

@@ -99,7 +99,7 @@ void setup(void)
 	// param 0 for BLE only
 	// param 1 for Serial BT only
 	// param 2 for both
-	initBlueTooth(1);
+	initBlueTooth(0);
 
 	// Initialize MQTT connection
 	initMqtt();
@@ -146,4 +146,6 @@ void setup(void)
 
 	// Start the TCP server to receive commands
 	tcpServer.begin();
+
+	printPartitions();
 }
