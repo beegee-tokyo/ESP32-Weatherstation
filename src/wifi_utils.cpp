@@ -1,55 +1,254 @@
 #include "setup.h"
 
+/** Device identification */
+String devID = "";
+String devType = "";
+String devLoc = "";
+
+/** SSIDs of local WiFi networks */
+String ssidPrim = "";
+String ssidSec = "";
+/** Password for local WiFi network */
+String pwPrim = "";
+String pwSec = "";
+
+/** WiFiMulti class */
+WiFiMulti wifiMulti;
+
+/** Connection status */
+volatile byte connStatus = CON_LOST;
+
+/** UDP broadcast address */
+IPAddress multiIP (192,	168, 0, 255);
+
+/** Selected network 
+    true = use primary network
+		false = use secondary network
+*/
+bool usePrimAP = true;
+
+/** Flag if two networks are found */
+bool canSwitchAP = false;
+
+/** Counter to measure connection time */
+unsigned long wifiConnectStart;
+
+/** Callback for connection loss */
+void lostCon(system_event_id_t event) {
+	if (connStatus == CON_GOTIP) {
+		tft.fillRect(120, 32, 8, 9, TFT_RED);
+		Serial.println("STA disconnect detected");
+		connStatus = CON_LOST;
+		// Switch on onboard LED to show status
+		ledTicker.detach();
+		digitalWrite(ledPin, LOW);
+	}
+}
+
+/** Callback for connection to AP */
+void gotCon(system_event_id_t event) {
+	if (connStatus == CON_INIT) {
+		tft.fillRect(120, 32, 8, 9, TFT_YELLOW);
+		Serial.println("Got connection after " + String((millis()-wifiConnectStart)/1000) + "s");
+		Serial.println("SSID: " + String(WiFi.SSID()));
+		Serial.println("Channel: " + String(WiFi.channel()));
+		Serial.println("RSSI: " + String(WiFi.RSSI()));
+		connStatus = CON_START;
+		// Flash onboard LED with 0.5Hz to show status
+		startFlashing(250);
+	}
+}
+
+/** Callback for receiving IP address from AP */
+void gotIP(system_event_id_t event) {
+	if (connStatus == CON_START) {
+		tft.fillRect(120, 32, 8, 9, TFT_GREEN);
+		Serial.print("Got IP after " + String((millis()-wifiConnectStart)/1000) + "s: ");
+		Serial.println(WiFi.localIP());
+		Serial.println("RSSI: " + String(WiFi.RSSI()));
+		connStatus = CON_GOTIP;
+		// Flash onboard LED with 1Hz to show status
+		startFlashing(500);
+		// Create UDP broadcast address
+		IPAddress deviceIP = WiFi.localIP();
+		multiIP[0] = deviceIP[0];
+		multiIP[1] = deviceIP[1];
+		multiIP[2] = deviceIP[2];
+		multiIP[3] = 255;
+	}
+}
+
+/** Callback for WiFi ready status */
+void wifiReady(system_event_id_t event) {
+	Serial.println("Wifi ready detected");
+}
+
 /**
  * Create Access Point name & mDNS name
  * from MAC address
  *
  * Created name is stored in the global char *apName[]
  **/
-void createName(char *apName, int apIndex) {
+void createName() {
 	uint8_t baseMac[6];
 	// Get MAC address for WiFi station
 	esp_read_mac(baseMac, ESP_MAC_WIFI_STA);
 	char baseMacChr[18] = {0};
-	sprintf(baseMacChr, "%02X:%02X:%02X:%02X:%02X:%02X", baseMac[0], baseMac[1], baseMac[2], baseMac[3], baseMac[4], baseMac[5]);
+	sprintf(baseMacChr, "%02X%02X%02X%02X", baseMac[0], baseMac[3], baseMac[4], baseMac[5]);
 
-	apName[apIndex] = baseMacChr[0];
-	apName[apIndex+1] = baseMacChr[1];
-	apName[apIndex+2] = baseMacChr[9];
-	apName[apIndex+3] = baseMacChr[10];
-	apName[apIndex+4] = baseMacChr[12];
-	apName[apIndex+5] = baseMacChr[13];
-	apName[apIndex+6] = baseMacChr[15];
-	apName[apIndex+7] = baseMacChr[16];
+	memcpy((void*)&apName[apIndex],(void*)baseMacChr,8);
 }
 
 /**
- * Connect to WiFi with defined method
- *
- */
-/**
- * Connect with predefined SSID and password
- *
- * @param ssid
- *				SSID to connect to
- * @param password
- *				Password for this AP
- * @param timeout
- *				Time to wait for connection to succeed
- * @return <code>boolean</code>
- *				True if connection successfull
- *				False if connection failed after
- */
-bool connDirect(const char *ssid, const char *password, uint32_t timeout) {
+	 scanWiFi
+	 Scans for available networks 
+	 and decides if a switch between
+	 allowed networks makes sense
+
+	 @return <code>bool</code>
+	        True if at least one allowed network was found
+*/
+bool scanWiFi() {
+	/** RSSI for primary network */
+	int8_t rssiPrim;
+	/** RSSI for secondary network */
+	int8_t rssiSec;
+	/** Result of this function */
+	bool result = false;
+
+	Serial.println("Start scanning for networks");
+
+	WiFi.disconnect(true);
+	WiFi.setAutoReconnect(false);
+	WiFi.enableSTA(true);
 	WiFi.mode(WIFI_STA);
-	WiFi.begin(ssid, password);
-	uint32_t startTime = millis();
-	while (WiFi.waitForConnectResult() != WL_CONNECTED) {
-		if (millis()-startTime > timeout) { // check if waiting time exceeded
-			return false;
+
+	wifiConnectStart = millis();
+	// int apNum = WiFi.scanNetworks();
+	int apNum = WiFi.scanNetworks(false,true,false,5000);
+	if (apNum == 0) {
+		Serial.println("Found no networks?????");
+		return false;
+	}
+	
+	byte foundAP = 0;
+	bool foundPrim = false;
+
+	for (int index=0; index<apNum; index++) {
+		String ssid = WiFi.SSID(index);
+		Serial.println("Found AP: " + ssid + " RSSI: " + WiFi.RSSI(index));
+		tft.println(ssid + " - " + WiFi.RSSI(index));
+		// tft.printf("%s - %d\n",ssid, WiFi.RSSI(index));
+		if (!strcmp((const char*) &ssid[0], (const char*) &ssidPrim[0])) {
+			Serial.println("Found primary AP");
+			foundAP++;
+			foundPrim = true;
+			rssiPrim = WiFi.RSSI(index);
+		}
+		if (!strcmp((const char*) &ssid[0], (const char*) &ssidSec[0])) {
+			Serial.println("Found secondary AP");
+			foundAP++;
+			rssiSec = WiFi.RSSI(index);
 		}
 	}
-	return true;
+
+	Serial.printf("Found %d AP's\n", foundAP);
+
+	switch (foundAP) {
+		case 0:
+			result = false;
+			break;
+		case 1:
+			if (foundPrim) {
+				usePrimAP = true;
+			} else {
+				usePrimAP = false;
+			}
+			result = true;
+			break;
+		default:
+		tft.printf("RSSI Prim: %d Sec: %d\n", rssiPrim, rssiSec);
+		Serial.printf("RSSI Prim: %d Sec: %d\n", rssiPrim, rssiSec);
+			if (rssiPrim > rssiSec) {
+				usePrimAP = true; // RSSI of primary network is better
+			} else {
+				usePrimAP = false; // RSSI of secondary network is better
+			}
+			result = true;
+			break;
+	}
+	Serial.println("WiFi scan finished after " + String((millis()-wifiConnectStart)/1000) + "s");
+	return result;
+}
+
+/**
+ * Start connection to AP
+ */
+void connectWiFi() {
+	WiFi.disconnect(true);
+	// WiFi.setAutoReconnect(false);
+	WiFi.enableSTA(true);
+	WiFi.mode(WIFI_STA);
+
+	Serial.println();
+	Serial.print("Start connection to ");
+	tft.print("Try ");
+	if (usePrimAP) {
+		Serial.println(ssidPrim);
+		tft.println(ssidPrim);
+		WiFi.begin(ssidPrim.c_str(), pwPrim.c_str());
+	} else {
+		Serial.println(ssidSec);
+		tft.println(ssidSec);
+		WiFi.begin(ssidSec.c_str(), pwSec.c_str());
+	}
+	connStatus = CON_INIT;
+
+	wifiConnectStart = millis();
+}
+
+/**
+ * Initiates connection to AP
+ * Setup callback handlers
+ * Scan WiFi network
+ * Start connection to WiFi network
+ *
+ */
+void connectInit() {
+	// Set WiFi into STA mode
+	WiFi.disconnect();
+	WiFi.mode(WIFI_STA);
+	// Setup callback function for WiFi is connectedy
+	WiFi.onEvent(gotCon, SYSTEM_EVENT_STA_CONNECTED);
+	// Setup callback function for WiFi received IP address
+	WiFi.onEvent(gotIP, SYSTEM_EVENT_STA_GOT_IP);
+	// Setup callback function for WiFi lost connection
+	WiFi.onEvent(lostCon, SYSTEM_EVENT_STA_DISCONNECTED);
+	// Setup callback function for WiFi is ready
+	WiFi.onEvent(wifiReady, SYSTEM_EVENT_WIFI_READY);
+
+	wifiMulti.addAP(ssidPrim.c_str(), pwPrim.c_str());
+	wifiMulti.addAP(ssidSec.c_str(), pwSec.c_str());
+
+	Serial.println();
+	Serial.println("Start MultiWiFi with");
+	Serial.println("Primary: " + ssidPrim + " " + pwPrim);
+	Serial.println("Secondary: " + ssidSec + " " + pwSec);
+
+	connStatus = CON_INIT;
+	wifiMulti.run();
+	wifiConnectStart = millis();
+
+	// // Scan for available WiFi networks
+	// if (!scanWiFi()) {
+	// 	Serial.println("Scan failed");
+	// 	connStatus = CON_LOST;
+	// 	// delay(1000);
+	// 	// esp_restart();
+	// }
+
+	// // Try to connect to a WiFi network
+	// connectWiFi();
 }
 
 /** Structure to keep the local time */
@@ -127,4 +326,3 @@ String digitalTimeDisplaySec() {
 	dateTime += getDigits(timeinfo.tm_sec);
 	return dateTime;
 }
-

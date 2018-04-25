@@ -4,7 +4,7 @@
 /** OTA update status */
 bool otaRunning = false;
 /** Flag for debug output */
-bool debugOn = false;
+bool debugOn = true;
 
 /**********************************************************/
 // Initialize TFT

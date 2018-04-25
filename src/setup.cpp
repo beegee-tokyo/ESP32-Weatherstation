@@ -2,23 +2,10 @@
 #include "declarations.h"
 #include "esp_now.h"
 
-/** Initialize OTA function */
-void activateOTA(const char *MODULTYPE, const char *MODULID);
+#include "preferences.h"
 
 /** Build time */
 const char compileDate[] = __DATE__ " " __TIME__;
-
-/**********************************************************/
-// Give the board a type and an ID
-/**********************************************************/
-/** Module type used for mDNS */
-const char* MODULTYPE = "type=TestBoard"; // e.g. aircon, light, TestBoard, ...
-/** Module id used for mDNS */
-const char* MODULID = "id=ESP32-Test"; // e.g. ac1, lb1, ESP32-Test, ...
-/** mDNS and Access point name */
-char apName[] = "ESP32-Test-xxxxxx";
-/** Index to add module ID to apName */
-int apIndex = 11; // position of first x in apName[]
 
 /**
  * Arduino setup function (called once after boot/reboot)
@@ -28,8 +15,8 @@ void setup(void)
 {
 	// Setup labels
 	debugLabel = "debug";
-	infoLabel = "[INFO] ";
-	errorLabel = "[ERROR] ";
+	infoLabel = "[I] ";
+	errorLabel = "[E] ";
 
 	Serial.begin(115200);
 #ifdef ENA_DEBUG
@@ -44,79 +31,65 @@ void setup(void)
 	tft.fillScreen(TFT_BLACK);
 	tft.setCursor(0, 40);
 	tft.setTextColor(TFT_WHITE);
+	tft.setTextSize(1);
 
 #ifdef ENA_DEBUG
 	Serial.print("Build: ");
 	Serial.println(compileDate);
 #endif
 	tft.println("Build: ");
-	tft.setTextSize(1);
 	tft.println(compileDate);
 
-	/**********************************************************/
-	// Create Access Point name & mDNS name
-	// from MAC address
-	/**********************************************************/
-	createName(apName, apIndex);
+	// Create Access Point name & mDNS name from MAC address
+	createName();
 
-	if (connDirect("MHC2", "teresa1963", 20000)) {
-		// WiFi connection successfull
-		tft.println("Connected to ");
-		tft.println(WiFi.SSID());
-		tft.println("with IP address ");
-		tft.println(WiFi.localIP());
-#ifdef ENA_DEBUG
-		Serial.print("Connected to " + String(WiFi.SSID()) + " with IP address ");
-		Serial.println(WiFi.localIP());
-#endif
+	Preferences preferences;
+	preferences.begin(PREF_NAME, false);
+	bool hasPref = preferences.getBool(VALID_KEY, false);
+	if (hasPref) {
+		ssidPrim = preferences.getString(SSID_PRIM_KEY,"");
+		ssidSec = preferences.getString(SSID_SEC_KEY,ssidPrim);
+		pwPrim = preferences.getString(PW_PRIM_KEY,"");
+		pwSec = preferences.getString(PW_SEC_KEY,pwPrim);
+		devLoc = preferences.getString(DEV_LOC_KEY,"Office");
+		devID = preferences.getString(DEV_ID_KEY,"tb1");
+		devType = preferences.getString(DEV_TYPE_KEY,"Tst");
+
+		ssidPrim = preferences.getString(SSID_PRIM_KEY,"");
+		ssidSec = preferences.getString(SSID_SEC_KEY,ssidPrim);
+		pwPrim = preferences.getString(PW_PRIM_KEY,"");
+		pwSec = preferences.getString(PW_SEC_KEY,pwPrim);
+		devLoc = preferences.getString(DEV_LOC_KEY,"Office");
+		devID = preferences.getString(DEV_ID_KEY,"tb1");
+		devType = preferences.getString(DEV_TYPE_KEY,"Tst");
+
+		String dbgMsg = "Read from preferences:";
+		sendDebug(debugLabel, dbgMsg, false);
+		dbgMsg = "primary SSID: "+ssidPrim+" password: "+pwPrim;
+		sendDebug(debugLabel, dbgMsg, false);
+		dbgMsg = "secondary SSID: "+ssidSec+" password: "+pwSec;
+		sendDebug(debugLabel, dbgMsg, false);
+
+		// Show status
+		tft.fillRect(120, 32, 8, 9, TFT_RED);
+
+		// Initialize WiFi connection
+		connectInit();
+
 	} else {
-		// WiFi connection failed
-		tft.println("Failed to connect to WiFI");
-		tft.println("Rebooting in 30 seconds");
-#ifdef ENA_DEBUG
-		Serial.println("Failed to connect to WiFi");
-#endif
-		// Decide what to do next
-		delay(30000);
-		esp_restart();
+		sendDebug(debugLabel, "Could not find preferences, need send data over BLE", false);
+		ssidPrim = "-";
+		ssidSec = "-";
+		pwPrim = "-";
+		pwSec = "-";
+		devLoc = "Office";
+		devID = "tb1";
+		devType = "Test";
 	}
+	preferences.end();
 
-	/**********************************************************/
-	// Activate ArduinoOTA
-	// and setup mDNS records
-	/**********************************************************/
-	activateOTA(MODULTYPE, MODULID);
-
-	/**********************************************************/
-	// Initialize other stuff from here on
-	/**********************************************************/
-
-	// At the moment either BLE or Bluetooth Serial can be used.
-	// They are not working both at the same time.
-	// Initialize only one of the two!!!!!!
-
-	// Initialize BLE server
-	// param 0 for BLE only
-	// param 1 for Serial BT only
-	// param 2 for both
-	initBlueTooth(0);
-
-	// Initialize MQTT connection
-	initMqtt();
-
-	// Initialize touch interface
-	initTouch();
-
-	// Start UDP listener
-	udpListener.begin(9997);
-
-	// Start NTP listener
-	initNTP();
-	tryGetTime();
-
-	// Initialize LED flashing
-	initLed();
-	startFlashing(1000);
+	tft.println("Waiting for");
+	tft.println("connection");
 
 	// Initialize Light measurement
 	byte lightInitResult = initLight();
@@ -138,14 +111,26 @@ void setup(void)
 		sendDebug(debugLabel, errorLabel + digitalTimeDisplaySec() + " Failed to start temperature measurement", false);
 	}
 
-	// Initialize Weather and NTP time updates
-	if (!initUGWeather()) {
-		// Serial.println(errorLabel + digitalTimeDisplaySec() + " Failed to start weather & time updates");
-		sendDebug(debugLabel, errorLabel + digitalTimeDisplaySec() + " Failed to start weather & time updates", false);
+	// At the moment either BLE or Bluetooth Serial can be used.
+	// They are not working both at the same time.
+	// Initialize only one of the two!!!!!!
+
+	// Initialize BLE server
+	// param 0 for BLE only
+	// param 1 for Serial BT only
+	// param 2 for both
+	// initBlueTooth(0);
+
+	// If there are no WiFi credentials stored, start Bluetooth to receive them
+	if (!hasPref) {
+		initBLE();
+	} else {
+		stopBLE();
 	}
+	// Initialize touch interface
+	initTouch();
 
-	// Start the TCP server to receive commands
-	tcpServer.begin();
-
-	printPartitions();
+	// Initialize LED flashing
+	initLed();
+	startFlashing(1000);
 }

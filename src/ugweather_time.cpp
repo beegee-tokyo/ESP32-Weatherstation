@@ -87,7 +87,9 @@ void ugWeatherTask(void *pvParameters) {
 			if (getUGWeather()) {
 				// Serial.println("Got weather conditions");
 				// Serial.println(ugWeatherText);
-				sendDebug("WEA", ugWeatherText, true);
+				// if (!addMqttMsg("WEA", ugWeatherText, true)) {
+				// 	sendDebug(debugLabel, errorLabel + digitalTimeDisplaySec() + " Failed to publish Weather", false);
+				// }
 				ugWeatherText = "";
 			} else {
 				// Serial.println("Failed to get weather conditions");
@@ -130,9 +132,9 @@ bool getUGWeather() {
 				payload = http.getString();
 				http.end();
 			} else {
-				// payload = "[HTTP] GET error code: " + http.errorToString(httpCode);
-				// Serial.println(payload);
-				// sendDebug(debugLabel, errorLabel + digitalTimeDisplaySec() + " getWGWeather() http.getString() -> " + payload, false);
+				payload = "[HTTP] GET error code: " + http.errorToString(httpCode);
+				Serial.println(payload);
+				sendDebug(debugLabel, errorLabel + digitalTimeDisplaySec() + " getWGWeather() http.getString() -> " + payload, false);
 				http.end();
 				return false;
 			}
@@ -181,6 +183,7 @@ bool getUGWeather() {
 		portENTER_CRITICAL(&mux);
 		tft.setTextSize(1);
 		tft.setCursor(0, 120);
+		tft.setTextColor(TFT_WHITE);
 		tft.fillRect(0, 120, 128, 40, TFT_DARKGREY);
 		tft.println("Weather at " + obsHour + ":" + obsMin);
 		ugWeatherText = "T " + temp + "'C H " + humid +"%";
@@ -207,19 +210,26 @@ bool getUGWeather() {
 		// 	sendDebug(debugLabel, errorLabel + digitalTimeDisplaySec() + "Could not find weather icon", false);
 		}
 		// drawIcon(icon,	(tft.width() -	ugIconWidth)/2, 88,	ugIconWidth,	ugIconHeight);
-		drawIcon(icon,	5, 88,	ugIconWidth,	ugIconHeight);
-		mux = portMUX_INITIALIZER_UNLOCKED;
-		portENTER_CRITICAL(&mux);
-		tft.setCursor(45,103);
-		tft.setTextSize(1);
-		tft.print("Light:");
-		portEXIT_CRITICAL(&mux);
+		drawIcon(icon,	25, 88,	ugIconWidth,	ugIconHeight);
 
 		ugWeatherText = "Weather at " + String(obsHour) + ":" + String(obsMin) + "</br>";
 		ugWeatherText += "T " + temp + "&deg;C H " + humid +"%</br>";
 		ugWeatherText += weather + "</br>";
 		ugWeatherText += wind_dir + " wind at " + wind_kph + "kph</br>";
 		ugWeatherText += "gusting to " + wind_gust_kph + "kph</br>";
+
+		/** Buffer for outgoing JSON string */
+		DynamicJsonBuffer jsonOutBuffer;
+		/** Json object for outgoing data */
+		JsonObject& jsonOut = jsonOutBuffer.createObject();
+
+		jsonOut["de"] = "wea";
+
+		jsonOut["en"] = ugWeatherText;
+		String weatherMsg = "";
+		
+		jsonOut.printTo(weatherMsg);
+		udpSendMessage(multiIP, weatherMsg, 9997);
 
 		return true;
 	}

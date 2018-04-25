@@ -13,7 +13,7 @@
 #define DEW_UUID            0x2A7B
 #define COMFORT_UUID        "00002A3D-ead2-11e7-80c1-9a214cf093ae" // same as String characteristic 0x2A3D
 #define PERCEPTION_UUID     "10002A3D-ead2-11e7-80c1-9a214cf093ae" //	same as String characteristic 0x2A3D
-#define OUTPUT_UUID         0x2A57
+#define WIFI_UUID         0x2A57
 #define DEVICENAME_UUID     0x2A00
 
 /** Characteristic for client notification */
@@ -31,7 +31,7 @@ BLECharacteristic *pCharacteristicComfort;
 /** Characteristic for environment perception status */
 BLECharacteristic *pCharacteristicPerception;
 /** Characteristic for digital output */
-BLECharacteristic *pCharacteristicOutput;
+BLECharacteristic *pCharacteristicWiFi;
 /** Characteristic for device name */
 BLECharacteristic *pCharacteristicDeviceName;
 
@@ -176,11 +176,11 @@ void initBLEserver() {
 	pCharacteristicDeviceName->setValue((uint8_t*)apName,16);
 
 	// Create BLE Characteristic for Digital output
-	pCharacteristicOutput = pService->createCharacteristic(
-		BLEUUID((uint16_t)OUTPUT_UUID),
+	pCharacteristicWiFi = pService->createCharacteristic(
+		BLEUUID((uint16_t)WIFI_UUID),
 		BLECharacteristic::PROPERTY_WRITE
 	);
-	pCharacteristicOutput->setCallbacks(new MyCallbackHandler());
+	pCharacteristicWiFi->setCallbacks(new MyCallbackHandler());
 
 	// Start the service
 	pService->start();

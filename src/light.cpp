@@ -124,6 +124,21 @@ void lightTask(void *pvParameters) {
 
 			// Read analog value of LDR
 			newLDRValue = analogRead(ldrPin);
+
+			// Update display
+			/** PortMux to disable task switching */
+			portMUX_TYPE lightMux = portMUX_INITIALIZER_UNLOCKED;
+			portENTER_CRITICAL(&lightMux);
+			tft.setTextSize(0);
+			tft.fillRect(80, 77, 48, 27, TFT_YELLOW);
+			tft.setCursor(85,78);
+			tft.setTextColor(TFT_BLACK);
+			tft.print("Light:");
+			tft.setCursor(85,87);
+			tft.print(String(newLDRValue)+" r ");
+			tft.setCursor(85,96);
+			tft.print(String(newTSLValue) + " lx");
+			portEXIT_CRITICAL(&lightMux);
 		}
 		vTaskSuspend(NULL);
 	}

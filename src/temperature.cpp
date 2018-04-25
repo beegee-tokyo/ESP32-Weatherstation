@@ -1,14 +1,13 @@
 #include "setup.h"
 #include "DHTesp.h"
 
-extern BLECharacteristic *pCharacteristicNotify;
-extern BLECharacteristic *pCharacteristicTemp;
-extern BLECharacteristic *pCharacteristicHumid;
-extern BLECharacteristic *pCharacteristicHeatIndex;
-extern BLECharacteristic *pCharacteristicDewPoint;
-extern BLECharacteristic *pCharacteristicComfort;
-extern BLECharacteristic *pCharacteristicPerception;
-// extern BLEAdvertising* pAdvertising;
+// extern BLECharacteristic *pCharacteristicNotify;
+// extern BLECharacteristic *pCharacteristicTemp;
+// extern BLECharacteristic *pCharacteristicHumid;
+// extern BLECharacteristic *pCharacteristicHeatIndex;
+// extern BLECharacteristic *pCharacteristicDewPoint;
+// extern BLECharacteristic *pCharacteristicComfort;
+// extern BLECharacteristic *pCharacteristicPerception;
 
 void triggerGetTemp();
 void triggerSendTemp();
@@ -28,7 +27,7 @@ Ticker tempTicker;
 /** Ticker for MQTT weather update every minute */
 Ticker mqttTicker;
 /** JSON as string to be sent to MQTT broker and UDP listeners */
-String tempMsg;
+String weatherMsg;
 /** Comfort profile */
 ComfortState cf;
 
@@ -103,7 +102,8 @@ void triggerGetTemp() {
  * called by Ticker mqttTicker
  */
 void triggerSendTemp() {
-	sendDebug("WEI", tempMsg, false);
+	udpSendMessage(multiIP, weatherMsg, 9997);
+	// sendDebug("WEI", weatherMsg, false);
 }
 
 /**
@@ -134,15 +134,16 @@ void tempTask(void *pvParameters) {
  *		false if aquisition failed
 */
 bool getTemperature() {
-	mux = portMUX_INITIALIZER_UNLOCKED;
-	portENTER_CRITICAL(&mux);
-	tft.fillRect(0, 32, 128, 8, TFT_WHITE);
+	/** PortMux to disable task switching */
+	portMUX_TYPE tempMux = portMUX_INITIALIZER_UNLOCKED;
+	portENTER_CRITICAL(&tempMux);
+	tft.fillRect(0, 32, 120, 9, TFT_WHITE);
 	tft.setCursor(0, 33);
 	tft.setTextColor(TFT_BLACK);
 	tft.setTextSize(0);
-	tft.println("Getting temperature");
+	tft.println("Read");
 	tft.setTextColor(TFT_WHITE);
-	portEXIT_CRITICAL(&mux);
+	portEXIT_CRITICAL(&tempMux);
 
 	// Reading temperature and humidity takes about 250 milliseconds!
 	// Sensor readings may also be up to 2 seconds 'old' (it's a very slow sensor)
@@ -151,15 +152,14 @@ bool getTemperature() {
 	// Check if any reads failed and exit early (to try again).
 	if (dht.getStatus() != 0) {
 		sendDebug(debugLabel, errorLabel + digitalTimeDisplaySec() + " DHT11 error status: " + String(dht.getStatusString()), false);
-		mux = portMUX_INITIALIZER_UNLOCKED;
-		portENTER_CRITICAL(&mux);
-		tft.fillRect(0, 32, 128, 8, TFT_RED);
+		portENTER_CRITICAL(&tempMux);
+		tft.fillRect(0, 32, 120, 9, TFT_RED);
 		tft.setCursor(0, 33);
 		tft.setTextColor(TFT_BLACK);
 		tft.setTextSize(0);
-		tft.println("DHT11 failure");
+		tft.println("Failure");
 		tft.setTextColor(TFT_WHITE);
-		portEXIT_CRITICAL(&mux);
+		portEXIT_CRITICAL(&tempMux);
 		return false;
 	}
 	/******************************************************* */
@@ -168,21 +168,20 @@ bool getTemperature() {
 	lastValues.humidity =	(int)(lastValues.humidity * 4.2);
 	String displayTxt = "";
 
-	mux = portMUX_INITIALIZER_UNLOCKED;
-	portENTER_CRITICAL(&mux);
-	tft.fillRect(0, 32, 128, 16, TFT_DARKGREY);
+	portENTER_CRITICAL(&tempMux);
+	tft.fillRect(0, 32, 120, 9, TFT_DARKGREY);
 	tft.setCursor(0, 33);
 	tft.setTextSize(1);
 	tft.setTextColor(TFT_WHITE);
-	tft.println("Local data at " + digitalTimeDisplay());
+	tft.println("Last read: " + digitalTimeDisplay());
 
-	tft.fillRect(0, 48, 128, 14, TFT_BLACK);
+	tft.fillRect(0, 41, 128, 18, TFT_BLACK);
 	tft.setTextSize(2);
-	tft.setCursor(0,48);
+	tft.setCursor(0,42);
 	tft.setTextColor(TFT_WHITE);
 	displayTxt = "I " + String(lastValues.temperature,0) + "'C " + String(lastValues.humidity,0) + "%";
 	tft.print(displayTxt);
-	portEXIT_CRITICAL(&mux);
+	portEXIT_CRITICAL(&tempMux);
 
 	float heatIndex = dht.computeHeatIndex(lastValues.temperature, lastValues.humidity);
 	float dewPoint = dht.computeDewPoint(lastValues.temperature, lastValues.humidity);
@@ -195,57 +194,57 @@ bool getTemperature() {
 	// sendDebug(debugLabel, dbgMessage, false);
 
 
-	// Send notification if any BLE client is connected
-	if ((pServer != NULL) && (pServer->getConnectedCount() != 0)) {
-		uint8_t tempData[2];
-		uint16_t tempValue;
-		tempValue = (uint16_t)(lastValues.temperature*100);
-		tempData[1] = tempValue>>8;
-		tempData[0] = tempValue;
+	// // Send notification if any BLE client is connected
+	// if ((pServer != NULL) && (pServer->getConnectedCount() != 0)) {
+	// 	uint8_t tempData[2];
+	// 	uint16_t tempValue;
+	// 	tempValue = (uint16_t)(lastValues.temperature*100);
+	// 	tempData[1] = tempValue>>8;
+	// 	tempData[0] = tempValue;
 
-		pCharacteristicTemp->setValue(tempData, 2);
+	// 	pCharacteristicTemp->setValue(tempData, 2);
 
-		tempValue = (uint16_t)(lastValues.humidity*100);
-		tempData[1] = tempValue>>8;
-		tempData[0] = tempValue;
-		pCharacteristicHumid->setValue(tempData, 2);
+	// 	tempValue = (uint16_t)(lastValues.humidity*100);
+	// 	tempData[1] = tempValue>>8;
+	// 	tempData[0] = tempValue;
+	// 	pCharacteristicHumid->setValue(tempData, 2);
 
-		tempValue = (uint16_t)(dewPoint);
-		tempData[1] = 0;
-		tempData[0] = tempValue;
-		pCharacteristicDewPoint->setValue(tempData, 2);
+	// 	tempValue = (uint16_t)(dewPoint);
+	// 	tempData[1] = 0;
+	// 	tempData[0] = tempValue;
+	// 	pCharacteristicDewPoint->setValue(tempData, 2);
 
-		tempValue = (uint16_t)(heatIndex);
-		tempData[1] = 0;
-		tempData[0] = tempValue;
-		pCharacteristicHeatIndex->setValue(tempData, 2);
+	// 	tempValue = (uint16_t)(heatIndex);
+	// 	tempData[1] = 0;
+	// 	tempData[0] = tempValue;
+	// 	pCharacteristicHeatIndex->setValue(tempData, 2);
 
-		String bleStatus = "Comfort: " + comfortStatus;
-		size_t dataLen = bleStatus.length();
-		pCharacteristicComfort->setValue((uint8_t*)&bleStatus[0], dataLen);
+	// 	String bleStatus = "Comfort: " + comfortStatus;
+	// 	size_t dataLen = bleStatus.length();
+	// 	pCharacteristicComfort->setValue((uint8_t*)&bleStatus[0], dataLen);
 
-		bleStatus = "Perception: " + humanPerception;
-		dataLen = bleStatus.length();
-		pCharacteristicPerception->setValue((uint8_t*)&bleStatus[0], dataLen);
+	// 	bleStatus = "Perception: " + humanPerception;
+	// 	dataLen = bleStatus.length();
+	// 	pCharacteristicPerception->setValue((uint8_t*)&bleStatus[0], dataLen);
 
-		// Send notification to connected clients
-		uint8_t notifData[8];
-		time_t now;
-		struct tm timeinfo;
-		time(&now); // get time (as epoch)
-		localtime_r(&now, &timeinfo); // update tm struct with current time
-		uint16_t year = timeinfo.tm_year+1900;
-		notifData[1] = year>>8;
-		notifData[0] = year;
-		notifData[2] = timeinfo.tm_mon+1;
-		notifData[3] = timeinfo.tm_mday;
-		notifData[4] = timeinfo.tm_hour;
-		notifData[5] = timeinfo.tm_min;
-		notifData[6] = timeinfo.tm_sec;
-		pCharacteristicNotify->setValue(notifData, 8);
+	// 	// Send notification to connected clients
+	// 	uint8_t notifData[8];
+	// 	time_t now;
+	// 	struct tm timeinfo;
+	// 	time(&now); // get time (as epoch)
+	// 	localtime_r(&now, &timeinfo); // update tm struct with current time
+	// 	uint16_t year = timeinfo.tm_year+1900;
+	// 	notifData[1] = year>>8;
+	// 	notifData[0] = year;
+	// 	notifData[2] = timeinfo.tm_mon+1;
+	// 	notifData[3] = timeinfo.tm_mday;
+	// 	notifData[4] = timeinfo.tm_hour;
+	// 	notifData[5] = timeinfo.tm_min;
+	// 	notifData[6] = timeinfo.tm_sec;
+	// 	pCharacteristicNotify->setValue(notifData, 8);
 
-		pCharacteristicNotify->notify();
-	}
+	// 	pCharacteristicNotify->notify();
+	// }
 
  	/** Buffer for outgoing JSON string */
 	DynamicJsonBuffer jsonOutBuffer;
@@ -260,10 +259,11 @@ bool getTemperature() {
 	jsonOut["dp"] = dewPoint;
 	jsonOut["cr"] = dht.getComfortRatio(cf, lastValues.temperature, lastValues.humidity);
 	jsonOut["pe"] = dht.computePerception(lastValues.temperature, lastValues.humidity);
+	jsonOut["ap"] = WiFi.SSID();
 
-	tempMsg = "";
+	weatherMsg = "";
 	// Message will be broadcasted every 60 seconds by triggerSendTemp
-	jsonOut.printTo(tempMsg);
+	jsonOut.printTo(weatherMsg);
 	return true;
 }
 

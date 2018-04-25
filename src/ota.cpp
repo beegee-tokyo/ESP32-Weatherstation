@@ -21,6 +21,7 @@ void activateOTA(const char *MODULTYPE, const char *MODULID) {
 			sendDebug(debugLabel, infoLabel + digitalTimeDisplaySec() + " OTA_START", false);
 			// Set OTA flag
 			otaRunning = true;
+			otaStatus = 0;
 
 			// Stop LED from flashing
 			stopFlashing();
@@ -33,8 +34,8 @@ void activateOTA(const char *MODULTYPE, const char *MODULID) {
 			// Just in case the touch pad timers are active (should not happen!)
 			disableTouch();
 
-			// Stop Bluetooth Serial
-			stopBtSerial();
+			// // Stop Bluetooth Serial
+			// stopBtSerial();
 			
 			// Stop BLE advertising
 			stopBLE();
@@ -74,7 +75,8 @@ void activateOTA(const char *MODULTYPE, const char *MODULID) {
 			tft.setTextSize(2);
 			tft.drawString("OTA",64,50);
 			tft.drawString("FINISHED!",64,80);
-			delay(10);
+			// delay(10);
+			// esp_restart();
 		})
 		.onProgress([](unsigned int progress, unsigned int total) {
 			unsigned int achieved = progress / (total / 100);
@@ -113,6 +115,7 @@ void activateOTA(const char *MODULTYPE, const char *MODULID) {
 				Serial.println("End Failed");
 				tft.drawString("End Failed",64,120);
 			}
+			otaStatus = 0;
 		});
 
 	ArduinoOTA.begin();
