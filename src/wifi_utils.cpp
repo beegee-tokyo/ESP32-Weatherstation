@@ -71,10 +71,10 @@ void gotIP(system_event_id_t event) {
 		startFlashing(500);
 		// Create UDP broadcast address
 		IPAddress deviceIP = WiFi.localIP();
-		multiIP[0] = deviceIP[0];
-		multiIP[1] = deviceIP[1];
-		multiIP[2] = deviceIP[2];
-		multiIP[3] = 255;
+		IPAddress subnetMask = WiFi.subnetMask();
+		for (int i = 0; i < 4; i++) {
+			multiIP[i] = ~subnetMask[i] | deviceIP[i];
+		}
 	}
 }
 
